@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <!--[if IE]><script type="text/javascript" src="../js/html5.js"></script><![endif]-->
+    <link type="image/x-icon" rel="icon" href="/favicon.ico" />
+    <link type="image/x-icon" rel="shortcut icon" href="/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="/css/style.css" />
+    <script type="text/javascript" src="/MathJax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <title>SICP Exercises</title>
+</head>
+<body>
+    <div class="content">
+    
+<h1 id="toc_1">SICP Exercises</h1>
+<p>
+<a href="http://mitpress.mit.edu/sicp/full-text/book/book-Z-H-4.html\#%_toc_start">SCIP book</a>
+</p>
+
+<h2 id="toc_1.1">Chapter 01</h2>
+<h3 id="toc_1.1.1">Exercise 1.1</h3>
+
+<p>
+  Below is a sequence of expressions. What is the result printed by the
+  interpreter in response to each expression? Assume that the sequence is to be 
+  evaluated in the order in which it is presented.
+</p>
+
+<pre class="brush: scheme">
+10
+(+ 5 3 4)
+(- 9 1)
+(/ 6 2)
+(+ (* 2 4) (- 4 6))
+(define a 3)
+(define b (+ a 1))
+(+ a b (* a b))
+(= a b)
+(if (and (&gt; b a) (&lt; b (* a b)))
+    b
+    a)
+(cond ((= a 4) 6)
+      ((= b 4) (+ 6 7 a))
+      (else 25))
+(+ 2 (if (&gt; b a) b a))
+(* (cond ((&gt; a b) a)
+         ((&lt; a b) b)
+         (else -1))
+   (+ a 1))
+</pre>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+10
+12
+8
+3
+6
+19
+false
+4
+16
+6
+16
+</pre>
+
+<h3 id="toc_1.1.2">Exercise 1.2</h3>
+
+<p>
+Translate the following expression into prefix form
+</p>
+\[
+    \frac{5+4+(2-(3-(6+\frac{1}{3})))}{3(6-2)(2-7)}
+\]
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(/ (+ 5 4 (- 2 (- 3 (6 + (/ 1 3)))))
+   (* 3 (- 6 2) (- 2 7)))
+</pre>
+
+<h3 id="toc_1.1.3">Exercise 1.3</h3>
+
+<p>
+Define a procedure that takes three numbers as arguments and returns
+the sum of the squares of the two larger numbers.
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define (sum-square-2-largest a b c)
+        (cond ((and (&lt;= a b) (&lt;= a c)) (+ (* b b) (* c c)))
+              ((and (&lt;= b a) (&lt;= b c)) (+ (* a a) (* c c)))
+              ((and (&lt;= c a) (&lt;= c b)) (+ (* a a) (* b b)))))
+</pre>
+
+<h3 id="toc_1.1.4">Exercise 1.4</h3>
+
+<p>
+Observe that our model of evaluation allows for combinations whose operators 
+are compound expressions. Use this observation to describe the behavior of 
+the following procedure:
+</p>
+
+<pre class="brush: scheme">
+(define (a-plus-abs-b a b)
+  ((if (&gt; b 0) + -) a b))
+</pre>
+
+<ul>
+<li>
+Answer:
+
+<ul>
+<li>
+When <code>(&gt; b 0)</code> evaluated true, <code>(a-plus-abs-b a b) </code> become <code>(- a b)</code>,
+    scince \(b &lt; 0\) , this means \(a+\left|b\right|\)
+
+<li>
+When <code>(&gt; b 0)</code> evaluated false, it is <code>(+ a b)</code> now, again, means 
+    \(a+\left|b\right|\)
+
+</ul>
+</ul>
+
+<h3 id="toc_1.1.5">Exercise 1.5</h3>
+
+<p>
+Ben Bitdiddle has invented a test to determine whether the interpreter he is
+faced with is using applicative-order evaluation or normal-order evaluation.
+He defines the following two procedures:
+</p>
+
+<pre class="brush: scheme">
+(define (p) (p))
+
+(define (test x y)
+  (if (= x 0)
+      0
+      y))
+</pre>
+
+<p>
+Then he evaluates the expression
+</p>
+
+<pre class="brush: scheme">
+(test 0 (p))
+</pre>
+
+<p>
+What behavior will Ben observe with an interpreter that uses applicative-order
+evaluation? What behavior will he observe with an interpreter that uses
+normal-order evaluation? Explain your answer. (Assume that the evaluation rule
+for the special form <code>if</code> is the same whether the interpreter is using normal or
+applicative order: The predicate expression is evaluated first, and the result
+determines whether to evaluate the consequent or the alternative expression.) 
+</p>
+
+<ul>
+<li>
+Answer:
+
+<ul>
+<li>
+In an interpreter uses applicative-order eval., <code>(test 0 (p))</code> will first be
+    expanded to <code>(if (= 0 0) 0 p)</code>, then goes to its first branch and than the
+    whole expression is evaluated to 0
+
+<li>
+But in an interpreter uses normal-order eval., <code>(test 0 (p))</code> will also be
+    expanded to <code>(if (= 0 0) 0 p)</code>, but than, the interpreter try to expend
+    the nested <code>(p)</code>, and found it should be expand to <code>(p)</code>. Again, the
+    interpreter will still try to expand <code>p</code> here, so the whole evulation will
+    never terminate.
+
+</ul>
+</ul>
+
+<h3 id="toc_1.1.6">Exercise 1.6</h3>
+
+<p>
+Alyssa P. Hacker doesn't see why if needs to be provided as a special form.
+"Why can't I just define it as an ordinary procedure in terms of <code>cond?</code>" she
+asks. Alyssa's friend Eva Lu Ator claims this can indeed be done, and she
+defines a new]]ersion of <code>if</code>: 
+</p>
+<pre class="brush: scheme">
+(define (new-if predicate then-clause else-clause)
+  (cond (predicate then-clause)
+        (else else-clause)))
+</pre>
+<p>
+Eva demonstrates the program for Alyssa:
+</p>
+<pre class="brush: scheme">
+(new-if (= 2 3) 0 5)
+5
+
+(new-if (= 1 1) 0 5)
+0
+</pre>
+<p>
+Delighted, Alyssa uses <code>new-if</code> to rewrite the square-root program:
+</p>
+<pre class="brush: scheme">
+(define (sqrt-iter guess x)
+  (new-if (good-enough? guess x)
+           guess
+          (sqrt-iter (improve guess x)
+                     x)))
+</pre>
+<p>
+What happens when Alyssa attempts to use this to compute square roots? Explain.
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<p>
+The compution of square will never terminate. In an normal-order interpreter,
+the recursion will never end, as already seen in <a href="\#toc_1.2.5.html">previous</a>
+exersice. Still, even in a applicative-order interpreter, use <code>new-if</code> will noe
+always ensure the recursion terminate.     
+</p>
+
+<p>
+When the interpreter try to eval the <code>sqrt</code>, it will come across the `(new-if
+(good-enough? ...) guess (sqrt-iter ...))`. Here, the interpreter will eval.
+<code>(good-enough? ...)</code>, <code>guess</code>, <code>(sqrt-iter ...)</code> accordingly. And when
+evaluating <code>iter-iter</code>, it will come across the new-if again.  this means the
+evaluation will never terminate.    
+</p>
+
+<p>
+The difference between between the 'internal' <code>if</code> and the <code>new-if</code> is that the
+internal <code>if</code> is a primtive instruction, its evaluation process differs from
+normal procedure. <code>if</code> will evaluate <code>predicate</code> first, and then only evaluate
+one of <code>then-clause</code> and <code>else-clause</code> on <code>predicate</code> result, which the <code>new-if</code>
+failed when evaluating a recursive precedure.  
+</p>
+
+<h3 id="toc_1.1.7">Exercise 1.7</h3>
+
+<p>
+The <code>good-enough?</code> test used in computing square roots will not be very effective
+for finding the square roots of very small numbers. Also, in real computers,
+arithmetic operations are almost always performed with limited precision. This
+makes our test inadequate for very large numbers. Explain these statements, with
+examples showing how the test fails for small and large numbers. An alternative
+strategy for implementing <code>good-enough?</code> is to watch how guess changes from one
+iteration to the next and to stop when the change is a very small fraction of
+the guess. Design a square-root procedure that uses this kind of end test. Does
+this work better for small and large numbers?  
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<p>
+Suppose we want to find the square root of 10\<sup><small>10, which is 10\</small></sup>5, the evaluation
+go on like this: 
+<table>
+<tr>
+<td>
+guess
+</td>
+<td>
+x/guess
+</td>
+<td>
+avg.
+</td>
+<td>
+abs(avg<sup><small>2</small></sup>-x)
+</td>
+</tr>
+<tr>
+<td>
+1
+</td>
+<td>
+0.000001
+</td>
+<td>
+0.5000005
+</td>
+<td>
+1.00000000000025
+</td>
+</tr>
+<tr>
+<td>
+1.0000005
+</td>
+<td>
+0.999999...
+</td>
+<td>
+1.000000499..
+</td>
+<td>
+1.0000000000002499...
+</td>
+</tr>
+<tr>
+<td>
+...
+</td>
+<td>
+...
+</td>
+<td>
+...
+</td>
+<td>
+...
+</td>
+</tr>
+</table>
+As we can see here, the evaluation converges slowly, in fact, it will <strong>never</strong>
+converges since the difference between the first <code>avg.</code> and the 2nd one is small
+to be taken as rounding error and makes almost no difference when computer
+stores these numbers. So the evaluation will never terminate. Similiar thing
+happens when finding the root of large number.
+</p>
+
+<p>
+When using chenge between two guess as the termination condition, 
+</p>
+
+<p>
+<a href="newton_method_convergence.html">More on Newton's Method</a>
+</p>
+
+<p>
+Exercise 1.8.  Newton's method for cube roots is based on the fact that if y is
+an approximation to the cube root of x, then a better approximation is given by
+the value
+</p>
+
+<p>
+Use this formula to implement a cube-root procedure analogous to the square-root
+procedure. (In section 1.3.4 we will see how to implement Newton's method in
+general as an abstraction of these square-root and cube-root procedures.) 
+</p>
+
+
+<div class="toc">
+<ul>
+<li><a href="#toc_1">SICP Exercises</a>
+<ul>
+<li><a href="#toc_1.1">Chapter 01</a>
+<ul>
+<li><a href="#toc_1.1.1">Exercise 1.1</a>
+<li><a href="#toc_1.1.2">Exercise 1.2</a>
+<li><a href="#toc_1.1.3">Exercise 1.3</a>
+<li><a href="#toc_1.1.4">Exercise 1.4</a>
+<li><a href="#toc_1.1.5">Exercise 1.5</a>
+<li><a href="#toc_1.1.6">Exercise 1.6</a>
+<li><a href="#toc_1.1.7">Exercise 1.7</a>
+</ul>
+</ul>
+</ul>
+</div>
+
+    </div>
+
+    <footer>
+        <p>本页最后修订于 %time_stamp%</p>
+    </footer>
+</body>
+<link rel="stylesheet" type="text/css" href="/SyntaxHighlighter/styles/shCore.css" />
+<link rel="stylesheet" type="text/css" href="/SyntaxHighlighter/styles/shThemeDefault.css" />
+<link rel="stylesheet" type="text/css" href="/SyntaxHighlighter/styles/shThemeMidnight.css" />
+<script type="text/javascript" src="/SyntaxHighlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="/SyntaxHighlighter/scripts/shAutoloader.js"></script>
+
+<script type="text/javascript">
+    SyntaxHighlighter.autoloader(
+      'applescript            /SyntaxHighlighter/scripts/shBrushAppleScript.js',
+      'actionscript3 as3      /SyntaxHighlighter/scripts/shBrushAS3.js',
+      'bash shell             /SyntaxHighlighter/scripts/shBrushBash.js',
+      'coldfusion cf          /SyntaxHighlighter/scripts/shBrushColdFusion.js',
+      'cpp c                  /SyntaxHighlighter/scripts/shBrushCpp.js',
+      'c# c-sharp csharp      /SyntaxHighlighter/scripts/shBrushCSharp.js',
+      'css                    /SyntaxHighlighter/scripts/shBrushCss.js',
+      'delphi pascal          /SyntaxHighlighter/scripts/shBrushDelphi.js',
+      'diff patch pas         /SyntaxHighlighter/scripts/shBrushDiff.js',
+      'erl erlang             /SyntaxHighlighter/scripts/shBrushErlang.js',
+      'groovy                 /SyntaxHighlighter/scripts/shBrushGroovy.js',
+      'java                   /SyntaxHighlighter/scripts/shBrushJava.js',
+      'jfx javafx             /SyntaxHighlighter/scripts/shBrushJavaFX.js',
+      'js jscript javascript  /SyntaxHighlighter/scripts/shBrushJScript.js',
+      'perl pl                /SyntaxHighlighter/scripts/shBrushPerl.js',
+      'php                    /SyntaxHighlighter/scripts/shBrushPhp.js',
+      'text plain             /SyntaxHighlighter/scripts/shBrushPlain.js',
+      'py python              /SyntaxHighlighter/scripts/shBrushPython.js',
+      'ruby rails ror rb      /SyntaxHighlighter/scripts/shBrushRuby.js',
+      'sass scss              /SyntaxHighlighter/scripts/shBrushSass.js',
+      'scala                  /SyntaxHighlighter/scripts/shBrushScala.js',
+      'sql                    /SyntaxHighlighter/scripts/shBrushSql.js',
+      'vb vbnet               /SyntaxHighlighter/scripts/shBrushVb.js',
+      'xml xhtml xslt html    /SyntaxHighlighter/scripts/shBrushXml.js',
+      'scheme                 /SyntaxHighlighter/scripts/shBrushScheme.js',
+      'hs haskell             /SyntaxHighlighter/scripts/shBrushHaskell.js'
+    );
+    SyntaxHighlighter.defaults['toolbar']    = false;
+    SyntaxHighlighter.defaults['gutter']     = true;
+    SyntaxHighlighter.defaults['smart-tabs'] = true;
+    SyntaxHighlighter.defaults['ruler']      = true;
+    SyntaxHighlighter.defaults['tab-size']   = 4;
+    SyntaxHighlighter.all();
+</script>
+</html>

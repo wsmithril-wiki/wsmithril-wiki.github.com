@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <!--[if IE]><script type="text/javascript" src="js/html5.js"></script><![endif]-->
+    <link type="image/x-icon" rel="icon" href="/favicon.ico" />
+    <link type="image/x-icon" rel="shortcut icon" href="/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="/css/style.css" />
+    <script type="text/javascript" src="/MathJax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <title>Feature Test Page</title>
+</head>
+<body>
+    <div class="content">
+    
+<ul>
+<li>
+this is an mathematical formulae test   
+\[
+    \int_{-\infty}^{\infty} {\rm e}^{-x^2} {\rm d}x = \sqrt{\pi} 
+\]
+
+</ul>
+
+<ul>
+<li>
+Code Highlight  
+
+</ul>
+
+<pre class="brush: cpp">
+
+#include &lt;stdio.h&gt;
+
+int main(void) {
+    prtinf("Hello World!\n");
+    return 0;
+}
+
+</pre>
+
+<pre class="brush: python">
+
+class heiello:
+    self.hail = "Hello"
+
+    def __init__(self, s):
+        self.name = str(s)
+
+    def hello(self):
+        print self.hail + self.name
+
+if __name__ = "__main__": 
+    hail = hello('world')
+    hail.hello()
+
+</pre>
+
+
+<pre class="brush: python">
+
+class TestHelloWorld(object):
+  """Hello world python."""
+  def __init__(self, name):
+    self.name = name
+
+  def say(self):
+    print("hello {0}".format(self.name))
+
+</pre>
+
+
+<pre class="brush: scheme">
+(define (plot-mandelbrot-set
+         rmin rmax imax reso iter-limit)
+    (let* ((bm (make-object bitmap%
+                 (-&gt;integer (/ (- rmax rmin) reso))
+                 (-&gt;integer (/ (* imax 2) reso))))
+           (dc (make-object bitmap-dc%)))
+      (send dc set-bitmap bm)
+      (send dc clear)
+      (draw-mandelbrot-set dc rmin rmax imax reso iter-limit)
+      (send bm save-file "mandelbrot.png" 'png)))
+
+(&gt; 2 3)
+</pre>
+
+<pre class="brush: haskell">
+main = do
+       input &lt;- getContents
+       putStr $ unlines $ map show $ doEMP $ map read $ words input
+    
+   doEMP [] = []
+   doEMP (a:b:o) = a + b : doEMP o
+
+   test a b = a &lt; b
+
+   (+ 1) &lt;$&gt; [1, 2, 4] ++ [5, 6 ,7]
+</pre>
+
+    </div>
+
+    <footer>
+        <p>本页最后修订于 %time_stamp%</p>
+    </footer>
+</body>
+<link rel="stylesheet" type="text/css" href="/SyntaxHighlighter/styles/shCore.css" />
+<link rel="stylesheet" type="text/css" href="/SyntaxHighlighter/styles/shThemeDefault.css" />
+<link rel="stylesheet" type="text/css" href="/SyntaxHighlighter/styles/shThemeMidnight.css" />
+<script type="text/javascript" src="/SyntaxHighlighter/scripts/shCore.js"></script>
+<script type="text/javascript" src="/SyntaxHighlighter/scripts/shAutoloader.js"></script>
+
+<script type="text/javascript">
+    SyntaxHighlighter.autoloader(
+      'applescript            /SyntaxHighlighter/scripts/shBrushAppleScript.js',
+      'actionscript3 as3      /SyntaxHighlighter/scripts/shBrushAS3.js',
+      'bash shell             /SyntaxHighlighter/scripts/shBrushBash.js',
+      'coldfusion cf          /SyntaxHighlighter/scripts/shBrushColdFusion.js',
+      'cpp c                  /SyntaxHighlighter/scripts/shBrushCpp.js',
+      'c# c-sharp csharp      /SyntaxHighlighter/scripts/shBrushCSharp.js',
+      'css                    /SyntaxHighlighter/scripts/shBrushCss.js',
+      'delphi pascal          /SyntaxHighlighter/scripts/shBrushDelphi.js',
+      'diff patch pas         /SyntaxHighlighter/scripts/shBrushDiff.js',
+      'erl erlang             /SyntaxHighlighter/scripts/shBrushErlang.js',
+      'groovy                 /SyntaxHighlighter/scripts/shBrushGroovy.js',
+      'java                   /SyntaxHighlighter/scripts/shBrushJava.js',
+      'jfx javafx             /SyntaxHighlighter/scripts/shBrushJavaFX.js',
+      'js jscript javascript  /SyntaxHighlighter/scripts/shBrushJScript.js',
+      'perl pl                /SyntaxHighlighter/scripts/shBrushPerl.js',
+      'php                    /SyntaxHighlighter/scripts/shBrushPhp.js',
+      'text plain             /SyntaxHighlighter/scripts/shBrushPlain.js',
+      'py python              /SyntaxHighlighter/scripts/shBrushPython.js',
+      'ruby rails ror rb      /SyntaxHighlighter/scripts/shBrushRuby.js',
+      'sass scss              /SyntaxHighlighter/scripts/shBrushSass.js',
+      'scala                  /SyntaxHighlighter/scripts/shBrushScala.js',
+      'sql                    /SyntaxHighlighter/scripts/shBrushSql.js',
+      'vb vbnet               /SyntaxHighlighter/scripts/shBrushVb.js',
+      'xml xhtml xslt html    /SyntaxHighlighter/scripts/shBrushXml.js',
+      'scheme                 /SyntaxHighlighter/scripts/shBrushScheme.js',
+      'hs haskell             /SyntaxHighlighter/scripts/shBrushHaskell.js'
+    );
+    SyntaxHighlighter.defaults['toolbar']    = false;
+    SyntaxHighlighter.defaults['gutter']     = true;
+    SyntaxHighlighter.defaults['smart-tabs'] = true;
+    SyntaxHighlighter.defaults['ruler']      = true;
+    SyntaxHighlighter.defaults['tab-size']   = 4;
+    SyntaxHighlighter.all();
+</script>
+</html>
