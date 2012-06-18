@@ -1,12 +1,10 @@
 /**
- * Haskell Brushe for SyntaxHighlighter 2.0
- * http://watashi.ws/blog/48/my-syntaxhighlighter-2-0-haskell-brush/
+ * Haskell Brushe for SyntaxHighlighter 3.0
+ * Modified from http://watashi.ws/blog/48/my-syntaxhighlighter-2-0-haskell-brush/ by wshithril<at>gmail.com
+ * Adjusted to SH 3.0, fix issue with escape sequences.
  *
- * @copyright
- * Copyright (C) 2009 watashi.
- *
- * @license
  * Dual licensed under the MIT and GPL licenses.
+ *
  */
 ;(function ()
 {
