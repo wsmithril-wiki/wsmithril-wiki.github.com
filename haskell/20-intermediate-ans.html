@@ -78,7 +78,6 @@ class Misty m where
   -- (use banana and/or unicorn)
   furry' :: (a -&gt; b) -&gt; m a -&gt; m b
   furry' f = banana $ unicorn `furry` f
-  -- Just like liftM2
 
 -- Exercise 7
 -- Relative Difficulty: 2
@@ -103,7 +102,7 @@ instance Misty ((-&gt;) t) where
 -- here's the type signature for banana and unicorn
 -- banana  :: (a -&gt; t -&gt; b) -&gt; (t -&gt; a) -&gt; t -&gt; b
 -- unicorn :: a -&gt; t -&gt; a
--- so it is almost certain that the only none-trival function here is like this
+-- so it is almost certain that this is the only possiable implemention
 
 -- Exercise 10
 -- Relative Difficulty: 6
@@ -134,35 +133,36 @@ apple = furry' $ flip ($)
 -- Exercise 14
 -- Relative Difficulty: 6
 moppy :: (Misty m) =&gt; [a] -&gt; (a -&gt; m b) -&gt; m [b]
-moppy (x:xs) fm = (fm a) 
-
-
-mpooy []     _  = unicorn []
--- this is forM in List Monad
+mpppy [] _     = unicorn []
+moppy (a:as) f = banana (\x -&gt; banana (\xs -&gt; unicorn (x:xs)) (moppy as f)) (f a)  
+-- the \x thing banana is liftM2 (:) in disguis
+-- this implentation is indeed a moppy one.
 
 -- Exercise 15
 -- Relative Difficulty: 6
 -- (bonus: use moppy)
 sausage :: (Misty m) =&gt; [m a] -&gt; m [a]
-sausage = 
+sausage mas = moppy mas id
 
--- Exercise 16
+-- Exercise 16 
 -- Relative Difficulty: 6
 -- (bonus: use apple + furry')
 banana2 :: (Misty m) =&gt; (a -&gt; b -&gt; c) -&gt; m a -&gt; m b -&gt; m c
-banana2 = error "todo"
+banana2 fabc ma mb = apple mb $ furry' f ma
 
 -- Exercise 17
 -- Relative Difficulty: 6
 -- (bonus: use apple + banana2)
 banana3 :: (Misty m) =&gt; (a -&gt; b -&gt; c -&gt; d) -&gt; m a -&gt; m b -&gt; m c -&gt; m d
-banana3 = error "todo"
+banana3 fabcd ma mb mc
+    = apple mc (banana2 fabcd ma mb)
 
 -- Exercise 18
 -- Relative Difficulty: 6
 -- (bonus: use apple + banana3)
 banana4 :: (Misty m) =&gt; (a -&gt; b -&gt; c -&gt; d -&gt; e) -&gt; m a -&gt; m b -&gt; m c -&gt; m d -&gt; m e
-banana4 = error "todo"
+banana4 fabcde ma mb mc md
+    = apple md (banana3 ma mb mc)
 
 newtype State s a = State {
   state :: (s -&gt; (s, a))
