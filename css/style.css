@@ -74,6 +74,10 @@ pre:hover{
     overflow:auto; overflow-y:hidden; padding-bottom:18px\9;
     -moz-box-shadow:-2px 0px 6px #ccc; -webkit-box-shadow:2px 2px 8px #666; box-shadow:2px 2px 8px #666;
 }
+pre.ascii-art{
+    line-height: 1em;
+    font-family: monospace; font-size: 0.85em;
+}
 blockquote{
     margin:.5em 1em; padding:0.4em 50px; line-height:1.5em; min-height:50px;
     border-width:0; border-color:#ccc; border-style:solid;

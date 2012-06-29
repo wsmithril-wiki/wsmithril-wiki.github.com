@@ -2,63 +2,150 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" lang="zh-CN">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <!--[if IE]><script type="text/javascript" src="js/html5.js"></script><![endif]-->
+    <!--[if IE]><script type="text/javascript" src="../js/html5.js"></script><![endif]-->
     <link type="image/x-icon" rel="icon" href="/favicon.ico" />
     <link type="image/x-icon" rel="shortcut icon" href="/favicon.ico" />
     <link rel="stylesheet" type="text/css" href="/css/style.css" />
     <script type="text/javascript" src="/MathJax/MathJax.js?config=TeX-AMS-MML_SVG"></script>
-    <title>WsMithril's Wiki</title>
+    <title>20 Intermediate Haskell Exercises</title>
 </head>
 <body>
     <div class="content">
     
-<h1 id="toc_1">WsMithril's Wiki</h1>
-<ul>
-<li>
-<a href="SICP-Exercise/index.html">My answer to SICP Exersices</a>
+<h1 id="toc_1">20 Intermediate Haskell Exercises</h1>
 
-<ul>
-<li>
-<a href="SICP-Exercise/Chapter01.html">Chapter01</a>
+<p>
+Heres is the famous 20-intermediate-haskell-exercises.
+Your job is replace those <code>error "todo"</code> into some none bottem implemtetion that 
+could pass the type check.
+</p>
 
-<li>
-<a href="SICP-Exercise/Chapter02.html">Chapter02</a>
+<pre class="brush: haskell">
 
-</ul>
-</ul>
+class Fluffy f where
+  furry :: (a -&gt; b) -&gt; f a -&gt; f b
 
-<ul>
-<li>
-Haskell
+-- Exercise 1
+-- Relative Difficulty: 1
+instance Fluffy [] where
+  furry = error "todo"
 
-<ul>
-<li>
-Amazing tool to try haskell in a Broswer <a href="http://tryhaskell.org/">tryhaskell</a>
+-- Exercise 2
+-- Relative Difficulty: 1
+instance Fluffy Maybe where
+  furry = error "todo"
 
-<li>
-20 Intermediate Haskell <a href="haskell/20-intermediate.html">Exercises</a> and <a href="/haskell/20-intermediate-ans.html">My Answers</a>
+-- Exercise 3
+-- Relative Difficulty: 5
+instance Fluffy ((-&gt;) t) where
+  furry = error "todo"
 
-</ul>
-</ul>
+newtype EitherLeft b a = EitherLeft (Either a b)
+newtype EitherRight a b = EitherRight (Either a b)
 
-<ul>
-<li>
-Online Compiler <a href="http://codepad.org/">CodePad</a>
+-- Exercise 4
+-- Relative Difficulty: 5
+instance Fluffy (EitherLeft t) where
+  furry = error "todo"
 
-</ul>
+-- Exercise 5
+-- Relative Difficulty: 5
+instance Fluffy (EitherRight t) where
+  furry = error "todo"
 
+class Misty m where
+  banana :: (a -&gt; m b) -&gt; m a -&gt; m b
+  unicorn :: a -&gt; m a
+  -- Exercise 6
+  -- Relative Difficulty: 3
+  -- (use banana and/or unicorn)
+  furry' :: (a -&gt; b) -&gt; m a -&gt; m b
+  furry' = error "todo"
 
-<h2 id="toc_1.1">offline documents</h2>
-<ul>
-<li>
-<a href="/haskell-doc/">Haskell Documents</a>
+-- Exercise 7
+-- Relative Difficulty: 2
+instance Misty [] where
+  banana = error "todo"
+  unicorn = error "todo"
 
-<li>
-<a href="/realworld-haskell/">Realworld Haskell</a>
+-- Exercise 8
+-- Relative Difficulty: 2
+instance Misty Maybe where
+  banana = error "todo"
+  unicorn = error "todo"
 
-</ul>
+-- Exercise 9
+-- Relative Difficulty: 6
+instance Misty ((-&gt;) t) where
+  banana = error "todo"
+  unicorn = error "todo"
 
-<h6 id="toc_1.1.0.0.0.1"><a href="feature_test.html">Feature Test</a> Here</h6>
+-- Exercise 10
+-- Relative Difficulty: 6
+instance Misty (EitherLeft t) where
+  banana = error "todo"
+  unicorn = error "todo"
+
+-- Exercise 11
+-- Relative Difficulty: 6
+instance Misty (EitherRight t) where
+  banana = error "todo"
+  unicorn = error "todo"
+
+-- Exercise 12
+-- Relative Difficulty: 3
+jellybean :: (Misty m) =&gt; m (m a) -&gt; m a
+jellybean = error "todo"
+
+-- Exercise 13
+-- Relative Difficulty: 6
+apple :: (Misty m) =&gt; m a -&gt; m (a -&gt; b) -&gt; m b
+apple = error "todo"
+
+-- Exercise 14
+-- Relative Difficulty: 6
+moppy :: (Misty m) =&gt; [a] -&gt; (a -&gt; m b) -&gt; m [b]
+moppy = error "todo"
+
+-- Exercise 15
+-- Relative Difficulty: 6
+-- (bonus: use moppy)
+sausage :: (Misty m) =&gt; [m a] -&gt; m [a]
+sausage = error "todo"
+
+-- Exercise 16
+-- Relative Difficulty: 6
+-- (bonus: use apple + furry')
+banana2 :: (Misty m) =&gt; (a -&gt; b -&gt; c) -&gt; m a -&gt; m b -&gt; m c
+banana2 = error "todo"
+
+-- Exercise 17
+-- Relative Difficulty: 6
+-- (bonus: use apple + banana2)
+banana3 :: (Misty m) =&gt; (a -&gt; b -&gt; c -&gt; d) -&gt; m a -&gt; m b -&gt; m c -&gt; m d
+banana3 = error "todo"
+
+-- Exercise 18
+-- Relative Difficulty: 6
+-- (bonus: use apple + banana3)
+banana4 :: (Misty m) =&gt; (a -&gt; b -&gt; c -&gt; d -&gt; e) -&gt; m a -&gt; m b -&gt; m c -&gt; m d -&gt; m e
+banana4 = error "todo"
+
+newtype State s a = State {
+  state :: (s -&gt; (s, a))
+}
+
+-- Exercise 19
+-- Relative Difficulty: 9
+instance Fluffy (State s) where
+  furry = error "todo"
+
+-- Exercise 20
+-- Relative Difficulty: 10
+instance Misty (State s) where
+  banana = error "todo"
+  unicorn = error "todo"
+</pre>
 
     </div>
 
