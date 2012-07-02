@@ -171,7 +171,9 @@ newtype State s a = State {
 -- Exercise 19
 -- Relative Difficulty: 9
 instance Fluffy (State s) where
-  furry = error "todo"
+  furry f st = State ((\f (a, b) -&gt; (a, f b)) (state st))
+
+
 
 -- Exercise 20
 -- Relative Difficulty: 10
