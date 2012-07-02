@@ -15,7 +15,8 @@
     </div>
 
     <footer>
-        <p>本页最后修订于 %time_stamp%</p>
+        <p>本页最后修订于</p>
+        <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/2.5/cn/"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/2.5/cn/88x31.png" /></a><br />本作品由<span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">WsMithril</span>创作，采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/2.5/cn/">知识共享署名-非商业性使用-相同方式共享 2.5 中国大陆许可协议</a>进行许可。
     </footer>
 </body>
 <link rel="stylesheet" type="text/css" href="/SyntaxHighlighter/styles/shCore.css" />
