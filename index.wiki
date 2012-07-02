@@ -1,0 +1,18 @@
+= WsMithril's Wiki =
+- [[SICP-Exercise/index| My answer to SICP Exersices]]
+  - [[SICP-Exercise/Chapter01|Chapter01]]
+  - [[SICP-Exercise/Chapter02|Chapter02]]
+
+- Haskell
+  - Amazing tool to try haskell in a Broswer [[http://tryhaskell.org/|tryhaskell]]
+  - 20 Intermediate Haskell [[haskell/20-intermediate|Exercises]] and [[/haskell/20-intermediate-ans|My Answers]]
+
+- Online Compiler [[http://codepad.org/|CodePad]]
+
+
+== offline documents ==
+- [[/haskell-doc/| Haskell Documents]]
+- [[/realworld-haskell/| Realworld Haskell]]
+
+====== [[feature_test| Feature Test]] Here ======
+%title WsMithril's Wiki

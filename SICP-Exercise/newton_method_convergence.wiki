@@ -1,0 +1,50 @@
+= The Newton's Method =
+Newton's Method is a quick way to guess a root of an equation, simle follow the
+simple iteration rule folloews:
+- Pick $x_0$,
+- Then do the iteration
+{{$
+    x_{n} = x_{n-1} - \frac{f(x_{n-1})}{f'(x_{n-1}))}
+}}$
+
+Then, when $n\to\infty$, ${x_n}$ will convergence under some condition, 
+
+let $x^{*}=\lim\nolimits_{n\to\infty}x_n$, then we have $f(x^{*}) = 0$
+
+== Convergence ==
+According to `Taylor's theorem`, if $x^{*}$ is the root of $f(x)$, the expansion
+of $f(x^*)$ about $x$ is:
+{{$
+f(x^*)=f(x)+f'(x)(x^*-x)+\frac{1}{2}f''(\xi)(x^*-x)^2, (x^*-\xi)(x-\xi) < 0
+}}$
+Dividing by $f'(x)$ and rearrange:
+{{$
+\frac{f(x)}{f'(x)}+(x^*-x) = - \frac{1}{2} \frac{f''(\xi)}{f'(x)} (x^*-x)^2
+}}$
+Denote that $\epsilon_n=x^*-x_n$, and let $x=x_n$, this become:
+{{$
+\frac{f(x_n)}{f'(x_n)} - x_n + x^* = - \frac{1}{2} \frac{f''(\xi)}{f'(x_n)}(x^*-x_n)^2
+}}$
+Notice that $x_{n+1} = x_n - f(x_n) / f'(x_n)$,
+{{$
+\epsilon_{n+1} = - \frac{1}{2} \frac{f''(\xi)}{f'(x_n)}\epsilon_n^2
+}}$
+Take the absolute value gives:
+{{$
+\left|\epsilon_{n-1}\right|=\frac{1}{2}\left|\frac{f''(\xi)}{f'(x_n)}\epsilon_n^2 \right|
+}}$
+And this shows (at least):
+- The iteration of ${x_n}$ will converge under these condition:
+  # $f''$ is _limited_ in interval $I$;
+  # $f'$ is non-zero in interval $I$;
+  # the initial value$x_0$ is "close enough" to the root $x^*$, or will get close
+    eonugh after a finite times of iteration.
+- The rate of convergence is quadratic. And this makes the Newton's method can
+  converge even if there is a rounding error in each step.
+
+Here $I$ is an interval $[x^*-r, x^*+r]$ for some $r>(x_0 - x^*)$
+
+How close is "close enough", that is, if denoted $M=\sup_{x\in I} \left|\frac{f''(x)}{f'(x)}\right|$, $\left|x_0-x^*\right|M<1$
+
+%toc
+%title Newton's Method
