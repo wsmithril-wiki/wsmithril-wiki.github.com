@@ -10,7 +10,7 @@
 - Online Compiler [[http://codepad.org/|CodePad]]
 
 
-== offline documents ==
+== Online Documents ==
 - [[/haskell-doc/| Haskell Documents]]
 - [[/realworld-haskell/| Realworld Haskell]]
 

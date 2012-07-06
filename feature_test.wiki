@@ -18,24 +18,6 @@ int main(void) {
 
 {{{class="brush: python"
 
-class heiello:
-    self.hail = "Hello"
-
-    def __init__(self, s):
-        self.name = str(s)
-
-    def hello(self):
-        print self.hail + self.name
-
-if __name__ = "__main__": 
-    hail = hello('world')
-    hail.hello()
-
-}}}
-
-
-{{{class="brush: python"
-
 class TestHelloWorld(object):
   """Hello world python."""
   def __init__(self, name):
@@ -48,31 +30,20 @@ class TestHelloWorld(object):
 
 
 {{{class="brush: scheme"
-(define (plot-mandelbrot-set
-         rmin rmax imax reso iter-limit)
-    (let* ((bm (make-object bitmap%
-                 (->integer (/ (- rmax rmin) reso))
-                 (->integer (/ (* imax 2) reso))))
-           (dc (make-object bitmap-dc%)))
-      (send dc set-bitmap bm)
-      (send dc clear)
-      (draw-mandelbrot-set dc rmin rmax imax reso iter-limit)
-      (send bm save-file "mandelbrot.png" 'png)))
-
-(> 2 3)
+(define hello-world 
+    (let ((msg "hello world!"))
+    (display msg)
+    (newline)))
 }}}
 
 {{{class="brush: haskell"
-main = do
-       input <- getContents
-       putStr $ unlines $ map show $ doEMP $ map read $ words input
-    
-   doEMP [] = []
-   doEMP (a:b:o) = a + b : doEMP o
+fibs = 1:1:zipWith (+) fibs (tail fibs)
+}}}
 
-   test a b = a < b
-
-   (+ 1) <$> [1, 2, 4] ++ [5, 6 ,7]
+{{{class="bursh: shell"
+exec 1>/dev/tty 2>/dev/tty
+echo "Hello World"
+exec 1>- 2>-
 }}}
 
 %title Feature Test Page

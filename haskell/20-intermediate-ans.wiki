@@ -139,7 +139,13 @@ banana3 fabcd ma mb mc
 banana4 :: (Misty m) => (a -> b -> c -> d -> e) -> m a -> m b -> m c -> m d -> m e
 banana4 fabcde ma mb mc md
     = apple md (banana3 ma mb mc)
+}}}
 
+Typeclass `Misty` is dreadful `Modad` typeclass, with `banana` is `=<<`, 
+`unicorn` is `return` and `furry'` is `liftM`. Other function like
+`jellybean` is `>>=` and `apple` is `forM`.
+
+{{{class="brush: haskell"
 newtype State s a = State {
   state :: (s -> (s, a))
 }
@@ -149,11 +155,18 @@ newtype State s a = State {
 instance Fluffy (State s) where
   furry f st = State ((\f (a, b) -> (a, f b)) (state st))
 
-
-
 -- Exercise 20
 -- Relative Difficulty: 10
 instance Misty (State s) where
-  banana = error "todo"
+  banana  f sa sb =   (state sa) 
   unicorn = error "todo"
+
+(a -> State s b ) -> State s a -> State s b
+(a -> (s -> (s, b))) -> (s -> (s, a)) -> (s -> (s, b))
 }}}
+
+There is a simlar example in the book `Real World Haskell`, chapter named
+`Chapter 10. Code case study: parsing a binary data format`, which build the
+essence of a `State` monad from scretch without even introducing the concept of 
+Monad. Very inspering.
+
