@@ -142,6 +142,8 @@ h6 a[href^="https://"]:hover{background-position:right top;}
 .justright {text-align: right;}
 .justcenter {text-align: center;}
 
+div.copyright{border-width:1px 0; border-style:solid; border-color:#ccc; color:#999; padding:5px; font-family:Georgia,Times,sans-serif; font-size:small; text-align:right; display:block; margin:0 1em;}
+
 footer{border-width:1px 0 0; border-style:solid; border-color:#ccc; color:#999; padding:5px; font-family:Georgia,Times,sans-serif; font-size:small; text-align:right; display:block; margin:0 1em;}
 footer:after{content:"\0020"; display:block; height:0; clear:both;}
 footer{zoom:1;}

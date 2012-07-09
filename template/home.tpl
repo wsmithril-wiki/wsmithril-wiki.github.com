@@ -2,99 +2,17 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" lang="zh-CN">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <!--[if IE]><script type="text/javascript" src="js/html5.js"></script><![endif]-->
+    <!--[if IE]><script type="text/javascript" src="%root_path%js/html5.js"></script><![endif]-->
     <link type="image/x-icon" rel="icon" href="/favicon.ico" />
     <link type="image/x-icon" rel="shortcut icon" href="/favicon.ico" />
     <link rel="stylesheet" type="text/css" href="/css/style.css" />
     <script type="text/javascript" src="/MathJax/MathJax.js?config=TeX-AMS-MML_SVG"></script>
-    <title>Feature Test Page</title>
+    <title>%title%</title>
 </head>
 <body>
     <div class="content">
-    
-<ul>
-<li>
-this is an mathematical formulae test   
-\[
-    \int_{-\infty}^{\infty} {\rm e}^{-x^2} {\rm d}x = \sqrt{\pi} 
-\]
-
-</ul>
-
-<ul>
-<li>
-Code Highlight  
-
-</ul>
-
-<pre class="brush: cpp">
-
-#include &lt;stdio.h&gt;
-
-int main(void) {
-    prtinf("Hello World!\n");
-    return 0;
-}
-
-</pre>
-
-<pre class="brush: python">
-
-class TestHelloWorld(object):
-  """Hello world python."""
-  def __init__(self, name):
-    self.name = name
-
-  def say(self):
-    print("hello {0}".format(self.name))
-
-</pre>
-
-
-<pre class="brush: scheme">
-(define hello-world 
-    (let ((msg "hello world!"))
-    (display msg)
-    (newline)))
-</pre>
-
-<pre class="brush: haskell">
-fibs = 1:1:zipWith (+) fibs (tail fibs)
-</pre>
-
-<pre class="bursh: shell">
-exec 1&gt;/dev/tty 2&gt;/dev/tty
-echo "Hello World"
-exec 1&gt;- 2&gt;-
-</pre>
-
+    %content%
     </div>
-
-    <div class="copyright">
-        <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/2.5/cn/"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/2.5/cn/88x31.png" /></a>
-        <br />
-        本作品由<span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">WsMithril</span>创作，采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/2.5/cn/">知识共享署名-非商业性使用-相同方式共享 2.5 中国大陆许可协议</a>进行许可。
-    </div>
-     
-    <div id="disqus_thread"></div>
-    <script type="text/javascript">
-        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
-        var disqus_shortname = 'wsmithrilswiki'; // required: replace example with your forum shortname
-
-        /* * * DON'T EDIT BELOW THIS LINE * * */
-        (function() {
-            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
-            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-        })();
-    </script>
-    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-
-    <footer>
-        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-    </footer>
-
-
 </body>
 <link rel="stylesheet" type="text/css" href="/SyntaxHighlighter/styles/shCore.css" />
 <link rel="stylesheet" type="text/css" href="/SyntaxHighlighter/styles/shThemeDefault.css" />
