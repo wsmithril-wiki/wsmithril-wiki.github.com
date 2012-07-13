@@ -184,7 +184,7 @@ instance Fluffy (State s) where
 -- Exercise 20
 -- Relative Difficulty: 10
 instance Misty (State s) where
-  banana  f sa st = f $ (\(a, b) -&gt; b) $ (state sa) st
+  banana  f sa st = f $ (\(a, b) -&gt; b) $ state sa st
   unicorn a st    = (st, a)
 
 </pre>

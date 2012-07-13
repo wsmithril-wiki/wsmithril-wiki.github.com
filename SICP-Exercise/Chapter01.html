@@ -1134,6 +1134,28 @@ elipsed time
 Almost halve the runtime.
 </p>
 
+<h2 id="toc_1.2">Exercise 1.24</h2>
+<p>
+Modify the timed-prime-test procedure of exercise 1.22 to use <code>fast-prime?</code> (the
+Fermat method), and test each of the 12 primes you found in that exercise. Since
+the Fermat test has \(O(\log n)\) growth, how would you expect the time to test primes
+near 1,000,000 to compare with the time needed to test primes near 1000? Do your
+data bear this out? Can you explain any discrepancy you find? 
+</p>
+
+<pre class="brush: scheme">
+(define (timed-prime-test-fast n)
+  (newline)
+  (display n)
+  (start-prime-test n (runtime)))
+(define (start-prime-test n start-time)
+  (if (prime? n)
+      (report-prime (- (runtime) start-time))))
+(define (report-prime elapsed-time)
+  (display " *** ")
+  (display elapsed-time))
+</pre>
+
 
 
 
@@ -1167,6 +1189,7 @@ Almost halve the runtime.
 <li><a href="#toc_1.1.22">Exercise 1.22</a>
 <li><a href="#toc_1.1.23">Exercise 1.23</a>
 </ul>
+<li><a href="#toc_1.2">Exercise 1.24</a>
 </ul>
 </ul>
 </div>
