@@ -17,7 +17,7 @@
 <h3 id="toc_1.1.1">Exercise 1.1</h3>
 <p>
   Below is a sequence of expressions. What is the result printed by the
-  interpreter in response to each expression? Assume that the sequence is to be 
+  interpreter in response to each expression? Assume that the sequence is to be
   evaluated in the order in which it is presented.
 </p>
 
@@ -107,8 +107,8 @@ Answer:
 <h3 id="toc_1.1.4">Exercise 1.4</h3>
 
 <p>
-Observe that our model of evaluation allows for combinations whose operators 
-are compound expressions. Use this observation to describe the behavior of 
+Observe that our model of evaluation allows for combinations whose operators
+are compound expressions. Use this observation to describe the behavior of
 the following procedure:
 </p>
 
@@ -127,7 +127,7 @@ When <code>(&gt; b 0)</code> evaluated true, <code>(a-plus-abs-b a b) </code> be
     since \(b &lt; 0\) , this means \(a+\left|b\right|\)
 
 <li>
-When <code>(&gt; b 0)</code> evaluated false, it is <code>(+ a b)</code> now, again, means 
+When <code>(&gt; b 0)</code> evaluated false, it is <code>(+ a b)</code> now, again, means
     \(a+\left|b\right|\)
 
 </ul>
@@ -164,7 +164,7 @@ evaluation? What behavior will he observe with an interpreter that uses
 normal-order evaluation? Explain your answer. (Assume that the evaluation rule
 for the special form <code>if</code> is the same whether the interpreter is using normal or
 applicative order: The predicate expression is evaluated first, and the result
-determines whether to evaluate the consequent or the alternative expression.) 
+determines whether to evaluate the consequent or the alternative expression.)
 </p>
 
 <ul>
@@ -193,7 +193,7 @@ But in an interpreter uses normal-order eval., <code>(test 0 (p))</code> will al
 Alyssa P. Hacker doesn't see why if needs to be provided as a special form.
 "Why can't I just define it as an ordinary procedure in terms of <code>cond?</code>" she
 asks. Alyssa's friend Eva Lu Ator claims this can indeed be done, and she
-defines a new version of <code>if</code>: 
+defines a new version of <code>if</code>:
 </p>
 <pre class="brush: scheme">
 (define (new-if predicate then-clause else-clause)
@@ -234,7 +234,7 @@ Answer:
 The computation of square will never terminate. In an normal-order interpreter,
 the recursion will never end, as already seen in <a href="\#toc_1.2.5.html">previous</a>
 exercise. Still, even in a applicative-order interpreter, use <code>new-if</code> will not
-always ensure the recursion terminate.     
+always ensure the recursion terminate.
 </p>
 
 <p>
@@ -242,7 +242,7 @@ When the interpreter try to eval the <code>sqrt</code>, it will come across the 
 (good-enough? ...) guess (sqrt-iter ...))`. Here, the interpreter will eval.
 <code>(good-enough? ...)</code>, <code>guess</code>, <code>(sqrt-iter ...)</code> accordingly. And when
 evaluating <code>iter-iter</code>, it will come across the new-if again. This means the
-evaluation will never terminate.    
+evaluation will never terminate.
 </p>
 
 <p>
@@ -250,7 +250,7 @@ The difference between between the 'internal' <code>if</code> and the <code>new-
 internal <code>if</code> is a primitive instruction, its evaluation process differs from
 normal procedure. <code>if</code> will evaluate <code>predicate</code> first, and then only evaluate
 one of <code>then-clause</code> and <code>else-clause</code> on <code>predicate</code> result, which the <code>new-if</code>
-failed when evaluating a recursive procedure.  
+failed when evaluating a recursive procedure.
 </p>
 
 <h3 id="toc_1.1.7">Exercise 1.7</h3>
@@ -264,7 +264,7 @@ examples showing how the test fails for small and large numbers. An alternative
 strategy for implementing <code>good-enough?</code> is to watch how guess changes from one
 iteration to the next and to stop when the change is a very small fraction of
 the guess. Design a square-root procedure that uses this kind of end test. Does
-this work better for small and large numbers?  
+this work better for small and large numbers?
 </p>
 
 <ul>
@@ -275,7 +275,7 @@ Answer:
 
 <p>
 Suppose we want to find the square root of 10<sup><small>10</small></sup>, which is 10<sup><small>5</small></sup>, the evaluation
-go on like this: 
+go on like this:
 <table>
 <tr>
 <th>
@@ -345,7 +345,7 @@ The case with very small number is better, the evaluation will terminate, but
 with a wrong value. This is mainly caused by the way with the definition of
 <code>good-enough?</code>. When the <code>guess</code> itself is smaller than the threshold in
 <code>good-enough?</code>, the iteration will terminate, whatever it is the proper square
-root. 
+root.
 </p>
 
 <p>
@@ -355,7 +355,7 @@ Using change between two guess as the termination condition, the
 <pre class="brush: scheme">
 (define TOL 0.00001)
 (define (good-enough? old-guess guess)
-        (if (= guess 0) 
+        (if (= guess 0)
             true
             (&lt; (abs (/ (- guess old-guess) guess)) TOL)))
 </pre>
@@ -375,7 +375,7 @@ And this version of <code>good-enough?</code> will terminate on large number, wi
 answer, but good with small number. The poor condition with large number is
 majorly the restriction of Newton's method, which means there nothing else to do
 to improve the problem with large number without a better way to find the
-initial guess value, other thane simply take 1.  
+initial guess value, other thane simply take 1.
 </p>
 
 <p>
@@ -394,7 +394,7 @@ y^*=\frac{x/y^2 + 2y}{3}
 <p>
 Use this formula to implement a <code>cube-root</code> procedure analogous to the square-root
 procedure. (In section 1.3.4 we will see how to implement Newton's method in
-general as an abstraction of these square-root and cube-root procedures.) 
+general as an abstraction of these square-root and cube-root procedures.)
 </p>
 
 <ul>
@@ -510,7 +510,7 @@ Consider the following procedures, where <code>A</code> is the procedure defined
 <p>
 Give concise mathematical definitions for the functions computed by the
 procedures <code>f</code>, <code>g</code>, and <code>h</code> for positive integer values of n. For example, <code>(k n)</code>
-computes \(5n^2\). 
+computes \(5n^2\).
 </p>
 
 <ul>
@@ -550,7 +550,7 @@ ack 0 n = n + 1
 ack m 0 = ack (m - 1) 1
 ack m n = ack (m - 1) (ack m (n - 1))
 </pre>
-  This function grows incredibly fast, which it is almost impossible to compute 
+  This function grows incredibly fast, which it is almost impossible to compute
   <code>ack 4 3</code>. Here is some test result on my computer, using Haskell
   implementation, which handle the recursion properly:
 
@@ -567,7 +567,7 @@ ack m n = ack (m - 1) (ack m (n - 1))
 
 <h3 id="toc_1.1.11">Exercise 1.11</h3>
 <p>
-A function f is defined by the rule that \(f(n) = n\) if \(n&lt;3\) and \(f(n) = f(n - 1) + 2f(n - 2) + 3f(n - 3)\) 
+A function f is defined by the rule that \(f(n) = n\) if \(n&lt;3\) and \(f(n) = f(n - 1) + 2f(n - 2) + 3f(n - 3)\)
 if \(n &gt; 3\). Write a procedure that computes \(f\) by means of a recursive process.
 Write a procedure that computes \(f\) by means of an iterative process.
 </p>
@@ -602,18 +602,18 @@ The following pattern of numbers is called Pascal's triangle.
 </p>
 \[
 \begin{array}{cccccccccc}
-&amp;   &amp;   &amp;   &amp;   &amp;   &amp; 1 &amp;   &amp;   &amp;   &amp;   &amp;   &amp;   \\ 
+&amp;   &amp;   &amp;   &amp;   &amp;   &amp; 1 &amp;   &amp;   &amp;   &amp;   &amp;   &amp;   \\
 &amp;   &amp;   &amp;   &amp;   &amp; 1 &amp;   &amp; 1 &amp;   &amp;   &amp;   &amp;   &amp;   \\
 &amp;   &amp;   &amp;   &amp; 1 &amp;   &amp; 2 &amp;   &amp; 1 &amp;   &amp;   &amp;   &amp;   \\
 &amp;   &amp;   &amp; 1 &amp;   &amp; 3 &amp;   &amp; 3 &amp;   &amp; 1 &amp;   &amp;   &amp;   \\
 &amp;   &amp; 1 &amp;   &amp; 4 &amp;   &amp; 6 &amp;   &amp; 4 &amp;   &amp; 1 &amp;   &amp;   \\
-&amp; 1 &amp;   &amp; 5 &amp;   &amp; 10 &amp;   &amp; 10 &amp;   &amp; 5 &amp;   &amp; 1 &amp;  
+&amp; 1 &amp;   &amp; 5 &amp;   &amp; 10 &amp;   &amp; 10 &amp;   &amp; 5 &amp;   &amp; 1 &amp;
 \end{array}
 \]
 <p>
 The numbers at the edge of the triangle are all 1, and each number inside the
 triangle is the sum of the two numbers above it. Write a procedure that computes
-elements of Pascal's triangle by means of a recursive process.  
+elements of Pascal's triangle by means of a recursive process.
 </p>
 
 <ul>
@@ -638,9 +638,9 @@ Simple mathematical fact: <code>Pascal's Tringal</code> is the value table for
 <h3 id="toc_1.1.13">Exercise 1.13</h3>
 <p>
 Prove that \(Fib(n)\) is the closest integer to \(\varphi^n/\sqrt{5}\), where
-\(\varphi=(1+\sqrt{5})/2\). Hint: Let \(\psi=(1-\sqrt{5})/2\). Use induction and the 
-definition of the Fibonacci numbers (see section 1.2.2) to prove that 
-\(Fib(n) = (\varphi^n - \phi^n)/\sqrt{5}\). 
+\(\varphi=(1+\sqrt{5})/2\). Hint: Let \(\psi=(1-\sqrt{5})/2\). Use induction and the
+definition of the Fibonacci numbers (see section 1.2.2) to prove that
+\(Fib(n) = (\varphi^n - \phi^n)/\sqrt{5}\).
 </p>
 
 <p>
@@ -648,8 +648,8 @@ definition of the Fibonacci numbers (see section 1.2.2) to prove that
 </p>
 
 <p>
-The induction definition of <code>Fibonacci numbers</code>, say \(Fib(n)=Fib(n-1)+Fib(n-2)\), 
-implies its characteristic function: \(\lambda^2=\lambda+1\), whose roots are \(\varphi, \psi\) 
+The induction definition of <code>Fibonacci numbers</code>, say \(Fib(n)=Fib(n-1)+Fib(n-2)\),
+implies its characteristic function: \(\lambda^2=\lambda+1\), whose roots are \(\varphi, \psi\)
 given. Hence,
 </p>
 \[
@@ -665,7 +665,7 @@ Fib(2) &amp;=&amp; c_1\varphi^2 &amp;+&amp; c_2\psi^2 &amp;=&amp; 1
 \end{alignat}
 \]
 <p>
-Solve this will get \(c_1=-c_2=\sqrt{5}\), which means 
+Solve this will get \(c_1=-c_2=\sqrt{5}\), which means
 </p>
 \[
 Fib(n)=(\varphi^n - \psi^n)/\sqrt{5}
@@ -676,7 +676,7 @@ Fib(n)=(\varphi^n - \psi^n)/\sqrt{5}
 Draw the tree illustrating the process generated by the count-change procedure
 of section 1.2.2 in making change for 11 cents. What are the orders of growth of
 the space and number of steps used by this process as the amount to be changed
-increases? 
+increases?
 </p>
 
 <ul>
@@ -688,7 +688,7 @@ Answer:
 <pre class="ascii-art">
 (cc 11 5) = 4
     +-- (cc -39 5) &lt;-- 0
-    +-- (cc 11 4) = 1 
+    +-- (cc 11 4) = 1
         +-- (cc -14 4) &lt;-- 0
         +-- (cc 11 3) = 1
         |   +-- (cc 1 3)
@@ -710,14 +710,14 @@ Answer:
 </pre>
 <p>
 Since this recursion basically enumerate every possible composition of change
-makes up to the given amount, the time complexity is about \(\prod\limits_{i} \frac{n}{c_i}\), 
+makes up to the given amount, the time complexity is about \(\prod\limits_{i} \frac{n}{c_i}\),
 where \(c_i\) is the changes.
 </p>
 
 <h3 id="toc_1.1.15">Exercise 1.15</h3>
 <p>
 The sine of an angle (specified in radians) can be computed by making use of the
-approximation \(\sin x \approx x\) if x is sufficiently small, and the trigonometric 
+approximation \(\sin x \approx x\) if x is sufficiently small, and the trigonometric
 identity
 </p>
 \[
@@ -745,7 +745,7 @@ How many times is the procedure <code>p</code> applied when <code>(sine 12.15)</
 <li>
 What is the order of growth in space and number of steps (as a function of
   a) used by the process generated by the sine procedure when <code>(sine a)</code> is
-  evaluated? 
+  evaluated?
 
 </ol>
 
@@ -755,7 +755,7 @@ Answer:
 
 <ol>
 <li>
-Since each call of <code>p</code> will decrease the angle to its one-third, and 
+Since each call of <code>p</code> will decrease the angle to its one-third, and
     12.15 is 0.05*3<sup><small>5</small></sup>, in the evaluation of <code>(sine 12.15)</code>, <code>p</code> will be applied
     5 times.
 
@@ -780,7 +780,7 @@ Answer:
         (cond ((= n 0)   1)
               ((even? n) (expr-iter (/ n 2) (* s s)))
               (else      (expr-iter (- n 1) (* s b)))))
-    (define (even? x) 
+    (define (even? x)
         (= 0 (remainder x 2)))
     (expr-iter n 1))
 </pre>
@@ -905,8 +905,8 @@ evaluation, as discussed in section 1.1.5. (The normal-order-evaluation rule for
 if is described in exercise 1.5.) Using the substitution method (for normal
 order), illustrate the process generated in evaluating <code>(gcd 206 40)</code> and indicate
 the remainder operations that are actually performed. How many remainder
-operations are actually performed in the normal-order evaluation of <code>(gcd 206 40)</code>? 
-In the applicative-order evaluation? 
+operations are actually performed in the normal-order evaluation of <code>(gcd 206 40)</code>?
+In the applicative-order evaluation?
 </p>
 
 <ul>
@@ -939,7 +939,7 @@ Answer:
 <h3 id="toc_1.1.21">Exercise 1.21</h3>
 <p>
 Use the <code>smallest-divisor</code> procedure to find the smallest divisor of each of the
-following numbers: 199, 1999, 19999. 
+following numbers: 199, 1999, 19999.
 </p>
 
 <ul>
@@ -986,7 +986,7 @@ testing for primes around 10,000 should take about 10 times as long as testing
 for primes around 1000. Do your timing data bear this out? How well do the data
 for 100,000 and 1,000,000 support the n prediction? Is your result compatible
 with the notion that programs on your machine run in time proportional to the
-number of steps required for the computation? 
+number of steps required for the computation?
 </p>
 
 <ul>
@@ -1000,7 +1000,7 @@ The <code>search-for-prime</code> procedure:
 </p>
 <pre class="brush: scheme">
 (define (search-for-primes s)
-    (if (prime? s) 
+    (if (prime? s)
         s
         (search-for-primes (+ 1 s))))
 </pre>
@@ -1070,7 +1070,7 @@ is no point in checking to see if it is divisible by any larger even numbers.
 This suggests that the values used for <code>test-divisor</code> should not be 2, 3, 4, 5,
 6, ..., but rather 2, 3, 5, 7, 9, .... To implement this change, define
 a procedure next that returns 3 if its input is equal to 2 and otherwise
-returns its input plus 2. Modify the <code>smallest-divisor</code> procedure to use 
+returns its input plus 2. Modify the <code>smallest-divisor</code> procedure to use
 <code>(next test-divisor)</code> instead of <code>(+ test-divisor 1)</code>. With <code>timed-prime-test</code>
 incorporating this modified version of <code>smallest-divisor</code>, run the test for each
 of the 12 primes found in exercise 1.22. Since this modification halves the
@@ -1140,7 +1140,7 @@ Modify the timed-prime-test procedure of exercise 1.22 to use <code>fast-prime?<
 Fermat method), and test each of the 12 primes you found in that exercise. Since
 the Fermat test has \(O(\log n)\) growth, how would you expect the time to test primes
 near 1,000,000 to compare with the time needed to test primes near 1000? Do your
-data bear this out? Can you explain any discrepancy you find? 
+data bear this out? Can you explain any discrepancy you find?
 </p>
 
 <pre class="brush: scheme">
@@ -1170,7 +1170,7 @@ we could have simply written
 
 <p>
 Is she correct? Would this procedure serve as well for our fast prime tester?
-Explain. 
+Explain.
 </p>
 
 <ul>
@@ -1217,7 +1217,7 @@ calling square:
 <p>
 "I don't see what difference that could make," says Louis. "I do." says Eva.
 "By writing the procedure like that, you have transformed the \(O(\log n)\) process
-into a \(O(n)\) process." Explain. 
+into a \(O(n)\) process." Explain.
 </p>
 
 <ul>
@@ -1239,7 +1239,7 @@ recursive calling, which makes the <code>prime?</code> even slower.
 Demonstrate that the Carmichael numbers listed in footnote 47 really do fool the
 Fermat test. That is, write a procedure that takes an integer \(n\) and tests
 whether \(a^n\) is congruent to \(a\) modulo \(n\) for every \(a&lt;n\), and try your procedure on
-the given Carmichael numbers. 
+the given Carmichael numbers.
 </p>
 
 <ul>
@@ -1258,7 +1258,7 @@ Answer:
 
 <h3 id="toc_1.1.28">Exercise 1.28</h3>
 <p>
-One variant of the Fermat test that cannot be fooled is called the 
+One variant of the Fermat test that cannot be fooled is called the
 <code>Miller-Rabin test</code> (Miller 1976; Rabin 1980). This starts from an alternate
 form of <code>Fermat's Little Theorem</code>, which states that if \(n\) is a prime number and
 \(a\) is any positive integer less than \(n\), then \(a\) raised to the \((n - 1)\)st power is
@@ -1275,7 +1275,7 @@ why the Miller-Rabin test cannot be fooled.) Modify the <code>expmod</code> proc
 signal if it discovers a nontrivial square root of 1, and use this to implement
 the Miller-Rabin test with a procedure analogous to <code>fermat-test</code>. Check your
 procedure by testing various known primes and non-primes. Hint: One convenient
-way to make <code>expmod</code> signal is to have it return 0. 
+way to make <code>expmod</code> signal is to have it return 0.
 </p>
 
 <ul>
@@ -1299,7 +1299,7 @@ Answer:
 <p>
 <code>Simpson's Rule</code> is a more accurate method of numerical integration than the
 method illustrated above. Using <code>Simpson's Rule</code>, the integral of a function \(f\)
-between \(a\) and \(b\) is approximated as 
+between \(a\) and \(b\) is approximated as
 </p>
 \[
 \frac h3 [y_0 + 4y_1 + 2y_2 + 4y_3 + 2y_4 + \cdots + 2y_{n-2} + 4y_{n-1} + y_n]
@@ -1310,14 +1310,20 @@ where \(h = (b - a)/n\), for some even integer \(n\), and \(y_k = f(a + kh)\). (
 arguments \(f\), \(a\), \(b\), and \(n\) and returns the value of the integral, computed using
 Simpson's Rule. Use your procedure to integrate <code>cube</code> between 0 and 1 (with
 \(n = 100\) and \(n = 1000\)), and compare the results to those of the <code>integral</code>
-procedure shown above. 
+procedure shown above.
 </p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
 
 <pre class="brush: scheme">
 (define (integral-simpson f a b n)
     (define h (/ (- b a) 1.0 n))
     (define (y i) (f (+ a (* i h))))
-    (define (iter i sum) 
+    (define (iter i sum)
         (cond ((= i n)  (+ sum (y n)))
               ((= i 1)  (iter (+ i 1) (+ sum (y 0))))
               ((odd? i) (iter (+ i 1) (+ sum (* 4 (y i)))))
@@ -1365,6 +1371,151 @@ integral
 </td>
 </tr>
 </table>
+
+<p>
+<code>Simpson's Rule</code> has the error of \(\frac{\left|b-a\right|^5}{180n^4}M_4\), where
+\(M_i=\sup\limits_{x\in [a,b]} \left|f^{(i)}(x)\right|\), while the error of <code>integral</code>,
+which is <code>Rectangle's Method</code>, is \(\frac{\left|b-a\right|^3}{24n^2}M_2\)
+</p>
+
+<h3 id="toc_1.1.30">Exercise 1.30</h3>
+<p>
+The <code>sum</code> procedure above generates a linear recursion. The procedure can be
+rewritten so that the sum is performed iteratively. Show how to do this by
+filling in the missing expressions in the following definition:
+</p>
+
+<pre class="brush: scheme">
+(define (sum term a next b)
+  (define (iter a result)
+    (if &lt;??&gt;
+        &lt;??&gt;
+        (iter &lt;??&gt; &lt;??&gt;)))
+  (iter &lt;??&gt; &lt;??&gt;))
+</pre>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define (sum term a next b)
+  (define (iter a result)
+    (if (&gt; a b)
+        result
+        (iter (next a) (+ result (term a)))))
+  (iter a 0.0))
+</pre>
+
+<h3 id="toc_1.1.31">Exercise 1.31</h3>
+<p>
+a. The sum procedure is only the simplest of a vast number of similar
+abstractions that can be captured as higher-order procedures.51 Write an
+analogous procedure called product that returns the product of the values of a
+function at points over a given range. Show how to define factorial in terms of
+product. Also use product to compute approximations to using the formula:
+\(\frac{\pi}{4} = \frac{2\cdot4\cdot4\cdot6\cdot6\cdot8\cdots}{3\cdot3\cdot5\cdot5\cdot7\cdot7\cdots}\)
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define (product term a next b)
+    (define (iter a result)
+        (cond ((&gt; a b) result)
+              ((= 0 result) 0)
+              (else (iter (next a) (* result (term a))))))
+    (iter a 1.0))
+
+(define (pi-wallis n)
+    (define (incr a) (+ a 1))
+    (define (term a) (square (/ (* a 1.0) (+ a 1))))
+    (* 8 (product term 1 incr n)))
+</pre>
+
+<h3 id="toc_1.1.32">Exercise 1.32</h3>
+<p>
+a. Show that <code>sum</code> and <code>product</code> (exercise 1.31) are both special cases of a still
+more general notion called <code>accumulate</code> that combines a collection of terms, using
+some general accumulation function:
+</p>
+<pre class="brush: scheme">
+(accumulate combiner null-value term a next b)
+</pre>
+<p>
+<code>accumulate</code> takes as arguments the same term and range specifications as <code>sum</code>
+and <code>product</code>, together with a combiner procedure (of two arguments) that
+specifies how the current term is to be combined with the accumulation of the
+preceding terms and a <code>null-value</code> that specifies what base value to use when the
+terms run out. Write accumulate and show how sum and product can both be defined
+as simple calls to accumulate.
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define (accumulate combiner null-value term a next b)
+    (define (iter a r)
+        (if (&gt; a b)
+            r
+            (combiner (next a) (term a))))
+    (iter a null-value))
+</pre>
+
+<h3 id="toc_1.1.33">Exercise 1.33</h3>
+<p>
+You can obtain an even more general version of <code>accumulate</code> (exercise 1.32) by
+introducing the notion of a <code>filter</code> on the terms to be combined. That is, combine
+only those terms derived from values in the range that satisfy a specified
+condition. The resulting <code>filtered-accumulate</code> abstraction takes the same
+arguments as accumulate, together with an additional predicate of one argument
+that specifies the filter. Write <code>filtered-accumulate</code> as a procedure. Show how to
+express the following using <code>filtered-accumulate</code>:
+</p>
+
+<p>
+a. The sum of the squares of the prime numbers in the interval a to b (assuming
+that you have a prime? <code>predicate</code> already written)
+</p>
+
+<p>
+b. The product of all the positive integers less than n that are relatively
+prime to n (i.e., all positive integers \(i &lt; n\) such that \(\rm{GCD}(i,n) = 1\)). 
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define (filtered-accumulate combiner null-value filter term a next b)
+    (define (iter a r)
+        (cond ((&gt; a b) r)
+              ((filter a) (iter (next a) (combiner (term a) r)))
+              (else (iter (next a) r))))
+    (iter a null-value))
+
+(define (sum-of-prime a b)
+    (define (id a) a)
+    (define (incr a) (+ 1 a))
+    (filtered-accumulate + 0 prime? id a incr b))
+
+(define (prod-of-relatively-prime n)
+    (define (rp-n a) (= 1 (GCD n a)))
+    (filtered-accumulate * 1.0 rp-n id 1 incr n))
+</pre>
 
     </div>
 
