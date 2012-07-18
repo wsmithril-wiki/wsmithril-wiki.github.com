@@ -1156,7 +1156,7 @@ data bear this out? Can you explain any discrepancy you find?
   (display elapsed-time))
 </pre>
 
-<h3 id="toc_1.1.25">Exercise 1.25.</h3>
+<h3 id="toc_1.1.25">Exercise 1.25</h3>
 <p>
 Alyssa P. Hacker complains that we went to a lot of extra work in writing
 <code>expmod</code>. After all, she says, since we already know how to compute exponentials,
@@ -1262,15 +1262,15 @@ One variant of the Fermat test that cannot be fooled is called the
 <code>Miller-Rabin test</code> (Miller 1976; Rabin 1980). This starts from an alternate
 form of <code>Fermat's Little Theorem</code>, which states that if \(n\) is a prime number and
 \(a\) is any positive integer less than \(n\), then \(a\) raised to the \((n - 1)\)st power is
-congruent to 1 modulo n. To test the primality of a number \(n\) by the <code>Miller-Rabin</code>
+congruent to 1 modulo \(n\). To test the primality of a number \(n\) by the <code>Miller-Rabin</code>
 test, we pick a random number \(a &lt; n\) and raise \(a\) to the \((n - 1)\)st power modulo
 \(n\) using the <code>expmod</code> procedure. However, whenever we perform the squaring step in
 <code>expmod</code>, we check to see if we have discovered a "nontrivial square root of
 1 modulo \(n\)," that is, a number not equal to 1 or \(n - 1\) whose square is equal to
 1 modulo \(n\).  It is possible to prove that if such a nontrivial square root of
-1 exists, then \(n\) is not prime. It is also possible to prove that if n is an odd
-number that is not prime, then, for at least half the numbers a&lt;n, computing
-an-1 in this way will reveal a nontrivial square root of 1 modulo n. (This is
+1 exists, then \(n\) is not prime. It is also possible to prove that if \(n\) is an odd
+number that is not prime, then, for at least half the numbers \(a&lt;n\), computing
+an-1 in this way will reveal a nontrivial square root of 1 modulo \(n\). (This is
 why the Miller-Rabin test cannot be fooled.) Modify the <code>expmod</code> procedure to
 signal if it discovers a nontrivial square root of 1, and use this to implement
 the Miller-Rabin test with a procedure analogous to <code>fermat-test</code>. Check your
@@ -1287,54 +1287,95 @@ Answer:
 <pre class="brush: scheme">
 (define (expmod-M-R-test base e m)
     (define (C1-to-0 a) (if (= 1 a) 0 a))
-    (cond ((= base 0) 0)
-          ((= e 1)    1)
+    (cond ((= e 1)    1)
           ((even? e) (C1-to-0 (remainder (square (expmod-M-R-test base (/ e 2) m)) m)))
           (else      (remainder (* base (expmpd-M-R-test base (- e 1) m)) m))))
 
-(define (M-R-prime-test n a) 
-    
+(define (M-R-prime-test n a)
+    (= a (expmod-M-R-test a n n)))
 </pre>
 
+<h3 id="toc_1.1.29">Exercise 1.29</h3>
+<p>
+<code>Simpson's Rule</code> is a more accurate method of numerical integration than the
+method illustrated above. Using <code>Simpson's Rule</code>, the integral of a function \(f\)
+between \(a\) and \(b\) is approximated as 
+</p>
+\[
+\frac h3 [y_0 + 4y_1 + 2y_2 + 4y_3 + 2y_4 + \cdots + 2y_{n-2} + 4y_{n-1} + y_n]
+\]
+<p>
+where \(h = (b - a)/n\), for some even integer \(n\), and \(y_k = f(a + kh)\). (Increasing
+\(n\) increases the accuracy of the approximation.) Define a procedure that takes as
+arguments \(f\), \(a\), \(b\), and \(n\) and returns the value of the integral, computed using
+Simpson's Rule. Use your procedure to integrate <code>cube</code> between 0 and 1 (with
+\(n = 100\) and \(n = 1000\)), and compare the results to those of the <code>integral</code>
+procedure shown above. 
+</p>
 
-<div class="toc">
-<ul>
-<li><a href="#toc_1">SICP Exercises</a>
-<ul>
-<li><a href="#toc_1.1">Chapter 01</a>
-<ul>
-<li><a href="#toc_1.1.1">Exercise 1.1</a>
-<li><a href="#toc_1.1.2">Exercise 1.2</a>
-<li><a href="#toc_1.1.3">Exercise 1.3</a>
-<li><a href="#toc_1.1.4">Exercise 1.4</a>
-<li><a href="#toc_1.1.5">Exercise 1.5</a>
-<li><a href="#toc_1.1.6">Exercise 1.6</a>
-<li><a href="#toc_1.1.7">Exercise 1.7</a>
-<li><a href="#toc_1.1.8">Exercise 2.8</a>
-<li><a href="#toc_1.1.9">Exercise 1.9</a>
-<li><a href="#toc_1.1.10">Exercise 1.10</a>
-<li><a href="#toc_1.1.11">Exercise 1.11</a>
-<li><a href="#toc_1.1.12">Exercise 1.12</a>
-<li><a href="#toc_1.1.13">Exercise 1.13</a>
-<li><a href="#toc_1.1.14">Exercise 1.14</a>
-<li><a href="#toc_1.1.15">Exercise 1.15</a>
-<li><a href="#toc_1.1.16">Exercise 1.16</a>
-<li><a href="#toc_1.1.17">Exercise 1.17</a>
-<li><a href="#toc_1.1.18">Exercise 1.18</a>
-<li><a href="#toc_1.1.19">Exercise 1.19</a>
-<li><a href="#toc_1.1.20">Exercise 1.20</a>
-<li><a href="#toc_1.1.21">Exercise 1.21</a>
-<li><a href="#toc_1.1.22">Exercise 1.22</a>
-<li><a href="#toc_1.1.23">Exercise 1.23</a>
-<li><a href="#toc_1.1.24">Exercise 1.24</a>
-<li><a href="#toc_1.1.25">Exercise 1.25.</a>
-<li><a href="#toc_1.1.26">Exercise 1.26</a>
-<li><a href="#toc_1.1.27">Exercise 1.27</a>
-<li><a href="#toc_1.1.28">Exercise 1.28</a>
-</ul>
-</ul>
-</ul>
-</div>
+<pre class="brush: scheme">
+(define (integral-simpson f a b n)
+    (define h (/ (- b a) 1.0 n))
+    (define (y i) (f (+ a (* i h))))
+    (define (iter i sum) 
+        (cond ((= i n)  (+ sum (y n)))
+              ((= i 1)  (iter (+ i 1) (+ sum (y 0))))
+              ((odd? i) (iter (+ i 1) (+ sum (* 4 (y i)))))
+              (else     (iter (+ i 1) (+ sum (* 2 (y i)))))))
+    (/ (* h (iter 0 0.0)) 3.0))
+</pre>
+
+<p>
+Test result for <code>cube</code> with <code>integral-simpson</code> and <code>integral</code> is shown in the
+table below:
+</p>
+
+<table>
+<tr>
+<td>
+n
+</td>
+<td>
+integral-simpson
+</td>
+<td>
+integral
+</td>
+</tr>
+<tr>
+<td>
+-
+</td>
+<td>
+------------------
+</td>
+<td>
+----------
+</td>
+</tr>
+<tr>
+<td>
+100
+</td>
+<td>
+.2499999866666667
+</td>
+<td>
+.24998750000000042
+</td>
+</tr>
+<tr>
+<td>
+1000
+</td>
+<td>
+.25
+</td>
+<td>
+.249999875000001
+</td>
+</tr>
+</table>
 
     </div>
 
