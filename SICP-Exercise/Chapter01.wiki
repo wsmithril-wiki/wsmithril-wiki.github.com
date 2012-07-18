@@ -85,7 +85,7 @@ the following procedure:
 
 - Answer:
   - When `(> b 0)` evaluated true, `(a-plus-abs-b a b) ` become `(- a b)`,
-    scince $b < 0$ , this means $a+\left|b\right|$
+    since $b < 0$ , this means $a+\left|b\right|$
   - When `(> b 0)` evaluated false, it is `(+ a b)` now, again, means 
     $a+\left|b\right|$
 
@@ -124,7 +124,7 @@ determines whether to evaluate the consequent or the alternative expression.)
   - But in an interpreter uses normal-order eval., `(test 0 (p))` will also be
     expanded to `(if (= 0 0) 0 p)`, but than, the interpreter try to expend
     the nested `(p)`, and found it should be expand to `(p)`. Again, the
-    interpreter will still try to expand `p` here, so the whole evulation will
+    interpreter will still try to expand `p` here, so the whole evaluation will
     never terminate.
 
 === Exercise 1.6 ===
@@ -132,7 +132,7 @@ determines whether to evaluate the consequent or the alternative expression.)
 Alyssa P. Hacker doesn't see why if needs to be provided as a special form.
 "Why can't I just define it as an ordinary procedure in terms of `cond?`" she
 asks. Alyssa's friend Eva Lu Ator claims this can indeed be done, and she
-defines a new]]ersion of `if`: 
+defines a new version of `if`: 
 {{{class="brush: scheme"
 (define (new-if predicate then-clause else-clause)
   (cond (predicate then-clause)
@@ -158,22 +158,22 @@ What happens when Alyssa attempts to use this to compute square roots? Explain.
 
 - Answer:
 
-The compution of square will never terminate. In an normal-order interpreter,
+The computation of square will never terminate. In an normal-order interpreter,
 the recursion will never end, as already seen in [[#toc_1.2.5|previous]]
-exersice. Still, even in a applicative-order interpreter, use `new-if` will noe
+exercise. Still, even in a applicative-order interpreter, use `new-if` will not
 always ensure the recursion terminate.     
 
 When the interpreter try to eval the `sqrt`, it will come across the `(new-if
 (good-enough? ...) guess (sqrt-iter ...))`. Here, the interpreter will eval.
 `(good-enough? ...)`, `guess`, `(sqrt-iter ...)` accordingly. And when
-evaluating `iter-iter`, it will come across the new-if again.  this means the
+evaluating `iter-iter`, it will come across the new-if again. This means the
 evaluation will never terminate.    
 
 The difference between between the 'internal' `if` and the `new-if` is that the
-internal `if` is a primtive instruction, its evaluation process differs from
+internal `if` is a primitive instruction, its evaluation process differs from
 normal procedure. `if` will evaluate `predicate` first, and then only evaluate
 one of `then-clause` and `else-clause` on `predicate` result, which the `new-if`
-failed when evaluating a recursive precedure.  
+failed when evaluating a recursive procedure.  
 
 === Exercise 1.7 ===
 
@@ -198,16 +198,16 @@ go on like this:
 | ...           | ...           | ...              | ...               |
 As we can see here, the evaluation converges slowly, in fact, it will *never*
 converges since the difference `avg.` is always a number slightly large than 1,
-and their difference is too small in compersion of 10^10^ and may be rounded
-off. So the eval. will fail on large number.
+and their difference is too small in comparison of 10^10^ and may be rounded
+off. So the eval will fail on large number.
 
 The case with very small number is better, the evaluation will terminate, but
-with a wrong value. This is mainly caused by the way with the defination of
-`good-enough?`. When the `guess` itself is smaller than the threshole in
+with a wrong value. This is mainly caused by the way with the definition of
+`good-enough?`. When the `guess` itself is smaller than the threshold in
 `good-enough?`, the iteration will terminate, whatever it is the proper square
 root. 
 
-Using chenge between two guess as the termination condition, the
+Using change between two guess as the termination condition, the
 `good-enugh?` may look like:
 {{{class="brush: scheme"
 (define TOL 0.00001)
@@ -227,7 +227,7 @@ And `sqrt-iter` should modify accordingly:
 }}}
 And this version of `good-enough?` will terminate on large number, with a wrong
 answer, but good with small number. The poor condition with large number is
-majorly the restrction of Newton's method, which means there nothing else to do
+majorly the restriction of Newton's method, which means there nothing else to do
 to improve the problem with large number without a better way to find the
 initial guess value, other thane simply take 1.  
 
@@ -294,7 +294,7 @@ in evaluating `(+ 4 5)`. Are these processes iterative or recursive?
 (inc 8)
 9
 }}}
-    Hence, its recu`sive.
+    Hence, its recursive.
   -  The second one work like this:
 {{{class="brush: scheme"
 (+ 4 5)
@@ -343,7 +343,7 @@ computes $5n^2$.
   - `(k n)` is $\underbrace{{2^2}^{{\cdot}^{{\cdot}^{{\cdot}^2}}}}_{n \text{ times } 2}$
 
 - Some Notation:
-  This is not excatlly the `Ackermann's Function`, but still got the stem of
+  This is not exactly the `Ackermann's Function`, but still got the stem of
   recursion which makes it not a primitive recursive function. Usually,
   `Ackermann's Function` is defined (in Haskell):
 {{{class="brush: haskell"
@@ -351,9 +351,9 @@ ack 0 n = n + 1
 ack m 0 = ack (m - 1) 1
 ack m n = ack (m - 1) (ack m (n - 1))
 }}}
-  This function grows incrediablely fast, which it is almost impossible to compute 
+  This function grows incredibly fast, which it is almost impossible to compute 
   `ack 4 3`. Here is some test result on my computer, using Haskell
-  implemtation, which handle the recursion properly:
+  implementation, which handle the recursion properly:
   - `ack 4 1`: `90.43s user 0.06s system 99% cpu 1:30.72 total`, for a simple
     result `65533`
   - `ack 4 2`: Just went stack overflow after 2 hours computing.
@@ -420,8 +420,8 @@ $Fib(n) = (\varphi^n - \phi^n)/\sqrt{5}$.
 
 *Proof*:
 
-The inductional defination of `Fibonacci numbers`, say $Fib(n)=Fib(n-1)+Fib(n-2)$, 
-implys its characteristic function: $\lambda^2=\lambda+1$, whose roots are $\varphi, \psi$ 
+The induction definition of `Fibonacci numbers`, say $Fib(n)=Fib(n-1)+Fib(n-2)$, 
+implies its characteristic function: $\lambda^2=\lambda+1$, whose roots are $\varphi, \psi$ 
 given. Hence,
 {{$
 Fib(n)=c_1\varphi^n+c_2\psi^2
@@ -469,7 +469,7 @@ increases?
         +-- (cc 11 1) = 1e
             + ... +-- (cc 0 1) <-- 1
 }}}
-Since this recursion basically emuerate every possible composition of change
+Since this recursion basically enumerate every possible composition of change
 makes up to the given amount, the time complexity is about $\prod\limits_{i} \frac{n}{c_i}$, 
 where $c_i$ is the changes.
 
@@ -525,7 +525,7 @@ The exponentiation algorithms in this section are based on performing
 exponentiation by means of repeated multiplication. In a similar way, one can
 perform integer multiplication by means of repeated addition. The following
 multiplication procedure (in which it is assumed that our language can only add,
-not multiply) is analogous to the expt procedure:
+not multiply) is analogous to the `expt` procedure:
 
 {{{class="brush: scheme"
 (define (* a b)
@@ -611,7 +611,7 @@ following procedure, which runs in a logarithmic number of steps:
 
 === Exercise 1.20 ===
 The process that a procedure generates is of course dependent on the rules used
-by the interpreter. As an example, consider the iterative gcd procedure given
+by the interpreter. As an example, consider the iterative `gcd` procedure given
 above. Suppose we were to interpret this procedure using normal-order
 evaluation, as discussed in section 1.1.5. (The normal-order-evaluation rule for
 if is described in exercise 1.5.) Using the substitution method (for normal
@@ -696,17 +696,17 @@ The `search-for-prime` procedure:
         (search-for-primes (+ 1 s))))
 }}}
 
-Since with a `i7-2760QM CPU @ 2.40GHz`, the runtime is below detection, and make no 
-difference between a test with 10^5^ and with 10^10^, I use [[https://github.com/opsengine/cpulimit|cpulimit]] 
-limit the cpu usage of the process up to 1%, and here's the test result:
+Since with `i7-2760QM CPU @ 2.40GHz`, the runtime make no difference between
+a test with 10^5^ and with 10^10^ (both 0.00s), I use
+[[https://github.com/opsengine/cpulimit|cpulimit]] limit the CPU usage of the process up to 1%, and here's the test result:
 
-| number | testing prime   | elipsed time |
+| number | testing prime   | elapsed time |
 |--------|-----------------|--------------|
 | 10^10^ | 10000000019     | 0.1340s      |
 | 10^12^ | 1000000000039   | 1.27s        |
 | 10^14^ | 100000000000031 | 12.14s       |
 
-Basically, the running thme is rughly $O(\sqrt{n})$
+Basically, the running time is roughly $O(\sqrt{n})$
 
 === Exercise 1.23 ===
 The `smallest-divisor` procedure shown at the start of this section does lots of
@@ -733,7 +733,7 @@ two algorithms, and how do you explain the fact that it is different from 2?
 
 Again, limit the CUP usage up to 1%, here's the test result:
 
-| testing prime   | elipsed time |
+| testing prime   | elapsed time |
 |-----------------|--------------|
 | 10000000019     | 0.07         |
 | 1000000000039   | 0.67         |
@@ -741,8 +741,164 @@ Again, limit the CUP usage up to 1%, here's the test result:
 
 Almost halve the runtime.
 
+=== Exercise 1.24 ===
+Modify the timed-prime-test procedure of exercise 1.22 to use `fast-prime?` (the
+Fermat method), and test each of the 12 primes you found in that exercise. Since
+the Fermat test has $O(\log n)$ growth, how would you expect the time to test primes
+near 1,000,000 to compare with the time needed to test primes near 1000? Do your
+data bear this out? Can you explain any discrepancy you find? 
+
+{{{class="brush: scheme"
+(define (timed-fast-prime-test n)
+  (newline)
+  (display n)
+  (start-prime-test n (runtime)))
+(define (start-prime-test n start-time)
+  (if (fast-prime? n)
+      (report-prime (- (runtime) start-time))))
+(define (report-prime elapsed-time)
+  (display " *** ")
+  (display elapsed-time))
+}}}
+
+=== Exercise 1.25 ===  
+Alyssa P. Hacker complains that we went to a lot of extra work in writing
+`expmod`. After all, she says, since we already know how to compute exponentials,
+we could have simply written
+
+{{{class="brush: scheme"
+(define (expmod base exp m)
+  (remainder (fast-expt base exp) m))
+}}}
+
+Is she correct? Would this procedure serve as well for our fast prime tester?
+Explain. 
+
+- Answer:
+
+This version of `expmod` will indeed faster then original `expmod` with small
+`base` and `exp`, for it shall only eval `remainder` once. But with a larger
+`base` and/or `exp`, this `expmod` will much slower and may even yield the wrong
+answer, simply for the `(fast-expt base exp)` will be quite a large number, so
+either the calculation large number with precision involved here, which is known
+to be very slow, or just simply overflowed, which leads to the wrong answer.
+
+The original version of `expmod` do the `remainder` in each of its recursion, by
+which prevent the occurrence of large number during the process of eval.
+
+=== Exercise 1.26 ===
+Louis Reasoner is having great difficulty doing exercise 1.24. His `fast-prime?`
+test seems to run more slowly than his `prime?` test. Louis calls his friend Eva
+Lu Ator over to help. When they examine Louis's code, they find that he has
+rewritten the `expmod` procedure to use an explicit multiplication, rather than
+calling square:
+
+{{{class="bursh: scheme"
+(define (expmod base exp m)
+  (cond ((= exp 0) 1)
+        ((even? exp)
+         (remainder (* (expmod base (/ exp 2) m)
+                       (expmod base (/ exp 2) m))
+                    m))
+        (else
+         (remainder (* base (expmod base (- exp 1) m))
+                    m))))
+}}}
+
+"I don't see what difference that could make," says Louis. "I do." says Eva.
+"By writing the procedure like that, you have transformed the $O(\log n)$ process
+into a $O(n)$ process." Explain. 
+
+- Answer:
+
+The original `expmode` use `square` to reduce the calling of `expmode`, which
+the modified version has failed. With an even base, the modified `expmod` will
+call itself twice. By doing so, the modified `expmod` makes no difference than
+simply multiply `base` with itself `exp` times, but with the overhead of
+recursive calling, which makes the `prime?` even slower.
+
+=== Exercise 1.27 ===
+Demonstrate that the Carmichael numbers listed in footnote 47 really do fool the
+Fermat test. That is, write a procedure that takes an integer $n$ and tests
+whether $a^n$ is congruent to $a$ modulo $n$ for every $a<n$, and try your procedure on
+the given Carmichael numbers. 
+
+- Answer:
+
+{{{class="brush: scheme"
+(define (cong n)
+    (define (cong-iter a)
+        (if (= n a) #T
+            (and (= a (expmod a n n)) (cong-iter (+ a 1)))))
+    (cong-iter 1))
+}}}
+
+=== Exercise 1.28 ===
+One variant of the Fermat test that cannot be fooled is called the 
+`Miller-Rabin test` (Miller 1976; Rabin 1980). This starts from an alternate
+form of `Fermat's Little Theorem`, which states that if $n$ is a prime number and
+$a$ is any positive integer less than $n$, then $a$ raised to the $(n - 1)$st power is
+congruent to 1 modulo $n$. To test the primality of a number $n$ by the `Miller-Rabin`
+test, we pick a random number $a < n$ and raise $a$ to the $(n - 1)$st power modulo
+$n$ using the `expmod` procedure. However, whenever we perform the squaring step in
+`expmod`, we check to see if we have discovered a "nontrivial square root of
+1 modulo $n$," that is, a number not equal to 1 or $n - 1$ whose square is equal to
+1 modulo $n$.  It is possible to prove that if such a nontrivial square root of
+1 exists, then $n$ is not prime. It is also possible to prove that if $n$ is an odd
+number that is not prime, then, for at least half the numbers $a<n$, computing
+an-1 in this way will reveal a nontrivial square root of 1 modulo $n$. (This is
+why the Miller-Rabin test cannot be fooled.) Modify the `expmod` procedure to
+signal if it discovers a nontrivial square root of 1, and use this to implement
+the Miller-Rabin test with a procedure analogous to `fermat-test`. Check your
+procedure by testing various known primes and non-primes. Hint: One convenient
+way to make `expmod` signal is to have it return 0. 
+
+- Answer:
+
+{{{class="brush: scheme"
+(define (expmod-M-R-test base e m)
+    (define (C1-to-0 a) (if (= 1 a) 0 a))
+    (cond ((= e 1)    1)
+          ((even? e) (C1-to-0 (remainder (square (expmod-M-R-test base (/ e 2) m)) m)))
+          (else      (remainder (* base (expmpd-M-R-test base (- e 1) m)) m))))
+
+(define (M-R-prime-test n a)
+    (= a (expmod-M-R-test a n n)))
+}}}
+
+=== Exercise 1.29 ===
+`Simpson's Rule` is a more accurate method of numerical integration than the
+method illustrated above. Using `Simpson's Rule`, the integral of a function $f$
+between $a$ and $b$ is approximated as 
+{{$
+\frac h3 [y_0 + 4y_1 + 2y_2 + 4y_3 + 2y_4 + \cdots + 2y_{n-2} + 4y_{n-1} + y_n]
+}}$
+where $h = (b - a)/n$, for some even integer $n$, and $y_k = f(a + kh)$. (Increasing
+$n$ increases the accuracy of the approximation.) Define a procedure that takes as
+arguments $f$, $a$, $b$, and $n$ and returns the value of the integral, computed using
+Simpson's Rule. Use your procedure to integrate `cube` between 0 and 1 (with
+$n = 100$ and $n = 1000$), and compare the results to those of the `integral`
+procedure shown above. 
+
+{{{class="brush: scheme"
+(define (integral-simpson f a b n)
+    (define h (/ (- b a) 1.0 n))
+    (define (y i) (f (+ a (* i h))))
+    (define (iter i sum) 
+        (cond ((= i n)  (+ sum (y n)))
+              ((= i 1)  (iter (+ i 1) (+ sum (y 0))))
+              ((odd? i) (iter (+ i 1) (+ sum (* 4 (y i)))))
+              (else     (iter (+ i 1) (+ sum (* 2 (y i)))))))
+    (/ (* h (iter 0 0.0)) 3.0))
+}}}
+
+Test result for `cube` with `integral-simpson` and `integral` is shown in the
+table below:
+
+| n    | integral-simpson   | integral           |
+| -    | ------------------ | ----------         |
+| 100  | .2499999866666667  | .24998750000000042 |
+| 1000 | .25                | .249999875000001   |
 
 
-
-%toc 
 %title SICP Exercises Chapter 01

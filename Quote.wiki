@@ -1,0 +1,12 @@
+= Quotes =
+
+== On OO ==
+
+{{{class="quote"
+    For example, in OO world you hear a good deal about "pattern". I wonder if
+    these pattern are not sometimes the evidence of case (c), the human
+    compiler.
+    -- Hackers & Painters, by Paul Graham
+}}}
+
+

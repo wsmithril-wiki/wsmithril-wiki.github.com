@@ -158,11 +158,9 @@ instance Fluffy (State s) where
 -- Exercise 20
 -- Relative Difficulty: 10
 instance Misty (State s) where
-  banana  f sa sb =   (state sa) 
-  unicorn = error "todo"
+  banana  f sa st = f $ (\(a, b) -> b) $ state sa st
+  unicorn a st    = (st, a)
 
-(a -> State s b ) -> State s a -> State s b
-(a -> (s -> (s, b))) -> (s -> (s, a)) -> (s -> (s, b))
 }}}
 
 There is a simlar example in the book `Real World Haskell`, chapter named

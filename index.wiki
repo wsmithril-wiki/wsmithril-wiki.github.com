@@ -9,10 +9,16 @@
 
 - Online Compiler [[http://codepad.org/|CodePad]]
 
+- [[Quote]] 
+
+- Branch Prediction (on [[http://stackoverflow.com/questions/11227809/why-is-processing-a-sorted-array-faster-than-an-unsorted-array|stackoverflow]])
 
 == Online Documents ==
 - [[/haskell-doc/| Haskell Documents]]
 - [[/realworld-haskell/| Realworld Haskell]]
 
 ====== [[feature_test| Feature Test]] Here ======
+
+
 %title WsMithril's Wiki
+%template home
