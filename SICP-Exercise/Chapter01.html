@@ -1517,6 +1517,403 @@ Answer:
     (filtered-accumulate * 1.0 rp-n id 1 incr n))
 </pre>
 
+<h3 id="toc_1.1.34">Exercise 1.34</h3>
+
+<p>
+Suppose we define the procedure
+</p>
+
+<pre class="brush: scheme">
+(define (f g) (g 2))
+</pre>
+
+<p>
+Then we have
+</p>
+
+<pre class="brush: scheme">
+(f square)
+4
+
+(f (lambda (z) (* z (+ z 1))))
+6
+</pre>
+
+<p>
+What happens if we (perversely) ask the interpreter to evaluate the combination
+<code>(f f)</code>? Explain. 
+</p>
+
+<ul>
+<li>
+Answer: 
+
+</ul>
+
+<p>
+The evaluate of <code>(f f)</code> would go like this:
+</p>
+<pre class="brush: scheme">
+(f f) -&gt; (f 2) -&gt; (2 2)
+</pre>
+<p>
+And this will raise an error.
+</p>
+
+<h3 id="toc_1.1.35">Exercise 1.35</h3>
+<p>
+Show that the golden ratio \(\phi\) (section 1.2.2) is a fixed point of the
+transformation \(x \mapsto 1 + \frac 1x\), and use this fact to compute by means of the
+fixed-point procedure. 
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+<p>
+From the definition of \(\phi = \lim_{n\to\infty}\frac{f_{n+1}}{f_n}\),
+where \(f_n\) is the n-th term of <code>Fibonacci Sequence</code>, since \(\phi &gt; 0\), 
+</p>
+\[
+1+\frac 1\phi =1 + 1 / \lim_{n\to\infty}\frac{f_{n+1}}{f_n}=\lim_{n\to\infty}\frac{f_n+f_{n+1}}{f_{n+1}}
+=\lim_{n\to\infty}\frac{f_{n+2}}{f_{n+1}}
+=\phi
+\]
+<p>
+Therefore, \(\phi\) is a fix-point of transformation \(x\mapsto 1+\frac 1x\).
+</p>
+
+<h3 id="toc_1.1.36">Exercise 1.36</h3>
+<p>
+Modify <code>fixed-point</code> so that it prints the sequence of approximations it
+generates, using the <code>newline</code> and <code>display</code> primitives shown in exercise 1.22. Then
+find a solution to \(x^x = 1000\) by finding a fixed point of \(x\to log(1000)/log(x)\).
+(Use Scheme's primitive log procedure, which computes natural logarithms.)
+Compare the number of steps this takes with and without average damping. (Note
+that you cannot start <code>fixed-point</code> with a guess of 1, as this would cause
+division by \(log(1) = 0\).)
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+<p>
+Fixed <code>fix-point</code>:
+</p>
+<pre class="brush: scheme">
+(define TOL 0.00001)
+(define (fix-point-display f first-guess)
+    (define (close-enough? x next) (&gt; TOL (abs (- x next))))
+    (define (report x) (display "Guessing ") (display x) (newline))
+    (define (try x)
+        (let ((next (f x)))
+        (cond ((close-enough? x next) x)
+              (else (report x) (try next)))))
+    (try first-guess))
+</pre>
+
+<p>
+And with first-guess set to 2.0, it takes 34 guess to the root of \(x^x=1000\),
+while with the average damping takes 9 steps to the same root.
+</p>
+
+<h3 id="toc_1.1.37">Exercise 1.37</h3>
+<p>
+a. An infinite continued fraction is an expression of the form
+</p>
+\[
+f=\cfrac{N_1}{D_1+\cfrac{N_2}{D_2+\cfrac{N_3}{D_3+\cdots}}}
+\]
+<p>
+As an example, one can show that the infinite continued fraction expansion with
+the \(N_i\) and the \(D_i\) all equal to 1 produces \(1/\phi\), where \(\phi\) is the golden ratio
+(described in section 1.2.2). One way to approximate an infinite continued
+fraction is to truncate the expansion after a given number of terms. Such
+a truncation -- a so-called k-term finite continued fraction -- has the form
+</p>
+\[
+a_k=\cftac{N_1}{N_1+\cfrac{N_2}{\ddots+\frac{N_k}{D_k}}}
+\]
+<p>
+Suppose that <code>n</code> and <code>d</code> are procedures of one argument (the term index <code>i</code>) that
+return the \(N_i\) and \(D_i\) of the terms of the continued fraction. Define a procedure
+<code>cont-frac</code> such that evaluating <code>(cont-frac n d k)</code> computes the value of the
+k-term finite continued fraction. Check your procedure by approximating \(1/\phi\)
+using
+</p>
+<pre class="brush: scheme">
+(cont-frac (lambda (i) 1.0)
+           (lambda (i) 1.0)
+           k)
+</pre>
+<p>
+for successive values of <code>k</code>. How large must you make <code>k</code> in order to get an 
+approximation that is accurate to 4 decimal places?
+</p>
+
+<p>
+b. If your <code>cont-frac</code> procedure generates a recursive process, write one that
+generates an iterative process. If it generates an iterative process, write one
+that generates a recursive process. 
+</p>
+
+<ul>
+<li>
+Answer: 
+
+</ul>
+<p>
+Only the iterative version
+</p>
+<pre class="brush: scheme">
+(define (cont-frac n d k)
+    (define (iter i ret)
+        (cond ((= i 0) ret)
+              (else (iter (- i 1) (/ (n k) (+ (d k) ret))))))
+    (iter (- k 1) (/ (n k) (d k))))
+</pre>
+
+<p>
+<code>k</code> needs to be last 12 to get 4 an approximation that is accurate to 4 decimal.
+</p>
+
+<h3 id="toc_1.1.38">Exercise 1.38</h3>
+<p>
+In 1737, the Swiss mathematician Leonhard Euler published a 
+<code>memoir De Fractionibus Continuis</code>, which included a continued fraction 
+expansion for \(e-2\), where \(e\) is the base of the natural logarithms. In this
+fraction, the \(N_i\) are all 1, and the \(D_i\) are successively 1, 2, 1, 1, 4, 1,
+1, 6, 1, 1, 8, .... Write a program that uses your <code>cont-frac</code> procedure from
+exercise 1.37 to approximate \(e\), based on Euler's expansion. 
+</p>
+
+<pre class="brush: scheme">
+(define (cont-frac-e n)
+    ( + 2 
+        (cont-frac (lambda (i) 1.0)
+                   (lambda (i) (if (= (remainder i 3) 2) (/ (+ 4 i) 1.5) 1.0))
+                   n)))
+</pre>
+
+<h3 id="toc_1.1.39">Exercise 1.39</h3>
+<p>
+A continued fraction representation of the tangent function was published in
+1770 by the German mathematician J.H. Lambert:
+</p>
+\[
+\tan x=\cfrac{x}{1-\cfrac{x^2}{3-\cfrac{x^2}{5-\cdots}}}
+\]
+<p>
+where \(x\) is in radians. Define a procedure <code>(tan-cf x k)</code> that computes an
+approximation to the tangent function based on Lambert's formula. <code>k</code> specifies
+the number of terms to compute, as in exercise 1.37. 
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define (tan-cf x k) 
+    (cont-frac (lambda (n) (if (= n 1) x (square x)))
+               (lambda (n) (+ 1 (* 2 n))
+               k))
+</pre>
+
+
+<h3 id="toc_1.1.40">Exercise 1.40</h3>
+<p>
+Define a procedure <code>cubic</code> that can be used together with the newtons-method
+procedure in expressions of the form
+</p>
+<pre class="brush: scheme">
+(newtons-method (cubic a b c) 1)
+</pre>
+<p>
+to approximate zeros of the cubic \(x^3 + ax^2 + bx + c\). 
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define (cubic a b c)
+    (lambda (x) 
+        (+ (cube x) (* a (square x)) (* b x) c)))
+</pre>
+
+<h3 id="toc_1.1.41">Exercise 1.41</h3>
+<p>
+Define a procedure <code>double</code> that takes a procedure of one argument as argument and
+returns a procedure that applies the original procedure twice. For example, if
+<code>inc</code> is a procedure that adds 1 to its argument, then <code>(double inc)</code> should be
+a procedure that adds 2. What value is returned by 
+<code>(((double (double double)) inc) 5)</code>
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define (double f) (lambda (x) (f (f x))))
+</pre>
+<p>
+And <code>(((double (double double)) inc) 5)</code> should return <code>13</code>
+</p>
+
+<p>
+Exercise 1.42  
+Let \(f\) and \(g\) be two one-argument functions. The composition \(f\) after \(g\) is defined
+to be the function \(x\mapsto f(g(x))\). Define a procedure compose that implements
+composition. For example, if <code>inc</code> is a procedure that adds 1 to its argument,
+<code>((compose square inc) 6)</code> should return <code>49</code>.
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define (compose f g) (lambda (x) (f (g x))))
+</pre>
+
+<h3 id="toc_1.1.42">Exercise 1.43</h3>
+<p>
+If \(f\) is a numerical function and \(n\) is a positive integer, then we can form the
+n-th repeated application of \(f\), which is defined to be the function whose value
+at \(x\) is \(f(f(...(f(x))...))\). For example, if \(f\) is the function \(x\mapsto x+1\), 
+then the nth repeated application of \(f\) is the function \(x\mapsto x+n\). If \(f\) is the
+operation of squaring a number, then the n-th repeated application of \(f\) is the
+function that raises its argument to the \(2n\)-th power. Write a procedure that
+takes as inputs a procedure that computes \(f\) and a positive integer \(n\) and returns
+the procedure that computes the nth repeated application of \(f\). Your procedure
+should be able to be used as follows: <code>((repeated square 2) 5)</code>, returns <code>625</code>
+</p>
+
+<p>
+Hint: You may find it convenient to use compose from exercise 1.42. 
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define (repeated f n)
+    (define (iter t rf)
+        (if (= t n) rf
+            (iter (+ t 1) (compose f rf))))
+    (iter 0 (lambda (x) x))
+</pre>
+
+<h3 id="toc_1.1.43">Exercise 1.44</h3>
+<p>
+The idea of smoothing a function is an important concept in signal processing.
+If \(f\) is a function and \(\rm{d}x\) is some small number, then the smoothed version of
+\(f\) is the function whose value at a point \(x\) is the average of \(f(x - dx)\), \(f(x)\),
+and \(f(x + dx)\). Write a procedure smooth that takes as input a procedure that
+computes \(f\) and returns a procedure that computes the smoothed \(f\). It is sometimes
+valuable to repeatedly smooth a function (that is, smooth the smoothed function,
+and so on) to obtained the \(n\)-fold smoothed function. Show how to generate the
+\(n\)-fold smoothed function of any given function using smooth and repeated from
+exercise 1.43. 
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define dx 0.0001)
+(define (n-smooth f n)
+    (define smooth-1
+        (lambda (x)
+        (/ (+ (f (- x dx)) (f x) (f (+ x dx))) 3)))
+    (repeat smooth-1 n))
+</pre>
+
+<h3 id="toc_1.1.44">Exercise 1.45</h3>
+<p>
+We saw in section 1.3.3 that attempting to compute square roots by naively
+finding a fixed point of \(y\mapsto x/y\) does not converge, and that this can be fixed by
+average damping. The same method works for finding cube roots as fixed points of
+the average-damped \(y\mapsto x/y^2\). Unfortunately, the process does not work for fourth
+roots -- a single average damp is not enough to make a fixed-point search for
+\(y\mapsto x/y^3\) converge. On the other hand, if we average damp twice (i.e., use the
+average damp of the average damp of \(y\mapsto x/y^3\)) the fixed-point search does
+converge. Do some experiments to determine how many average damps are required
+to compute \(n\)-th roots as a fixed-point search based upon repeated average damping
+of \(y\mapsto x/y^{n-1}\). Use this to implement a simple procedure for computing \(n\)-th roots
+using <code>fixed-point</code>, <code>average-damp</code>, and the <code>repeated</code> procedure of exercise 1.43.
+Assume that any arithmetic operations you need are available as primitives. 
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define (n-th-root n x) 
+    (if (even? n)
+        (fix-point ((repeat average-damp (/ n 2))
+                        (lambda (y) (/ x 1.0 (exp y (- n 1)))))
+               1.0)
+        (fix-point (lambda (y) (/ x 1.0 (exp y (- n 1)))) 1.0)))
+</pre>
+
+<h3 id="toc_1.1.45">Exercise 1.46</h3>
+<p>
+Several of the numerical methods described in this chapter are instances of an
+extremely general computational strategy known as iterative improvement.
+Iterative improvement says that, to compute something, we start with an initial
+guess for the answer, test if the guess is good enough, and otherwise improve
+the guess and continue the process using the improved guess as the new guess.
+Write a procedure <code>iterative-improve</code> that takes two procedures as arguments: a
+method for telling whether a guess is good enough and a method for improving a
+guess. <code>iterative-improve</code> should return as its value a procedure that takes a
+guess as argument and keeps improving the guess until it is good enough.
+Rewrite the <code>sqrt</code> procedure of section 1.1.7 and the <code>fixed-point</code> procedure of
+section 1.3.3 in terms of <code>iterative-improve</code>`. 
+</p>
+
+<pre class="brush: scheme">
+(define (iterative-improve good-enough? improve)
+    (lambda (x)
+    (if (good-enough? x) x
+        (iterative-improve (compose good-enough? improve) improve))))
+
+; rewrite sqrt with iterative-improve
+(define TOL 0.0001)
+(define (sqrt x)
+    (iterative-improve (lambda (g) (&gt; TOL (abs (- x (squre g))))
+                       (lambda (g) (/ (+ x (/ x g)) 2)))))
+
+; rewrite fixed-point
+(define (fixed-point f)
+    (iterative-improve (lambda (y) (&gt; TOL (abs (- y (f y)))))
+                       (lambda (y) (f y))))
+</pre>
+
     </div>
 
     <div class="copyright">
