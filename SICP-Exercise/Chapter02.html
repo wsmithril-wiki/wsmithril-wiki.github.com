@@ -15,18 +15,214 @@
 <h1 id="toc_1">SICP Exercises</h1>
 <h2 id="toc_1.1">Chapter 02</h2>
 
+<h3 id="toc_1.1.1">Exercise 2.1</h3>
+<p>
+Define a better version of <code>make-rat</code> that handles both positive and negative
+arguments. <code>make-rat</code> should normalize the sign so that if the rational number is
+positive, both the numerator and denominator are positive, and if the rational
+number is negative, only the numerator is negative. 
+</p>
 
+<pre class="brush: scheme">
+(define (sgn x) 
+    (cond ((= x 0) 0)
+          ((&gt; x 0) 1)
+          (else -1)))
+(define (make-rat n d)
+    (let ((an (abs n))
+          (ad (abs d)))
+    (let ((g (gcd an ad)))
+    (cond ((= 0 an) (cons 0 1))
+          ((= (sgn n) (sgn d)) (cons (/ an g) (/ ad g)))
+          (else (cons (* -1 (/ an g)) (/ ad g)))))))
+</pre>
 
+<h3 id="toc_1.1.2">Exercise 2.2</h3>
+<p>
+Consider the problem of representing line segments in a plane. Each segment is
+represented as a pair of points: a starting point and an ending point. Define
+a constructor <code>make-segment</code> and selectors <code>start-segment</code> and <code>end-segment</code> that
+define the representation of segments in terms of points. Furthermore, a point
+can be represented as a pair of numbers: the x coordinate and the y coordinate.
+Accordingly, specify a constructor <code>make-point</code> and selectors <code>x-point</code> and <code>y-point</code>
+that define this representation. Finally, using your selectors and constructors,
+define a procedure <code>midpoint-segment</code> that takes a line segment as argument and
+returns its midpoint (the point whose coordinates are the average of the
+coordinates of the endpoints). To try your procedures, you'll need a way to
+print points:
+</p>
+<pre class="brush: scheme">
+(define (print-point p)
+  (newline)
+  (display "(")
+  (display (x-point p))
+  (display ",")
+  (display (y-point p))
+  (display ")"))
+</pre>
 
-
-<div class="toc">
 <ul>
-<li><a href="#toc_1">SICP Exercises</a>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define make-point   cons)
+(define make-segment cons)
+(define start-segment car)
+(define end-segment   cdr)
+(define x-point car)
+(define y-point cdr)
+
+(define (mindpoint-segment seg)
+    (make-point (average (x-point (start-segment seg)) (x-point (end-segment seg)))
+                (average (y-point (start-segment seg)) (y-point (end-segment seg)))))
+</pre>
+
+<h3 id="toc_1.1.3">Exercise 2.3</h3>
+<p>
+Implement a representation for rectangles in a plane. (Hint: You may want to
+make use of exercise 2.2.) In terms of your constructors and selectors, create
+procedures that compute the perimeter and the area of a given rectangle. Now
+implement a different representation for rectangles. Can you design your system
+with suitable abstraction barriers, so that the same <code>perimeter</code> and <code>area</code>
+procedures will work using either representation?
+</p>
+
+<pre class="brush: scheme">
+(define (make-tringle a b c) 
+    (cons a (cons b c)))
+(define (a-point t) (car t))
+(define (b-point t) (car (cdr t)))
+(define (c-point t) (cdr (cdr t)))
+
+; another representation
+(define (make-tringle a b c) 
+    (cons (cons a b) c))
+(define (a-point t) (car (car t)))
+(define (b-point t) (cdr (car t)))
+(define (c-point t) (cdr t))
+
+; some helper function
+; inner product of vector ab and ac
+(define (inner-porduct a b c)
+    (+ (* (- (x-point b) (x-point a)) (- (x-point c) (x-point a)))
+       (* (- (y-point b) (y-point a)) (- (y-point c) (y-point a)))))
+(define (length-segment s)
+    (let ((seg (make-point (- (x-point (end-segment s)) (x-point (start-segment s)))
+                           (- (y-point (end-segment s)) (y-point (start-segment s))))))
+    (sqrt (inner-product (cons 0 0) seg seg))))
+
+; now  the area and perimeter should be identical to both representation
+(define (perimeter t)
+    (+ (segment-length (a-point t))
+       (segment-length (b-point t))
+       (segment-length (c-point t))))
+(define (area t)
+    (abs (inner-product (a-point t) (b-point t) (c-point t))))
+</pre>
+
+<h3 id="toc_1.1.4">Exercise 2.5</h3>
+<p>
+Show that we can represent pairs of nonnegative integers using only numbers and
+arithmetic operations if we represent the pair \(a\) and \(b\) as the integer that is
+the product \(2^a\cdot 3^b\). Give the corresponding definitions of the procedures 
+<code>cons</code>, <code>car</code>, and <code>cdr</code>.
+</p>
+
 <ul>
-<li><a href="#toc_1.1">Chapter 02</a>
+<li>
+Answer:
+
 </ul>
+
+<pre class="brush: scheme">
+(define (cons a b) (* (exp 2 a) (exp 3 b)))
+
+; helper prodecure used in car and cdr
+(define (in b n)
+    (define (iter n t)
+        (if (= 0 (remainder n b)) 
+            (iter (/ n b) (+ t 1))
+            (t)))
+    (iter n 0))
+
+; car and cdr
+(define (car p) (in 2 p))
+(define (cdr p) (in 3 p))
+</pre>
+
+<h3 id="toc_1.1.5">Exercise 2.6</h3>
+<p>
+In case representing pairs as procedures wasn't mind-boggling enough, consider
+that, in a language that can manipulate procedures, we can get by without
+numbers (at least insofar as nonnegative integers are concerned) by implementing
+0 and the operation of adding 1 as
+</p>
+<pre class="brush: scheme">
+(define zero (lambda (f) (lambda (x) x)))
+(define (add-1 n) (lambda (f) (lambda (x) (f ((n f) x)))))
+</pre>
+<p>
+This representation is known as Church numerals, after its inventor, Alonzo
+Church, the logician who invented the \(\lambda\)-calculus.
+</p>
+
+<p>
+Define <code>one</code> and <code>two</code> directly (not in terms of <code>zero</code> and <code>add-1</code>). (Hint: Use
+substitution to evaluate <code>(add-1 zero)</code>). Give a direct definition of the addition
+procedure <code>+</code> (not in terms of repeated application of <code>add-1</code>)
+</p>
+
+<ul>
+<li>
+Answer:
+
 </ul>
-</div>
+
+<pre class="brush: scheme">
+(define one (lambda (f) (lambda (x) (f x))))
+(define two (lambda (f) (lambda (x) (f (f x)))))
+
+(define (+ a b) (lambda (f) (lambda (x) ((a f) ((b f) x))))
+</pre>
+
+<h3 id="toc_1.1.6">Exercise 2.7</h3>
+<p>
+Alyssa's program is incomplete because she has not specified the implementation
+of the interval abstraction. Here is a definition of the interval constructor:
+</p>
+<pre class="brush: scheme">
+(define (make-interval a b) (cons a b))
+</pre>
+<p>
+Define selectors <code>upper-bound</code> and <code>lower-bound</code> to complete the implementation. 
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme"}>
+(define upper-bound car)
+(define lower-bound cdr)
+</pre>
+
+<p>
+Exercise 2.8  
+Using reasoning analogous to Alyssa's, describe how the difference of two
+intervals may be computed. Define a corresponding subtraction procedure, called
+<code>sub-interval</code>.
+</p>
+
+<pre class="brush: scheme">
+(define (sub-interval a b)
+    (let ((a ())))
+    (make-interval (a0 b0)))
+</pre>
 
     </div>
 
