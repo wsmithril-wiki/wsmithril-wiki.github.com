@@ -1096,7 +1096,7 @@ the $N_i$ and the $D_i$ all equal to 1 produces $1/\phi$, where $\phi$ is the go
 fraction is to truncate the expansion after a given number of terms. Such
 a truncation -- a so-called k-term finite continued fraction -- has the form
 {{$
-a_k=\cftac{N_1}{N_1+\cfrac{N_2}{\ddots+\frac{N_k}{D_k}}}
+a_k=\cfrac{N_1}{N_1+\cfrac{N_2}{\ddots+\frac{N_k}{D_k}}}
 }}$
 Suppose that `n` and `d` are procedures of one argument (the term index `i`) that
 return the $N_i$ and $D_i$ of the terms of the continued fraction. Define a procedure
@@ -1193,7 +1193,7 @@ a procedure that adds 2. What value is returned by
 }}}
 And `(((double (double double)) inc) 5)` should return `13`
 
-Exercise 1.42  
+=== Exercise 1.42 ===  
 Let $f$ and $g$ be two one-argument functions. The composition $f$ after $g$ is defined
 to be the function $x\mapsto f(g(x))$. Define a procedure compose that implements
 composition. For example, if `inc` is a procedure that adds 1 to its argument,
