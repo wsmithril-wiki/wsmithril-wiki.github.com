@@ -211,17 +211,439 @@ Answer:
 (define lower-bound cdr)
 </pre>
 
+<h3 id="toc_1.1.7">Exercise 2.8</h3>
 <p>
-Exercise 2.8  
 Using reasoning analogous to Alyssa's, describe how the difference of two
 intervals may be computed. Define a corresponding subtraction procedure, called
 <code>sub-interval</code>.
 </p>
 
+<ul>
+<li>
+Answer:
+
+</ul>
+
 <pre class="brush: scheme">
 (define (sub-interval a b)
-    (let ((a ())))
-    (make-interval (a0 b0)))
+    (make-interval (- (lower-bound a) (upper-bound b))
+                   (- (upper-bound a) (lower-bound b)))
+</pre>
+
+<h3 id="toc_1.1.8">Exercise 2.9</h3>
+<p>
+The width of an interval is half of the difference between its upper and lower
+bounds. The width is a measure of the uncertainty of the number specified by the
+interval. For some arithmetic operations the width of the result of combining
+two intervals is a function only of the widths of the argument intervals,
+whereas for others the width of the combination is not a function of the widths
+of the argument intervals. Show that the width of the sum (or difference) of two
+intervals is a function only of the widths of the intervals being added (or
+subtracted). Give examples to show that this is not true for multiplication or
+division. 
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<p>
+Simply notice the fact that sum of two interval, say \((a\pm \delta_a)\) and
+\((b\pm \delta_b)\), is \(((a+b)\pm (\delta_a+\delta_b))\), shows that the width of
+the sum of two interval is the sum of the width of the two.
+</p>
+
+<p>
+And the width of the multiplication of two interval \((a\pm \delta_a)\) and 
+\((b\pm \delta_b)\) is \((ab \pm (b\delta_a+a\delta_b))\), assuming all interval
+contain no negtive number, which shows that the width of the multiplication
+of two interval is not only relate to the width of each interval, but also
+relate to the lower nd upper bound of two interval itself.
+</p>
+
+<h3 id="toc_1.1.9">Exercise 2.10</h3>
+<p>
+Ben Bitdiddle, an expert systems programmer, looks over Alyssa's shoulder and
+comments that it is not clear what it means to divide by an interval that spans
+zero. Modify Alyssa's code to check for this condition and to signal an error if
+it occurs. 
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define (div-interval x y)
+    (if (&lt;= (* (lower-bound y) (upper-bound)) 0)
+        (error "divisor interval contains zero ")
+        (mul-interval x 
+                      (make-interval (/ 1.0 (upper-bound y))
+                                     (/ 1.0 (lower-bound y))))))
+</pre>
+
+<h3 id="toc_1.1.10">Exercise 2.11</h3>
+<p>
+In passing, Ben also cryptically comments: "By testing the signs of the
+endpoints of the intervals, it is possible to break <code>mul-interval</code> into nine
+cases, only one of which requires more than two multiplications." Rewrite this
+procedure using Ben's suggestion.
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define (mul-interval x y)
+    (define (pos-zero i) 
+        (let ((x (lower-bound i))
+              (y (upper-bound i)))
+        (cond ((and (&lt;  x 0) (&lt;  y 0)) -1)
+              ((and (&lt;= x 0) (&gt;= y 0)) 0)
+              ((and (&gt;  x 0) (&gt;  y 0)) 1))))
+    (let ((tx (pos-zero x))
+          (ty (pos-zero y))) 
+    (define (condition a b) (and (= tx a) (= ty b)))
+    (define (mi v1 v2 v3 v4)
+        (let ((f1 (if (= 0 v1) lower-bound upper-bound))
+              (f2 (if (= 0 v2) lower-bound upper-bound))
+              (f3 (if (= 0 v3) lower-bound upper-bound))
+              (f4 (if (= 0 v4) lower-bound upper-bound)))
+        (make-interval (* (f1 x) (f2 y)) (* (f3 x) (f4 y)))))
+    (cond ((condition  1  1) (mi 0 0 1 1)) ; --0---[x]-[y]--
+          ((condition -1 -1) (mi 1 1 0 0)) ; --[x]-[y]---0--
+          ((condition  1 -1) (mi 0 1 1 0)) ; --[y]--0--[x]--
+          ((condition -1  1) (mi 1 0 0 1)) ; --[x]--0--[y]--
+          ((condition  0  1) (mi 0 1 1 1)) ; --[x-0-]--[y]--
+          ((condition  0 -1) (mi 1 0 0 0)) ; --[y]--[x-0-]--
+          ((condition  1  0) (mi 1 0 1 1)) ; --[y-0-]--[x]--
+          ((condition -1  0) (mi 0 1 0 0)) ; --[x]--[y-0-]--
+          (else make-interval (min (* (lower-bound x) (upper-bound y))
+                                   (* (upper-bound x) (lower-bound y)))
+                              (max (* (lower-bound x) (lower-bound y))
+                                   (* (upper-bound x) (upper-bound y)))))))
+</pre>
+
+<h3 id="toc_1.1.11">Exercise 2.12</h3>
+<p>
+Define a constructor <code>make-center-percent</code> that takes a center and a percentage
+tolerance and produces the desired interval. You must also define a selector
+percent that produces the <code>percentage</code> tolerance for a given interval. The <code>center</code>
+selector is the same as the one shown above. ]
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define (make-center-percent c p)
+    (let ((hw (* c p)))
+    (make-interval (- c hw) (+ c hw))))
+(define (percent i)
+    (abs (/ (width i) (center i))))
+</pre>
+
+<h3 id="toc_1.1.12">Exercise 2.13</h3>
+<p>
+Show that under the assumption of small percentage tolerances there is a simple
+formula for the approximate percentage tolerance of the product of two intervals
+in terms of the tolerances of the factors. You may simplify the problem by
+assuming that all numbers are positive. 
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<p>
+Assume that two interval \(I_1\) and \(I_2\), that \(I_i=[c_i\pm c_i\cdot p_i]\), \((i=1,2)\),
+and both interval are positive, the product of two interval would be
+\(I=[(1-p_1)c_1\cdot (1-p_2)c_2, (1+p_1)c_1\cdot (1+p_2)c_2]=[c\pm cp]\), where 
+\(c=(1+\frac 12 p_2p_2)c_1c_2\), \(p=(p_1+p_2)/(1+\frac 12 p_1p_2)\). From the given
+assumption that \(p_1\) and \(p_2\) is small enough that \(p_1p_2\) can be ignored.
+So the product \(I\) has a simple approximation \(I_{approx}=[c_1c_2\pm c_1c_2(p_1+p_2)]\).
+</p>
+
+<h3 id="toc_1.1.13">Exercise 2.14</h3>
+<p>
+Demonstrate that Lem is right. Investigate the behavior of the system on
+a variety of arithmetic expressions. Make some intervals \(A\) and \(B\), and use them
+in computing the expressions \(A/A\) and \(A/B\). You will get the most insight by using
+intervals whose width is a small percentage of the center value. Examine the
+results of the computation in center-percent form (see exercise 2.12).
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<p>
+With two interval \(A=10\pm 5%\) and \(B=20\pm 1%\), <code>par1</code> gives \(6.6830\pm 8.132%\)
+while <code>par2</code> yields \(6.6643\pm 3.668%\).
+</p>
+
+<p>
+The result of \(A/A=1.005\pm 9.975%\), \(B/B=1.0002\pm 1.9998%\), \(A/B=0.5003\pm 5.997%\). 
+shows that basically after the <code>div-interval</code>, the <code>percent</code> of the two interval
+is the sum of both (as in 2.13). So the error will easily accumulate along with
+the process of evaluation. As for percedure <code>par1</code>, there are 3 interval
+arithmetic, namely <code>(add-interval r1 r2)</code>, <code>(mul-interval r1 r2)</code> and the
+<code>div-interval</code> of pervious two. Therefore the error get accumulated 3 times. While the
+procedure <code>par2</code>, only the add of the two reverse involves interval arithmetic,
+since <code>one</code> is not actually an interval, result in a more accurate result.
+</p>
+
+<p>
+The error analysis shows that the \(R=\frac{R_1R_2}{R_1+R_2}\) gives an error of
+\((\frac{\Delta_R}{R})^2=(\frac{\Delta_R_1}{R_1})^2+(\frac{\Delta_R_2}{R_2})^2+{\Delta_R_1}^2+{\Delta_R_2}^2\),
+while \(R'=\frac{1}{\frac{1}{R_1}+\frac{1}{R_2}}\) only has an error of 
+\({\Delta_{R'}}^2={\Delta_R_1}^2+{\Delta_R_2}^2\), which is much smaller.
+</p>
+
+<h3 id="toc_1.1.14">Exercise 2.15</h3>
+<p>
+Eva Lu Ator, another user, has also noticed the different intervals computed by
+different but algebraically equivalent expressions. She says that a formula to
+compute with intervals using Alyssa's system will produce tighter error bounds
+if it can be written in such a form that no variable that represents an
+uncertain number is repeated. Thus, she says, <code>par2</code> is a "better" program for
+parallel resistances than <code>par1</code>. Is she right? Why? 
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<p>
+For the most case, this is correct, for in each step of evaluation, the error
+gets accumulated. Therefore, the lesser expersion with number with error, the
+better. But in some cases, the algebraically equivlent is needed to prevent
+underflow from happenning. 
+</p>
+
+<h3 id="toc_1.1.15">Exercise 2.16</h3>
+<p>
+Explain, in general, why equivalent algebraic expressions may lead to different
+answers. Can you devise an interval-arithmetic package that does not have this
+shortcoming, or is this task impossible? (Warning: This problem is very
+difficult.)
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<p>
+This is indeed a very diffcult one. I think it is impossible to devise such
+interval-arithmetic package. One strong reason is the <code>error analysis</code> in ex
+2.14, which shows that the how a value calculated dose and should effect its
+accuracy.
+</p>
+
+<p>
+To interval arithmetic, certain laws which is known to be true in real number 
+dose not fits in. For example, if the basic arithemetic of intervla defined as
+follow:
+</p>
+\[
+\begin{alignat}{1}
+[a,b]+[c,d] &amp;=&amp; [a+b,c+d]
+[a,b]\cdot[c,d] &amp;=&amp; [min(ac,ad,bc,bd),max(ac,ad,bc,bd)]
+\end{alignat}
+\]
+<p>
+Then all interval, denoted as \(\rm{I}\), along with each of these two operator
+does not form an group. And with these two operator law of distribute does not
+applied (\(A(B+C)\) is not equals to \(AB+AC\), \(A,B,C\in\rm{I}\), in fact, \(A(B+C)\subset AB+AC\)).
+</p>
+
+<h3 id="toc_1.1.16">Exercise 2.17</h3>
+<p>
+Define a procedure last-pair that returns the list that contains only the last
+element of a given (nonempty) list:
+</p>
+<pre class="brush: scheme">
+(last-pair (list 23 72 149 34))
+(34)
+</pre>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define (last-pair xs) 
+    (if (null? xs)
+        (list)
+        (let ((x    (car xs))
+              (rest (cdr xs)))
+             (if (null? xs) 
+                (list x)
+                (last-pair xs)))))
+</pre>
+
+<h3 id="toc_1.1.17">Exercise 2.18</h3>
+<p>
+Define a procedure reverse that takes a list as argument and returns a list of
+the same elements in reverse order:
+</p>
+
+<pre class:"brush: scheme">
+(reverse (list 1 4 9 16 25))
+(25 16 9 4 1)
+</pre>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define (reverse xs)
+    (define (iter xs rs)
+        (if (null? xs) 
+            rs
+            (iter (cdr xs) (cons (car xs) rs))))
+    (iter xs (list)))
+</pre>
+
+<h3 id="toc_1.1.18">Exercise 2.19</h3>
+<p>
+Consider the <code>change-counting</code> program of section 1.2.2. It would be nice to be
+able to easily change the currency used by the program, so that we could compute
+the number of ways to change a British pound, for example. As the program is
+written, the knowledge of the currency is distributed partly into the procedure
+<code>first-denomination</code> and partly into the procedure <code>count-change</code> (which knows that
+there are five kinds of U.S. coins). It would be nicer to be able to supply
+a list of coins to be used for making change.
+</p>
+
+<p>
+We want to rewrite the procedure <code>cc</code> so that its second argument is a list of the
+values of the coins to use rather than an integer specifying which coins to use.
+We could then have lists that defined each kind of currency:
+</p>
+
+<pre class="brush: scheme">
+(define us-coins (list 50 25 10 5 1))
+(define uk-coins (list 100 50 20 10 5 2 1 0.5))
+</pre>
+
+<p>
+We could then call cc as follows:
+</p>
+
+<pre class="brush: scheme"">
+(cc 100 us-coins)
+292
+</pre>
+
+<p>
+To do this will require changing the program <code>cc</code> somewhat. It will still have the
+same form, but it will access its second argument differently, as follows:
+</p>
+
+<pre class="brush: scheme">
+(define (cc amount coin-values)
+  (cond ((= amount 0) 1)
+        ((or (&lt; amount 0) (no-more? coin-values)) 0)
+        (else
+         (+ (cc amount
+                (except-first-denomination coin-values))
+            (cc (- amount
+                   (first-denomination coin-values))
+                coin-values)))))
+</pre>
+
+<p>
+Define the procedures <code>first-denomination</code>, <code>except-first-denomination</code>, and
+no-more? in terms of primitive operations on list structures. Does the order of
+the list <code>coin-values</code> affect the answer produced by <code>cc</code>? Why or why not? 
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define first-denomination car)
+(define except-first-denomination cdr)
+(define no-more? null?)
+</pre>
+
+<h3 id="toc_1.1.19">Exercise 2.20</h3>
+<p>
+The procedures <code>+</code>, <code>*</code>, and <code>list</code> take arbitrary numbers of arguments. One way to
+define such procedures is to use define with <code>dotted-tail</code> notation. In a
+procedure definition, a parameter list that has a dot before the last parameter
+name indicates that, when the procedure is called, the initial parameters (if
+any) will have as values the initial arguments, as usual, but the final
+parameter's value will be a list of any remaining arguments. For instance,
+given the definition
+</p>
+
+<pre class="brush: scheme">
+(define (f x y . z) &lt;body&gt;)
+</pre>
+
+<p>
+The procedure f can be called with two or more arguments. If we evaluate
+<code>(f 1 2 3 4 5 6)</code>, then in the body of f, <code>x</code> will be <code>1</code>, <code>y</code> will be <code>2</code>, and
+<code>z</code> will be the list <code>(3 4 5 6)</code>. Given the definition <code>(define (g . w) &lt;body&gt;)</code>,
+the procedure <code>g</code> can be called with zero or more arguments. If we evaluate
+<code>(g 1 2 3 4 5 6)</code>, then in the body of <code>g</code>, <code>w</code> will be the list <code>(1 2 3 4 5 6)</code>
+</p>
+
+<p>
+Use this notation to write a procedure <code>same-parity</code> that takes one or more
+integers and returns a list of all the arguments that have the same <code>even-odd</code>
+parity as the first argument. For example,
+</p>
+
+<pre class="brush: scheme">
+(same-parity 1 2 3 4 5 6 7)
+(1 3 5 7)
+
+(same-parity 2 3 4 5 6 7)
+(2 4 6)
+</pre>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define (same-parity x . xs)
+    (define (iter is rs)
+        (cond ((null? is) (reverse rs))
+              ((even? (- (car is) x)) (iter (cdr is) (cons (car is) rs)))
+              (else (iter (cdr is) rs))))
+    (iter xs (list x)))
 </pre>
 
     </div>
