@@ -1,7 +1,7 @@
 = WsMithril's Wiki =
 - [[SICP-Exercise/index| My answer to SICP Exersices]]
   - [[SICP-Exercise/Chapter01|Chapter01]]
-  - [[SICP-Exercise/Chapter02|Chapter02]]
+  - [[SICP-Exercise/Chapter02-p01|Chapter02 - Part.I]]
 
 - Haskell
   - Amazing tool to try haskell in a Broswer [[http://tryhaskell.org/|tryhaskell]]
