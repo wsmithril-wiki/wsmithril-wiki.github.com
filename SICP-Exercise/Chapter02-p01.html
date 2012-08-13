@@ -7,7 +7,7 @@
     <link type="image/x-icon" rel="shortcut icon" href="/favicon.ico" />
     <link rel="stylesheet" type="text/css" href="/css/style.css" />
     <script type="text/javascript" src="/MathJax/MathJax.js?config=TeX-AMS-MML_SVG"></script>
-    <title>SICP Exercises - Chapter 02</title>
+    <title>SICP Exercises - Chapter 02 - Part. I</title>
 </head>
 <body>
     <div class="content">
@@ -508,7 +508,7 @@ Define a procedure reverse that takes a list as argument and returns a list of
 the same elements in reverse order:
 </p>
 
-<pre class:"brush: scheme">
+<pre class="brush: scheme">
 (reverse (list 1 4 9 16 25))
 (25 16 9 4 1)
 </pre>
@@ -1174,29 +1174,9 @@ Answer:
 
 <pre class="brush: scheme">
 ; first &lt;??&gt;
-(car seqs)
+(map car seqs)
 ; second &lt;??&gt;
-(cdr seqs)
-</pre>
-
-<p>
-In fact, <code>accumulate-n</code> can be implemented using <code>accumulate</code> to pack the
-<code>if</code>-<code>cons</code> recursion like this:
-</p>
-
-<pre class="brush: scheme">
-(define (accumulate-n op init seqs)
-  (accumulate (lambda (seq rest) (cons (accumulate op init seq) rest))
-              nil seqs))
-</pre>
-
-<p>
-Or even better, using <code>map</code>:
-</p>
-
-<pre class="brush: scheme">
-(define (accumulate-n op init seqs )
-  (map (accumulate (lambda (seq) (acculumate op init seq))) seqs))
+(map cdr seqs)
 </pre>
 
 <h3 id="toc_1.1.31">Exercise 2.37</h3>
@@ -1206,38 +1186,171 @@ Suppose we represent vectors \(v=(v_i)\) as sequences of numbers, and matrices
 matrix
 </p>
 \[
-\[\left(\begin{array}{cccc}
-1 &amp; 2 &amp; 3 &amp; 4 \\ 4 &amp; 5 &amp; 6 &amp; 6 &amp; \\ 6 &amp; 7 &amp; 8 &amp; 9
-\end{array}\right)\]
+\begin{bmatrix}
+1 &amp; 2 &amp; 3 &amp; 4 \\ 4 &amp; 5 &amp; 6 &amp; 6 \\ 6 &amp; 7 &amp; 8 &amp; 9
+\end{bmatrix}
 \]
 <p>
-is represented as the sequence ((1 2 3 4) (4 5 6 6) (6 7 8 9)). With this representation, we can use sequence operations to concisely express the basic matrix and vector operations. These operations (which are described in any book on matrix algebra) are the following:
+is represented as the sequence <code>((1 2 3 4) (4 5 6 6) (6 7 8 9))</code>. With this
+representation, we can use sequence operations to concisely express the basic
+matrix and vector operations. These operations (which are described in any book
+on matrix algebra) are the following:
 </p>
 
 <p>
-We can define the dot product as17
+We can define the dot product as:
 </p>
 
-<p>
+<pre class="brush: scheme">
 (define (dot-product v w)
   (accumulate + 0 (map * v w)))
-</p>
+</pre>
 
 <p>
-Fill in the missing expressions in the following procedures for computing the other matrix operations. (The procedure accumulate-n is defined in exercise 2.36.)
+Fill in the missing expressions in the following procedures for computing the
+other matrix operations. (The procedure <code>accumulate-n</code> is defined in exercise
+2.36.)
 </p>
 
-<p>
+<pre class="brush: scheme">
 (define (matrix-*-vector m v)
   (map &lt;??&gt; m))
 (define (transpose mat)
   (accumulate-n &lt;??&gt; &lt;??&gt; mat))
 (define (matrix-*-matrix m n)
   (let ((cols (transpose n)))
+    (map &lt;??&gt; m)))
+</pre>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define (martix-*-vector m v)
+  (map (lambda (r) (dot-product r v) m)))
+(define (transpose mat)
+  (accumulate-n cons nil mat))
+(define (matrix-*-matrix m n)
+  (let ((cols (transpose n)))
+    (map (lambda (r) (matrix-*-vector col r) m)))
+</pre>
+
+<h3 id="toc_1.1.32">Exercise 2.38</h3>
+<p>
+The accumulate procedure is also known as <code>fold-right</code>, because it combines the
+first element of the sequence with the result of combining all the elements to
+the right. There is also a <code>fold-left</code>, which is similar to <code>fold-right</code>, except
+that it combines elements working in the opposite direction:
 </p>
-<blockquote>
-(map &lt;??&gt; m)))
-</blockquote>
+
+<pre class="brush: scheme">
+(define (fold-left op initial sequence)
+  (define (iter result rest)
+    (if (null? rest)
+        result
+        (iter (op result (car rest))
+              (cdr rest))))
+  (iter initial sequence))
+</pre>
+
+<p>
+Give a property that op should satisfy to guarantee that <code>fold-right</code> and
+<code>fold-left</code> will produce the same values for any sequence. 
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<p>
+Consider <code>(fold-left op init (list a1 a2 a3 a4))</code> and <code>(fold-right op init (list a1 a2 a3 a4))</code>,
+the resule is something like this (using Haskell style infix notion to make
+thing clear):
+</p>
+
+<pre class="brush: haskell">
+-- fold-left
+((((a1 `op` a2) `op` a3) `op` a4) `op` init)
+-- fold-right
+(a1 `op` (a2 `op` (a3 `op` (a4 `op` init))))
+</pre>
+
+<p>
+Their difference lies in the order of computation, which clear suggests that the
+<code>fold-right</code> and <code>fold-left</code> return the same result for any list when the <code>op</code>
+satisfy the Rule of Combination, whohich means that in a "chain" of same <code>op</code>,
+which <code>op</code> gets computed first does not affact the result.
+</p>
+
+<h3 id="toc_1.1.33">Exercise 2.39</h3>
+<p>
+Complete the following definitions of <code>reverse</code> (exercise 2.18) in terms of
+<code>fold-right</code> and <code>fold-left</code> from exercise 2.38:
+</p>
+
+<pre class="brush: scheme">
+(define (reverse sequence)
+  (fold-right (lambda (x y) &lt;??&gt;) nil sequence))
+(define (reverse sequence)
+  (fold-left (lambda (x y) &lt;??&gt;) nil sequence))
+</pre>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme ">
+(define (reverse sequence)
+  (fold-right (lambda (x y) (append y (list x))) nil sequence))
+(define (reverse sequence) 
+  (fold-left (lambda (x y) (cons y x)) nil sequence))
+</pre>
+
+<h3 id="toc_1.1.34">Exercise 2.40</h3>
+<p>
+Define a procedure <code>unique-pairs</code> that, given an integer <code>n</code>, generates the
+sequence of pairs \((i,j)\) with \(1\le j\lt i\le n\). Use <code>unique-pairs</code> to
+simplify the definition of <code>prime-sum-pairs</code> given above.
+</p>
+
+<pre class="brush: scheme">
+(define (unique-pairs n)
+  (accumulate append '()
+              (map (lambda (i)
+                           (map (lambda (j) (list i j)) 
+                                (enumerate-interval (- i 1))))
+                   (enumerate-interval n))))
+(define (prime-sum-pairs n)
+  (map (lambda (p) (append p (list (+ p))))
+       (filter (lambda (p) (prime? (+ p)))
+               (unique-pairs n))))
+</pre>
+
+<h3 id="toc_1.1.35">Exercise 2.41</h3>
+<p>
+Write a procedure to find all ordered triples of distinct positive integers i,
+j, and k less than or equal to a given integer n that sum to a given integer s.
+</p>
+
+<ul>
+<li>
+Answer:
+<pre class="brush: scheme">
+(define (find-sum-s n s)
+  (filter (lambda (t) (= (+ t) s)) (uniq-triple n)))
+(define (uniq-triple n)
+  (flatmap (lambda (i) (map (lambda (p) (cons i p)) (unique-pqir i))) 
+           (enumerate-interval n)))
+</pre>
+
+</ul>
 
     </div>
 
