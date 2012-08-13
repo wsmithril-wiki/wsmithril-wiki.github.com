@@ -1146,6 +1146,99 @@ Answer:
     (accumulate + 0 (map (lambda (x) 1) (enumerate-tree t))))
 </pre>
 
+<h3 id="toc_1.1.30">Exercise 2.36</h3>
+<p>
+The procedure <code>accumulate-n</code> is similar to accumulate except that it takes as its
+third argument a sequence of sequences, which are all assumed to have the same
+number of elements. It applies the designated accumulation procedure to combine
+all the first elements of the sequences, all the second elements of the
+sequences, and so on, and returns a sequence of the results. For instance, if s
+is a sequence containing four sequences, <code>((1 2 3) (4 5 6) (7 8 9) (10 11 12))</code>,
+then the value of <code>(accumulate-n + 0 s)</code> should be the sequence <code>(22 26 30)</code>. Fill
+in the missing expressions in the following definition of <code>accumulate-n</code>:
+</p>
+
+<pre class="brush: scheme">
+(define (accumulate-n op init seqs)
+  (if (null? (car seqs))
+      nil
+      (cons (accumulate op init &lt;??&gt;)
+            (accumulate-n op init &lt;??&gt;))))
+</pre>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+; first &lt;??&gt;
+(car seqs)
+; second &lt;??&gt;
+(cdr seqs)
+</pre>
+
+<p>
+In fact, <code>accumulate-n</code> can be implemented using <code>accumulate</code> to pack the
+<code>if</code>-<code>cons</code> recursion like this:
+</p>
+
+<pre class="brush: scheme">
+(define (accumulate-n op init seqs)
+  (accumulate (lambda (seq rest) (cons (accumulate op init seq) rest))
+              nil seqs))
+</pre>
+
+<p>
+Or even better, using <code>map</code>:
+</p>
+
+<pre class="brush: scheme">
+(define (accumulate-n op init seqs )
+  (map (accumulate (lambda (seq) (acculumate op init seq))) seqs))
+</pre>
+
+<h3 id="toc_1.1.31">Exercise 2.37</h3>
+<p>
+Suppose we represent vectors \(v=(v_i)\) as sequences of numbers, and matrices
+\(m=(m_{ij})\) as sequences of vectors (the rows of the matrix). For example, the
+matrix
+</p>
+\[
+\[\left(\begin{array}{cccc}
+1 &amp; 2 &amp; 3 &amp; 4 \\ 4 &amp; 5 &amp; 6 &amp; 6 &amp; \\ 6 &amp; 7 &amp; 8 &amp; 9
+\end{array}\right)\]
+\]
+<p>
+is represented as the sequence ((1 2 3 4) (4 5 6 6) (6 7 8 9)). With this representation, we can use sequence operations to concisely express the basic matrix and vector operations. These operations (which are described in any book on matrix algebra) are the following:
+</p>
+
+<p>
+We can define the dot product as17
+</p>
+
+<p>
+(define (dot-product v w)
+  (accumulate + 0 (map * v w)))
+</p>
+
+<p>
+Fill in the missing expressions in the following procedures for computing the other matrix operations. (The procedure accumulate-n is defined in exercise 2.36.)
+</p>
+
+<p>
+(define (matrix-*-vector m v)
+  (map &lt;??&gt; m))
+(define (transpose mat)
+  (accumulate-n &lt;??&gt; &lt;??&gt; mat))
+(define (matrix-*-matrix m n)
+  (let ((cols (transpose n)))
+</p>
+<blockquote>
+(map &lt;??&gt; m)))
+</blockquote>
+
     </div>
 
     <div class="copyright">
