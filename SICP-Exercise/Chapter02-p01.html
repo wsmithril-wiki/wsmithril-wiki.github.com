@@ -13,7 +13,7 @@
     <div class="content">
     
 <h1 id="toc_1">SICP Exercises</h1>
-<h2 id="toc_1.1">Chapter 02</h2>
+<h2 id="toc_1.1">Chapter 02 - Part.I</h2>
 
 <h3 id="toc_1.1.1">Exercise 2.1</h3>
 <p>
@@ -409,9 +409,9 @@ since <code>one</code> is not actually an interval, result in a more accurate re
 
 <p>
 The error analysis shows that the \(R=\frac{R_1R_2}{R_1+R_2}\) gives an error of
-\((\frac{\Delta_R}{R})^2=(\frac{\Delta_R_1}{R_1})^2+(\frac{\Delta_R_2}{R_2})^2+{\Delta_R_1}^2+{\Delta_R_2}^2\),
+\((\frac{\delta_R}{R})^2=(\frac{\delta_{R_1}}{R_1})^2+(\frac{\delta_{R_2}}{R_2})^2+\delta_{R_1}^2+\delta_{R_2}^2\),
 while \(R'=\frac{1}{\frac{1}{R_1}+\frac{1}{R_2}}\) only has an error of
-\({\Delta_{R'}}^2={\Delta_R_1}^2+{\Delta_R_2}^2\), which is much smaller.
+\({\delta_{R'}}^2=\delta_{R_1}^2+{\delta_{R_2}}^2\), which is much smaller.
 </p>
 
 <h3 id="toc_1.1.14">Exercise 2.15</h3>
@@ -464,9 +464,9 @@ dose not fits in. For example, if the basic arithmetic of intervla defined as
 follow:
 </p>
 \[
-\begin{alignat}{1}
-[a,b]+[c,d] &amp;=&amp; [a+b,c+d]
-[a,b]\cdot[c,d] &amp;=&amp; [min(ac,ad,bc,bd),max(ac,ad,bc,bd)]
+\begin{alignat}{3}
+  [a,b] &amp;+&amp;[c,d] &amp;=  [a+b &amp; &amp;, c+d] \cr
+  [a,b] &amp;\times&amp; [c,d] &amp;= [\min(ac,ad,bc,bd) &amp; &amp;, \max(ac,ad,bc,bd)] \cr
 \end{alignat}
 \]
 <p>
@@ -685,8 +685,8 @@ Answer:
 (map square items)
 </pre>
 
+<h3 id="toc_1.1.21">Exercise 2.22</h3>
 <p>
-Exercise 2.22
 Louis Reasoner tries to rewrite the first <code>quare-list</code> procedure of exercise 2.21
 so that it evolves an iterative process:
 </p>
@@ -746,7 +746,7 @@ to represent the list <code>(square-list (list 1 2 3 4))</code> would be
 <code>(cons (cons (cons (cons 1 nil) 4) 9) 16)</code>, which is obviously the wrong one.
 </p>
 
-<h3 id="toc_1.1.21">Exercise 2.23</h3>
+<h3 id="toc_1.1.22">Exercise 2.23</h3>
 <p>
 The procedure <code>for-each</code> is similar to <code>map</code>. It takes as arguments a procedure and
 a list of elements. However, rather than forming a list of the results,
@@ -788,7 +788,7 @@ precedure should be strictly applied to each element in the list from the left
 to right, while <code>map</code> dose not need to be guarantee that.
 </p>
 
-<h3 id="toc_1.1.22">Exercise 2.24</h3>
+<h3 id="toc_1.1.23">Exercise 2.24</h3>
 <p>
 Suppose we evaluate the expression <code>(list 1 (list 2 (list 3 4)))</code>.  Give the
 result printed by the interpreter, the corresponding box-and-pointer structure,
@@ -805,7 +805,7 @@ Answer:
 The interpreter will show <code>(1 (2 (3 4)))</code>
 </p>
 
-<h3 id="toc_1.1.23">Exercise 2.25</h3>
+<h3 id="toc_1.1.24">Exercise 2.25</h3>
 <p>
 Give combinations of <code>car</code>s and <code>cdr</code>s that will pick 7 from each of the following
 lists:
@@ -839,7 +839,7 @@ Noted that <code>(7)</code> is actually <code>(cons 7 nil)</code> for short, the
 displaying. So the first <code>car</code> is nessery in each answer.
 </p>
 
-<h3 id="toc_1.1.24">Exercise 2.26</h3>
+<h3 id="toc_1.1.25">Exercise 2.26</h3>
 <p>
 Suppose we define x and y to be two lists:
 </p>
@@ -874,7 +874,7 @@ Answer:
 ((1 2 3) (4 5 6))
 </pre>
 
-<h3 id="toc_1.1.25">Exercise 2.27</h3>
+<h3 id="toc_1.1.26">Exercise 2.27</h3>
 <p>
 Modify your <code>reverse</code> procedure of exercise 2.18 to produce a <code>deep-reverse</code>
 procedure that takes a list as argument and returns as its value the list with
@@ -933,7 +933,7 @@ Answer:
           (else (append (fringe (car ls)) (fringe (cdr ls))))))
 </pre>
 
-<h3 id="toc_1.1.26">Exercise 2.29</h3>
+<h3 id="toc_1.1.27">Exercise 2.29</h3>
 <p>
 A binary mobile consists of two branches, a left branch and a right branch. Each
 branch is a rod of a certain length, from which hangs either a weight or another
@@ -1013,8 +1013,8 @@ Answer:
           (lr (branche-length (right-branche m))))
     (if (and (pair? sl) (pair? sr))
         (= (* ll sl) (* lr sr))
-        (and (balance? sl) (balance? sr) 
-             ( = (* ll (total-weight sl)) 
+        (and (balance? sl) (balance? sr)
+             ( = (* ll (total-weight sl))
                  (* lr (total-weight sr)))))))
 </pre>
 
@@ -1030,7 +1030,7 @@ d.  Suppose we change the representation of mobiles so that the constructors are
 </pre>
 
 <p>
-How much do you need to change your programs to convert to the new representation? 
+How much do you need to change your programs to convert to the new representation?
 </p>
 
 <ul>
@@ -1050,7 +1050,7 @@ Only these selectors
 (define branche-structure cdr)
 </pre>
 
-<h3 id="toc_1.1.27">Exercise 2.33</h3>
+<h3 id="toc_1.1.28">Exercise 2.33</h3>
 <p>
 Fill in the missing expressions to complete the following definitions of some
 basic list-manipulation operations as accumulations:
@@ -1079,7 +1079,7 @@ Answer:
 
 </ul>
 
-<h3 id="toc_1.1.28">Exercise 2.34</h3>
+<h3 id="toc_1.1.29">Exercise 2.34</h3>
 <p>
 Evaluating a polynomial in \(x\) at a given value of \(x\) can be formulated as an
 accumulation. We evaluate the polynomial \(f(x)=\sum_{i=1}^n a_ix^i\) using
@@ -1125,7 +1125,7 @@ when evaluation, which reduce the times of multiplication from \(2n-1\), when
 evaluating term by term, to \(n\), while the times of addition is both \(n\).
 </p>
 
-<h3 id="toc_1.1.29">Exercise 2.35</h3>
+<h3 id="toc_1.1.30">Exercise 2.35</h3>
 <p>
 Redefine <code>count-leaves</code> from section 2.2.2 as an <code>accumulation</code>:
 </p>
@@ -1146,7 +1146,7 @@ Answer:
     (accumulate + 0 (map (lambda (x) 1) (enumerate-tree t))))
 </pre>
 
-<h3 id="toc_1.1.30">Exercise 2.36</h3>
+<h3 id="toc_1.1.31">Exercise 2.36</h3>
 <p>
 The procedure <code>accumulate-n</code> is similar to accumulate except that it takes as its
 third argument a sequence of sequences, which are all assumed to have the same
@@ -1179,7 +1179,7 @@ Answer:
 (map cdr seqs)
 </pre>
 
-<h3 id="toc_1.1.31">Exercise 2.37</h3>
+<h3 id="toc_1.1.32">Exercise 2.37</h3>
 <p>
 Suppose we represent vectors \(v=(v_i)\) as sequences of numbers, and matrices
 \(m=(m_{ij})\) as sequences of vectors (the rows of the matrix). For example, the
@@ -1238,7 +1238,7 @@ Answer:
     (map (lambda (r) (matrix-*-vector col r) m)))
 </pre>
 
-<h3 id="toc_1.1.32">Exercise 2.38</h3>
+<h3 id="toc_1.1.33">Exercise 2.38</h3>
 <p>
 The accumulate procedure is also known as <code>fold-right</code>, because it combines the
 first element of the sequence with the result of combining all the elements to
@@ -1258,7 +1258,7 @@ that it combines elements working in the opposite direction:
 
 <p>
 Give a property that op should satisfy to guarantee that <code>fold-right</code> and
-<code>fold-left</code> will produce the same values for any sequence. 
+<code>fold-left</code> will produce the same values for any sequence.
 </p>
 
 <ul>
@@ -1287,7 +1287,7 @@ satisfy the Rule of Combination, whohich means that in a "chain" of same <code>o
 which <code>op</code> gets computed first does not affact the result.
 </p>
 
-<h3 id="toc_1.1.33">Exercise 2.39</h3>
+<h3 id="toc_1.1.34">Exercise 2.39</h3>
 <p>
 Complete the following definitions of <code>reverse</code> (exercise 2.18) in terms of
 <code>fold-right</code> and <code>fold-left</code> from exercise 2.38:
@@ -1309,11 +1309,11 @@ Answer:
 <pre class="brush: scheme ">
 (define (reverse sequence)
   (fold-right (lambda (x y) (append y (list x))) nil sequence))
-(define (reverse sequence) 
+(define (reverse sequence)
   (fold-left (lambda (x y) (cons y x)) nil sequence))
 </pre>
 
-<h3 id="toc_1.1.34">Exercise 2.40</h3>
+<h3 id="toc_1.1.35">Exercise 2.40</h3>
 <p>
 Define a procedure <code>unique-pairs</code> that, given an integer <code>n</code>, generates the
 sequence of pairs \((i,j)\) with \(1\le j\lt i\le n\). Use <code>unique-pairs</code> to
@@ -1324,7 +1324,7 @@ simplify the definition of <code>prime-sum-pairs</code> given above.
 (define (unique-pairs n)
   (accumulate append '()
               (map (lambda (i)
-                           (map (lambda (j) (list i j)) 
+                           (map (lambda (j) (list i j))
                                 (enumerate-interval (- i 1))))
                    (enumerate-interval n))))
 (define (prime-sum-pairs n)
@@ -1333,7 +1333,7 @@ simplify the definition of <code>prime-sum-pairs</code> given above.
                (unique-pairs n))))
 </pre>
 
-<h3 id="toc_1.1.35">Exercise 2.41</h3>
+<h3 id="toc_1.1.36">Exercise 2.41</h3>
 <p>
 Write a procedure to find all ordered triples of distinct positive integers i,
 j, and k less than or equal to a given integer n that sum to a given integer s.
@@ -1342,15 +1342,16 @@ j, and k less than or equal to a given integer n that sum to a given integer s.
 <ul>
 <li>
 Answer:
+
+</ul>
+
 <pre class="brush: scheme">
 (define (find-sum-s n s)
   (filter (lambda (t) (= (+ t) s)) (uniq-triple n)))
 (define (uniq-triple n)
-  (flatmap (lambda (i) (map (lambda (p) (cons i p)) (unique-pqir i))) 
+  (flatmap (lambda (i) (map (lambda (p) (cons i p)) (unique-pqir i)))
            (enumerate-interval n)))
 </pre>
-
-</ul>
 
     </div>
 
