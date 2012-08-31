@@ -40,8 +40,6 @@
 
 
 </body>
-<link rel="stylesheet" type="text/css" href="/SyntaxHighlighter/styles/shCore.css" />
-<link rel="stylesheet" type="text/css" href="/SyntaxHighlighter/styles/shThemeDefault.css" />
 <link rel="stylesheet" type="text/css" href="/SyntaxHighlighter/styles/shThemeMidnight.css" />
 <script type="text/javascript" src="/SyntaxHighlighter/scripts/shCore.js"></script>
 <script type="text/javascript" src="/SyntaxHighlighter/scripts/shAutoloader.js"></script>
@@ -73,7 +71,8 @@
       'vb vbnet               /SyntaxHighlighter/scripts/shBrushVb.js',
       'xml xhtml xslt html    /SyntaxHighlighter/scripts/shBrushXml.js',
       'scheme                 /SyntaxHighlighter/scripts/shBrushScheme.js',
-      'hs haskell             /SyntaxHighlighter/scripts/shBrushHaskell.js'
+      'hs haskell             /SyntaxHighlighter/scripts/shBrushHaskell.js',
+      'asm x86                /SyntaxHighlighter/scripts/shBrushAsm.js'
     );
     SyntaxHighlighter.defaults['toolbar']    = false;
     SyntaxHighlighter.defaults['gutter']     = true;
