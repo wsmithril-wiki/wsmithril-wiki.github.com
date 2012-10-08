@@ -17,7 +17,7 @@
 
 <h3 id="toc_1.1.1">Exercise 2.42</h3>
 <p>
-The "Eight-Queens Puzzle""asks how to place eight queens on a chessboard so that
+The "Eight-Queens Puzzle" asks how to place eight queens on a chessboard so that
 no queen is in check from any other (i.e., no two queens are in the same row,
 column, or diagonal). One way to solve the puzzle is to work across the board,
 placing a queen in each column. Once we have placed \(k-1\) queens, we must
@@ -100,6 +100,71 @@ Answer:
               (diag? last k con)))))
 </pre>
 
+<h2 id="toc_1.2">Exercise 2.43</h2>
+<p>
+Louis Reasoner is having a terrible time doing exercise 2.42. His queens
+procedure seems to work, but it runs extremely slowly. (Louis never does manage
+to wait long enough for it to solve even the 6×6 case.) When Louis asks Eva Lu
+Ator for help, she points out that he has interchanged the order of the nested
+mappings in the <code>flatmap</code>, writing it as
+</p>
+
+<pre class="brush: scheme">
+(flatmap
+ (lambda (new-row)
+   (map (lambda (rest-of-queens)
+          (adjoin-position new-row k rest-of-queens))
+        (queen-cols (- k 1))))
+ (enumerate-interval 1 board-size))
+</pre>
+
+<p>
+Explain why this interchange makes the program run slowly. Estimate how long it
+will take Louis's program to solve the eight-queens puzzle, assuming that the
+program in exercise 2.42 solves the puzzle in time \(T\). 
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<p>
+First of all, the <code>queen</code> precedure will be running in the procedure <code>safe?</code>, so
+the less times <code>safe?</code> being invoked, the less time will be used solving the
+puzzle.
+</p>
+
+<p>
+The former <code>flatmap</code> looks like this:
+</p>
+<pre class="brush: scheme">
+(flatmap
+  (lambda (rest-of-queens)
+    (map (lambda (new-row)
+           (adjoin-position new-row k rest-of-queens))
+                 (enumerate-interval 1 board-size)))
+  (queen-cols (- k 1)))
+</pre>
+
+<p>
+For an 8x8 puzzle, this one will first emurate every 8x1 board with one quenee
+on it, then append another column, try every possible combinations, filter out
+unsafe ones, then append a third column... until all 8 quenes are on the board
+safely. So basicaly, for a n-queens puzzle, this one will try up to 
+\(\sum_{i=1}^{n} \rm{A}_n^i\) times <code>safe?</code>, where \(A_n^i=\frac{n!}{(n-i)!}\), for
+\(n=8\), roughly \(109600\) times. This is not included filtered ones in each
+iterations. 
+</p>
+
+<p>
+As for Louis's program with an 8x8 , with the interchange of nested map, it will 
+try to solve every 7x7, 6x6, ..., 1x1 problem along the way, and worse, solve
+the inner 7x7 problem in a same manner, solving the 6x6, 5x5, 4x4 ..., 1x1 
+problems again. 
+</p>
+
     </div>
 
     <div class="copyright">
@@ -168,5 +233,16 @@ Answer:
     SyntaxHighlighter.defaults['ruler']      = true;
     SyntaxHighlighter.defaults['tab-size']   = 4;
     SyntaxHighlighter.all();
+</script>
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-35399239-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
 </script>
 </html>
