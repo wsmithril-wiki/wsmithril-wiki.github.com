@@ -3,6 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <!--[if IE]><script type="text/javascript" src="%root_path%js/html5.js"></script><![endif]-->
+    <title>%title%</title>
     <meta name="google-site-verification" content="cszFzdkUL0nHE-vdCp1XzHFsThExfjCT8QdxGgrzTjQ" />
     <link type="image/x-icon" rel="icon" href="/favicon.ico" />
     <link type="image/x-icon" rel="shortcut icon" href="/favicon.ico" />
@@ -18,7 +19,6 @@
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
   })();
 </script>
-    <title>%title%</title>
 </head>
 <body>
     <div class="content">

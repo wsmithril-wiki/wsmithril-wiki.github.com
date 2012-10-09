@@ -7,6 +7,7 @@
     <link type="image/x-icon" rel="shortcut icon" href="/favicon.ico" />
     <link rel="stylesheet" type="text/css" href="/css/style.css" />
     <script type="text/javascript" src="/MathJax/MathJax.js?config=TeX-AMS-MML_SVG"></script>
+    <title>Chapter02-p02</title>
 <script type="text/javascript">
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-35399239-1']);
@@ -18,7 +19,6 @@
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
   })();
 </script>
-    <title>Chapter02-p02</title>
 </head>
 <body>
     <div class="content">
@@ -165,8 +165,8 @@ on it, then append another column, try every possible combinations, filter out
 unsafe ones, then append a third column... until all 8 quenes are on the board
 safely. So basicaly, for a n-queens puzzle, this one will try up to 
 \(\sum_{i=1}^{n} \rm{A}_n^i\) times <code>safe?</code>, where \(A_n^i=\frac{n!}{(n-i)!}\), for
-\(n=8\), roughly \(109600\) times. This is not included filtered ones in each
-iterations. 
+\(n=8\), roughly \(109600\) times. This is not exclude filtered combinations in each
+iterations, so the number is very large. 
 </p>
 
 <p>
