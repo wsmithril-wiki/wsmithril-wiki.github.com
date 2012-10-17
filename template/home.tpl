@@ -20,8 +20,6 @@
 </script>
 </head>
 <body>
-    <div class="content">
-    %content%
-    </div>
+    <div class="content">%content%</div>
 </body>
 </html>

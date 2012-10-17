@@ -2,49 +2,57 @@ var mywiki = {
     getCSS: function(url) {
         var tag = '<link rel="stylesheet" type="text/css" href="' + url + '" />';
         $('body').append(tag);
-     }
+    },
+    disqus_shortname: 'wsmithrilswiki'
 }
 
 $(document).ready(function() {
-    if (window.innerWidth >= 460) {
-        var toggler = $('<div class="toggler" title="点击展开/收起，Shift+Z 隐藏或打开">目录</div>'),
-        toc = $('.toc');
-        toc.wrap('<div class="tocWrap">');
-
-        $('.tocWrap').prepend(toggler)
-        .delay(500)
-        .fadeTo(500, '0.25')
-        .hover(function() {
-            $(this).stop().fadeTo(300, '0.9');
-        }, function() {
-            $(this).stop().fadeTo(300, '0.25');
-        });
-
-        $('html').keypress(function(e) {
-            if (e.shiftKey && (e.charCode || e.keyCode) == '90') {
-                e.preventDefault();
-                $('div.tocWrap').toggle(200);
-            }
-        });
-
-        toggler.click(function() {
-            $('div.toc').slideToggle(300);
-        });
+    // DIE IE, DIE
+    if ($.browser.msie) {
+        $('div.content').replaceWith("DIE IE, DIE");
+        return;
     }
+
+    // copyright
+    $('div#copyright').append(
+        '<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/2.5/cn/"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/2.5/cn/88x31.png" /></a>'
+      + '<br />'
+      + '本作品由<span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">WsMithril</span>创作，采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/2.5/cn/">知识共享署名-非商业性使用-相同方式共享 2.5 中国大陆许可协议</a>进行许可。'
+    );
+
+    // toc
+    var toggler = $('<div class="toggler" title="Click to Expand">Content</div>'),
+    toc = $('.toc');
+    toc.wrap('<div class="tocWrap">');
+
+    $('.tocWrap').prepend(toggler)
+    .delay(500)
+    .fadeTo(500, '0.25')
+    .hover(function() { $(this).stop().fadeTo(300, '0.9'); }, function() { $(this).stop().fadeTo(300, '0.25'); });
+
+    $('html').keypress(function(e) {
+        if (e.shiftKey && (e.charCode || e.keyCode) == '90') {
+            e.preventDefault();
+            $('div.tocWrap').toggle(200);
+        }
+    });
+
+    toggler.click(function() {
+        $('div.toc').slideToggle(300);
+    });
 
     // add disqus comment
     if (!$.browser.msie) {
-        var disqus_shortname = 'wsmithrilswiki';
         (function() {
             var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            dsq.src = 'http://' + mywiki.disqus_shortname + '.disqus.com/embed.js';
             (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
         })();
     }
 
     // synatax hilight
     mywiki.getCSS("/SyntaxHighlighter/styles/shThemeRDark.css");
-    var syn = function() {
+    (function() {
         $.getScript("/SyntaxHighlighter/scripts/shCore.js", function() {
         $.getScript("/SyntaxHighlighter/scripts/shAutoloader.js", function() {
             SyntaxHighlighter.autoloader(
@@ -83,7 +91,7 @@ $(document).ready(function() {
             SyntaxHighlighter.defaults['tab-size']   = 4;
             SyntaxHighlighter.all();
         });});
-    }
+    })();
 
-    syn();
+
 });
