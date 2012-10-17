@@ -1,0 +1,251 @@
+= SICP Exercises =
+== Chapter 02 - Part.II ==
+
+=== Exercise 2.42 ===
+The "Eight-Queens Puzzle" asks how to place eight queens on a chessboard so that
+no queen is in check from any other (i.e., no two queens are in the same row,
+column, or diagonal). One way to solve the puzzle is to work across the board,
+placing a queen in each column. Once we have placed $k-1$ queens, we must
+place the $k$-th queen in a position where it does not check any of the queens
+already on the board. We can formulate this approach recursively: Assume that
+we have already generated the sequence of all possible ways to place
+$k-1$ queens in the first $k-1$ columns of the board. For each of these ways,
+generate an extended set of positions by placing a queen in each row of the $k$-th
+column. Now filter these, keeping only the positions for which the queen in the
+$k$-th column is safe with respect to the other queens. This produces the sequence
+of all ways to place $k$ queens in the first $k$ columns. By continuing this
+process, we will produce not only one solution, but all solutions to the
+puzzle.
+
+We implement this solution as a procedure queens, which returns a sequence of
+all solutions to the problem of placing $n$ queens on an $n\times n$ chessboard. Queens
+has an internal procedure `queen-cols` that returns the sequence of all ways to
+place queens in the first $k$ columns of the board.
+
+{{{class="brush: scheme"
+(define (queens board-size)
+  (define (queen-cols k)  
+    (if (= k 0)
+        (list empty-board)
+        (filter
+         (lambda (positions) (safe? k positions))
+         (flatmap
+          (lambda (rest-of-queens)
+            (map (lambda (new-row)
+                   (adjoin-position new-row k rest-of-queens))
+                 (enumerate-interval 1 board-size)))
+          (queen-cols (- k 1))))))
+  (queen-cols board-size))
+}}}
+
+In this procedure `rest-of-queens` is a way to place $k-1$ queens in the first
+$k-1$ columns, and `new-row` is a proposed row in which to place the queen for the
+$k$-th column. Complete the program by implementing the representation for sets of
+board positions, including the procedure `adjoin-position`, which adjoins a new
+`row-column` position to a set of positions, and `empty-board`, which represents an
+empty set of positions. You must also write the procedure `safe?`, which
+determines for a set of positions, whether the queen in the $k$-th column is safe
+with respect to the others. (Note that we need only check whether the new queen
+is safe -- the other queens are already guaranteed safe with respect to each
+other.)
+
+- Answer:
+
+{{{class="brush: scheme"
+; an empty map has no queens
+(define empty-board ())
+
+; the adjoint-position returns an list of k possible columns, having the k-th quene
+; in the different possition
+(define (adjoin-position n k cols)
+    (append cols (list n)))
+
+; is the board safe?
+; since we already assume that the (k - 1) board is safe, 
+; we only need to test the last queen on the board
+(define (safe? k cols)
+    (define (all l) (accumulate (lambda (a b) (and a b)) #t l))
+    (define (any l) (accumulate (lambda (a b) (or  a b)) #f l))
+    (define (diag? col la)
+        (define (iter i c ret) 
+            (if (null? c) ret
+                (iter (+ i 1) (cdr c)
+                      (cons (= (abs (- k i)) (abs (- la (car c)))) ret))))
+    (any (iter 1 col '())))
+    (let ((la (last cols))
+          (hs (take cols (- (length cols) 1))))
+    (not (or (any (map (lambda (a) (= a la)) hs)) (diag? hs la)))))
+}}}
+
+== Exercise 2.43 ==  
+Louis Reasoner is having a terrible time doing exercise 2.42. His queens
+procedure seems to work, but it runs extremely slowly. (Louis never does manage
+to wait long enough for it to solve even the 6×6 case.) When Louis asks Eva Lu
+Ator for help, she points out that he has interchanged the order of the nested
+mappings in the `flatmap`, writing it as
+
+{{{class="brush: scheme"
+(flatmap
+ (lambda (new-row)
+   (map (lambda (rest-of-queens)
+          (adjoin-position new-row k rest-of-queens))
+        (queen-cols (- k 1))))
+ (enumerate-interval 1 board-size))
+}}}
+
+Explain why this interchange makes the program run slowly. Estimate how long it
+will take Louis's program to solve the eight-queens puzzle, assuming that the
+program in exercise 2.42 solves the puzzle in time $T$. 
+
+- Answer:
+
+First of all, the `queen` precedure will be running in the procedure `safe?`, so
+the less times `safe?` being invoked, the less time will be used solving the
+puzzle.
+
+The former `flatmap` looks like this:
+{{{class="brush: scheme"
+(flatmap
+  (lambda (rest-of-queens)
+    (map (lambda (new-row)
+           (adjoin-position new-row k rest-of-queens))
+                 (enumerate-interval 1 board-size)))
+  (queen-cols (- k 1)))
+}}}
+
+For an 8x8 puzzle, this one will first emurate every 8x1 board with one quenee
+on it, then append another column, try every possible combinations, filter out
+unsafe ones, then append a third column... until all 8 quenes are on the board
+safely. For an 8x8 board, 15720 times `safe?` will be invoked.
+
+As for Louis's solution, with the two iterative flipped, this precedure solving
+an 8x8 problem by solving every 7x8, 6x8, ..., 1x8 problem, append another
+column, filter out "unsafe" ones, and return the result. Apperently, solving
+6x8, 5x8, ..., 1x8 problems are not necessary here, and worese, this precedure
+will try solve each of the 7x8, 6x8, ..., 1x8 problem in a same manner, that is
+to solving 7x8 problem, it needs to solve 6x8, ..., 1x8 problems, and to solve
+the 6x8 problem inside the 7x8 problem, it needs to solve 5x8, ..., 1x8
+problems... That is why it seems take forever even when $n$ is not too large.
+
+The original solution is basicaly enumerate every possible position of queens on
+the board, so it has an complacity of $O(n^n)$ or $O(n^(-\frac 12)n!)$. And with
+the flipped iterative, solving a $n\times n$ problem will result in solving each
+smaller board in a full recursive manner, so the time complacity would be $O(n^{n^n})$.
+
+Here are some test: (measured in times of `safe?` invoked, this should be the
+same in different implementations of `safe?`)
+| n | original | flipped | ratio (flipped / original) |
+|---|----------|---------|----------------------------|
+| 1 | 1        | 1       | 1.0                        |
+| 2 | 6        | 8       | 1.33                       |
+| 3 | 60       | 18      | 3.33                       |
+| 4 | 624      | 60      | 10.4                       |
+| 5 | 8160     | 220     | 37.09                      |
+| 6 | 128904   | 894     | 144.189                    |
+
+=== Exercise 2.44 ===
+Define the procedure up-split used by `corner-split`. It is similar to
+`right-split`, except that it switches the roles of below and beside. 
+
+- Answer:
+
+{{{class="brush: scheme"
+(define (up-split painter n)
+  (if (= n 0) painter
+      (let ((smaller (up-split painter (- n 1))))
+      (below painter(beside smaller smaller)))))
+}}}
+
+=== Exercise 2.45 === 
+
+`right-split` and `up-split` can be expressed as instances of a general splitting
+operation. Define a procedure `split` with the property that evaluating
+
+{{{class="brush: scheme"
+(define right-split (split beside below))
+(define up-split (split below beside))
+}}}
+
+produces procedures `right-split` and `up-split` with the same behaviors as the ones
+already defined. 
+
+- Answer:
+
+{{{class="brush: scheme"
+(define (splite c1 c2) (lambda (painter n) 
+    (if (= n 0) painter
+        (let ((smaller ((split c1 c1) painter (- n 1))))
+        (c1 painter (c2 smaller smaller))))))
+}}}
+
+=== Exercise 2.46 ===
+A two-dimensional vector *v* running from the origin to a point can be represented
+as a pair consisting of an x-coordinate and a y-coordinate. Implement a data
+abstraction for vectors by giving a constructor `make-vect `and corresponding
+selectors `xcor-vect` and `ycor-vect`. In terms of your selectors and constructor,
+implement procedures `add-vect`, `sub-vect`, and `scale-vect` that perform the
+operations vector addition, vector subtraction, and multiplying a vector by
+a scalar: 
+
+{{$
+\begin{alignat}{1}
+\left(x_1,y_1\right) &+& \left(x_2,y_2\right) &=& \left(x_1+x_2,y_1+y_2\right) \cr
+\left(x_1,y_1\right) &+& \left(x_2,y_2\right) &=& \left(x_1-x_2,y_1-y_2\right) \cr
+a &\cdot& \left(x,y\right) &=& \left(ax,ay\right) \cr
+\end{alignat}
+}}$
+
+- Answer:
+
+{{{class="brush: scheme"
+(define make-vect cons)
+(define xcor-vect car)
+(define ycor-vect cdr)
+(define (add-vect v1 v2)
+    (make-vect (+ (xcor-vect v1) (xcor-vect v2))
+               (+ (ycor-vect v1) (ycor-vect v2))))
+(define (sub-vect v1 v2)
+    (make-vect (- (xcor-vect v1) (xcor-vect v2))
+               (- (ycor-vect v1) (ycor-vect v2))))
+(define (scale-vect a v)
+    (make-vect (* a (xcor-vect v)) (* a (ycor-vect v))))
+}}}
+
+=== Exercise 2.47 ===
+Here are two possible constructors for frames:
+
+{{{class="bruch: scheme"
+(define (make-frame origin edge1 edge2)
+  (list origin edge1 edge2))
+
+(define (make-frame origin edge1 edge2)
+  (cons origin (cons edge1 edge2)))
+}}}
+
+For each constructor supply the appropriate selectors to produce an
+implementation for frames. 
+
+- Answer:
+
+{{{class="brush: scheme"
+; first two are the same
+(define origin-frame car)
+(define edge1-frame cadr)
+
+; edge2 using list
+(define edge2-frame caddr)
+
+; edge2 using cons
+(define edge2-frame cddr)
+}}}
+
+=== Exercise 2.48 ===
+A directed line segment in the plane can be represented as a pair of vectors --
+the vector running from the origin to the start-point of the segment, and the
+vector running from the origin to the end-point of the segment. Use your vector
+representation from exercise 2.46 to define a representation for segments with
+a constructor `make-segment` and selectors `start-segment` and `end-segment`. 
+
+- Answer:
+
+%toc

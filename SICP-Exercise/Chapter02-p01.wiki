@@ -1,5 +1,5 @@
 = SICP Exercises =
-== Chapter 02 ==
+== Chapter 02 - Part.I ==
 
 === Exercise 2.1 ===
 Define a better version of `make-rat` that handles both positive and negative
@@ -308,9 +308,9 @@ procedure `par2`, only the add of the two reverse involves interval arithmetic,
 since `one` is not actually an interval, result in a more accurate result.
 
 The error analysis shows that the $R=\frac{R_1R_2}{R_1+R_2}$ gives an error of
-$(\frac{\Delta_R}{R})^2=(\frac{\Delta_R_1}{R_1})^2+(\frac{\Delta_R_2}{R_2})^2+{\Delta_R_1}^2+{\Delta_R_2}^2$,
+$(\frac{\delta_R}{R})^2=(\frac{\delta_{R_1}}{R_1})^2+(\frac{\delta_{R_2}}{R_2})^2+\delta_{R_1}^2+\delta_{R_2}^2$,
 while $R'=\frac{1}{\frac{1}{R_1}+\frac{1}{R_2}}$ only has an error of
-${\Delta_{R'}}^2={\Delta_R_1}^2+{\Delta_R_2}^2$, which is much smaller.
+${\delta_{R'}}^2=\delta_{R_1}^2+{\delta_{R_2}}^2$, which is much smaller.
 
 === Exercise 2.15 ===
 Eva Lu Ator, another user, has also noticed the different intervals computed by
@@ -344,9 +344,9 @@ To interval arithmetic, certain laws which is known to be true in real number
 dose not fits in. For example, if the basic arithmetic of intervla defined as
 follow:
 {{$
-\begin{alignat}{1}
-[a,b]+[c,d] &=& [a+b,c+d]
-[a,b]\cdot[c,d] &=& [min(ac,ad,bc,bd),max(ac,ad,bc,bd)]
+\begin{alignat}{3}
+  [a,b] &+&[c,d] &=  [a+b & &, c+d] \cr
+  [a,b] &\times& [c,d] &= [\min(ac,ad,bc,bd) & &, \max(ac,ad,bc,bd)] \cr
 \end{alignat}
 }}$
 Then all interval, denoted as $\rm{I}$, along with each of these two operator
@@ -519,7 +519,7 @@ filling in the missing expressions:
 (map square items)
 }}}
 
-Exercise 2.22
+=== Exercise 2.22 ===
 Louis Reasoner tries to rewrite the first `quare-list` procedure of exercise 2.21
 so that it evolves an iterative process:
 
@@ -697,7 +697,7 @@ left-to-right order. For example,
           (else (append (fringe (car ls)) (fringe (cdr ls))))))
 }}}
 
-=== Exercise 2.29 ===  
+=== Exercise 2.29 ===
 A binary mobile consists of two branches, a left branch and a right branch. Each
 branch is a rod of a certain length, from which hangs either a weight or another
 binary mobile. We can represent a binary mobile using compound data by
@@ -759,8 +759,8 @@ mobile is balanced.
           (lr (branche-length (right-branche m))))
     (if (and (pair? sl) (pair? sr))
         (= (* ll sl) (* lr sr))
-        (and (balance? sl) (balance? sr) 
-             ( = (* ll (total-weight sl)) 
+        (and (balance? sl) (balance? sr)
+             ( = (* ll (total-weight sl))
                  (* lr (total-weight sr)))))))
 }}}
 
@@ -773,7 +773,7 @@ d.  Suppose we change the representation of mobiles so that the constructors are
   (cons length structure))
 }}}
 
-How much do you need to change your programs to convert to the new representation? 
+How much do you need to change your programs to convert to the new representation?
 
 - Answer:
 
@@ -786,7 +786,7 @@ Only these selectors
 (define branche-structure cdr)
 }}}
 
-=== Exercise 2.33 === 
+=== Exercise 2.33 ===
 Fill in the missing expressions to complete the following definitions of some
 basic list-manipulation operations as accumulations:
 
@@ -949,7 +949,7 @@ that it combines elements working in the opposite direction:
 }}}
 
 Give a property that op should satisfy to guarantee that `fold-right` and
-`fold-left` will produce the same values for any sequence. 
+`fold-left` will produce the same values for any sequence.
 
 - Answer:
 
@@ -985,7 +985,7 @@ Complete the following definitions of `reverse` (exercise 2.18) in terms of
 {{{class="brush: scheme "
 (define (reverse sequence)
   (fold-right (lambda (x y) (append y (list x))) nil sequence))
-(define (reverse sequence) 
+(define (reverse sequence)
   (fold-left (lambda (x y) (cons y x)) nil sequence))
 }}}
 
@@ -998,7 +998,7 @@ simplify the definition of `prime-sum-pairs` given above.
 (define (unique-pairs n)
   (accumulate append '()
               (map (lambda (i)
-                           (map (lambda (j) (list i j)) 
+                           (map (lambda (j) (list i j))
                                 (enumerate-interval (- i 1))))
                    (enumerate-interval n))))
 (define (prime-sum-pairs n)
@@ -1012,12 +1012,14 @@ Write a procedure to find all ordered triples of distinct positive integers i,
 j, and k less than or equal to a given integer n that sum to a given integer s.
 
 - Answer:
+
 {{{class="brush: scheme"
 (define (find-sum-s n s)
   (filter (lambda (t) (= (+ t) s)) (uniq-triple n)))
 (define (uniq-triple n)
-  (flatmap (lambda (i) (map (lambda (p) (cons i p)) (unique-pqir i))) 
+  (flatmap (lambda (i) (map (lambda (p) (cons i p)) (unique-pqir i)))
            (enumerate-interval n)))
 }}}
 
 %title SICP Exercises - Chapter 02 - Part. I
+%toc

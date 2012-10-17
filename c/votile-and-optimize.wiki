@@ -1,0 +1,233 @@
+== 对volatile的常见误解 ==
+
+今天看到一篇[[http://kernel.org/doc/Documentation/volatile-considered-harmful.txt|文章]]，讨论了为什么在linux内核中应该避免使用`volatile`来限定变量。
+可能有些人会认为在多线程程序中试用`volatile`来限定多个进程会同时访问到的变量，可以
+增加程序在多线程下的安全性。这并不是`volatile`设计的初衷，而且`volatile`对多线程安全
+也是毫无作用的。
+
+要想解释清楚这个问题，先要了解`voaltile`的作用。
+
+- `volatile`的作用 
+
+`volatile`类型限定符(type qualifier)在C99标准中的描述如下：
+（注意：c/c++的`volatile`与Java中的不同！！！）
+
+    (节选自 ISO/IEC 9899:TC2 6.7.5 5-6节)
+ 
+    ... If an attempt is made to refer to an object defined with a 
+    volatile-qualified type through use of an lvalue with non-volatile-qualified 
+    type, the behavior is undefined.
+
+    An object that has volatile-qualified type may be modified in ways unknown
+    to the implementation or have other unknown side effects. Therefore any
+    expression referring to such an object shall be evaluated strictly according
+    to the rules of the abstract machine, as described in 5.1.2.3. Furthermore, 
+    at every sequence point the value last stored in the object shall agree with
+    that prescribed by the abstract machine, except as modified by the unknown 
+    factors mentioned previously. What constitutes an access to an object that 
+    has volatile-qualified type is implementation-defined.
+
+从这个描述中可以得到以下几点：
+* `volatile`对象的可能会有在无法预料到的地方被修改等side effect
+* 如何访问`volatile`对象是 *编译器实现相关的*
+* 对`volatile`对象的访问要严格按照语言的规范进行（不能有汇编一级上的优化）
+* 左值为`volatile`，右值包含非`volatile`对象时的行为未定义（编译器自行实现）
+
+这些描述中根本没有提及多线程的问题，所以`volatile`能提高程序多线程的安全性不知道
+是从何提起的。而由于`volatile`禁止的汇编一级上的优化，反而会降低性能。
+
+- `volatile`有助线程安全的神话
+
+为什么`volatile`会给人能增加线程安全性的错觉呢？我估计大概是这样的：
+
+某天，码农A写了类系下面的代码：
+
+{{{class="brush: cpp"
+int some_flag = 0;
+
+int do_something() {
+    // ...
+   
+    // 启动一个新线程, 会修改some_flag的值
+    pthread_create(&pid, &attr, do_something_else, &some_flag);
+
+    while (!some_flag) 
+        do_other_things(); // 不会修改some_flag
+
+    // ...
+    return 0;
+}
+}}}
+
+这应该是一个常见的场景，主线程启动新的线程，然后根据一个全局状态来判断之后的流程。
+新线程会处理一些事物然后修改这个全局的状态。逻辑上 *暂时* 看不出什么问题。
+
+但是在编译是有一个非常诡异的问题：编译时不带优化选项，一切正常；而用`-O2`优化就不
+行，程序会卡在`while`循环上跳不出去。进一步反汇编发现经过`-O2`优化后的代码是下面
+的样子：
+
+{{{class="brush: asm"
+; while (!some_flag)
+.L0
+    ; calling do_other_things()
+    jmp .L0
+}}}
+
+而未优化的代码则是：
+
+{{{class="brush: asm"
+; while (!some_flag)
+.L0
+    ; calling do_other_things()
+    movl    some_flag(%eip), %eax
+    testl   %eax, %eax
+    je      .L0
+}}}
+
+优化过后的代码根本没有判断`some_flag`的值，直接跳转了。"这明显是编译器出错了啊，
+把不该优化的优化掉了。一定是编译器编译的方式不对。"码农A这样想着，向在一旁的砖家
+B求助。
+
+"`some_flag`加上`volatile`就好了，编译器就不会乱优化了。多线程程序要特别注意这
+点。"砖家B回答到。"现在的编译器还没有那个能解决这个问题的。"
+
+"原来还有这么个东西。"码农A按照砖家B的指点试了一下果然好使。反汇编的结果也一样了。
+于是记下了这个"经验"，多线程见共享的状态要用`volatile`来防止编译器错误的优化。至于
+`volatile`到底是什么意思，码农A也懒得深究。
+
+实际的情况可能差不多也就是这样了。
+
+- `volatile`的错误用法
+
+首先要说明的是上面故事中用`volatile`解决了问题只是运气。认为`volatile`能解决这类问题
+是有很大的问题的。
+
+先来说一下为什么编译器再优化时会将判断`some_flag`的值优化掉。因为如果在整个程序中
+只有`do_something_else`会修改`some_flag`这个变量的的值，由于编译器还没有很好的方法
+识别多线程（这点砖家B是正确的），在编译`do_something()`时就会发现原来`some_flag`编译
+时就能确定，循环终止的条件也就能在编译时确定了，于是也就被优化为常量了。这样来看
+增加`volatile`只是告诉编译器不优化含`some_flag`的表达式，误打误撞得到了正确的结果。
+
+其实能得到正确执行的多线程程序和是否使用`volatile`没有的关系，是编译器将有关`int`类型
+的操做编译到原子性的指令的结果，和编译器与系统架构都有关系。如果程序所运行的平台
+没有操作32位整数的原子操作，必须采取额外的机制来保证线程安全。
+
+- `volatile`的正确用法4
+
+`volatile`是为了解决类似上述优化中出现的问题产生的。需要说明的是上面程序的主要问题
+是程序 *误导* 了编译器，然后用了一些非常规的手段来强行改变编译器的行为来解决问题。
+通过错误的手段歪打正着外加各种巧合解决了问题，而问题本身完全有更好的解决方法。
+
+`volatile`的语义很简单，告诉编译器不要优化含有特定变量的表达式，主要是用于处理
+与`Memory Mapped I/O`设备(比较常见的就是GPIO)交流的问题。由于程序完全没有办法判断
+哪些变量的地址对应外部设备，那些不是，所以需要额外的限定符来标识这些变量。另外由于
+至到运行时都完全无法确定这些地址指向的值会以怎样的方式被修改，所以不能进行任何优
+化。（使用GPIO的例子可以参照[[http://elinux.org/RPi_Low-level_peripherals#GPIO_Driving_Example_.28C.29|RPi GPIO using C]]）
+`volatile`主要用在嵌入式开发中，一般的程序中用不到，在参考链接2中列出了在linux内
+核中`volatile`4种应用场景，都属于很罕见的应用，可以参考。
+
+
+由此可以看出上面的程序即使是单线程，如果考虑到`volatile`设计的应用场景的话，也存在很
+大的问题。考虑如下的情形：`some_flag`指向的地址会被映射到外部设备的32位寄存器上，
+{{{class="brush: cpp"
+void * some_flag; // 指向外部设备, 暂时没有加 volatile
+}}}
+而外部设备对32位寄存器操作是分高16位和低16位2步进行的。`while` 循环的终止条件变为
+{{{class="brush: cpp"
+while (*(unit32_t*)some_flag != 0x0000)
+    do_some_other_thing();
+}}}
+假设低位在前，cpu恰好按下列顺序执行，就会出现问题：
+
+# `some_flag`指向的值为0x0100
+# 外部设备更改`some_flag`指向地址的低16位为0x00
+# 程序判断`(*(uint32_t*)some_flag != 0x0000)`，由于`some_flag`的低16位已被修改，
+  表达式为假，跳出`while`循环。
+# 外部设备修改`some_flag`高16位至0x02，此时对`some_flag`的修改完成，`some_flag = 0x0002`
+  但是父线程已经退出，这显然和程序应有的逻辑不符
+
+这个错误不论怎样用`volatile`限定`some_flag`的声明都无法避免。
+{{{class="brush: cpp"
+void * volatile some_flag; // This is not what you want
+volatile void * some_flag; // This is the right one
+volatile void * volatile some_flag; // this is an overkill
+}}}
+但是这里的`volatile`是必须要有的。要解决这个问题，需要额外的判断将低风险；或者重
+新修改处理逻辑，使得即使出现这样的问题，也不会影响程序的逻辑。后者更好。如果是上
+述的硬件条件，这个问题无论采取怎样的措施，只能降低这种情况发生的概率，不会完全回
+避这个问题的（听说Itanium平台能比较完美的解决此类问题，未确认，也没有条件确认）。
+
+- 正确解决码农A的问题
+
+以上只是说了砖家B的方案是如何的歪打正着，下面给出几个我认为可行的解决方案：
+
+# 上面提到了编译器优化出现了错误是由于程序 *误导* 了编译器。so，正确引导编译器即可。
+
+采用类似下面的实现，正常一点的编译器都会得到正确的结果。
+{{{class="brush: cpp"
+// future-proff
+struct __state {
+    int some_flag;
+    // ...
+} global_state;
+
+void * do_something_else(void * state) {
+    // ...
+    (struct __state *)state->some_flag = 1;
+    // ...
+}
+
+// ...
+    pthread_create(&pid, &attr, do_something_else, &global_state)
+    while (!global_state.some_flag)
+        do_some_other_thing();
+}}}
+
+由于`pthread_create`的原型如下
+{{{class="brush: cpp"
+int pthread_create(pthread_t *thread, const pthread_attr_t *attr,
+    void *(*start_routine)(void*), void *arg);
+}}}
+最后一个参数类型的为`void *`而不是`const void *`，这样编译器就不会做出`global_state`
+的值在`pthread_create`调用后不会改变的假设，从而不会优化掉`while`循环中的条件。
+`const`，`restrict`，`volatile`这3个类型限定符全部是用来告诉编译器变量的值是否会发生改
+变，怎样改变。善用这些限定符可以更好地指导编译器高效正确的优化程序。
+将`global_state`作为额外的参数传入线程，程序的逻辑也更清晰。
+
+时刻记住一点：编写代码时，你并不是直接与计算机进行交流，而是与编译器/解释器进行
+交流。如果你不让编译器/解释器正确的理解你的代码，肯定得不到正确的结果。
+
+# 修改代码的逻辑，避免出现类似的判断
+
+这种修改方法不一定适用于所有情况。还要视具体情况而定。例如如果`while`循环的作用
+是等待检查子线程初始化结束，同时输出一些信息，则可以将子线程放初始化的工作在启
+动线程之前完成：
+{{{class="brush: cpp"
+    // init thread locales, log?
+    ret = thread_locale_init(&locales);
+    // init mustn't fail
+    ASSERT(ret == 0, "Thread init fail!");
+    pthread_create(&pid, &attr, do_something_else, &locales);
+    // no need for the while here
+}}}
+省掉了`while`循环，代码也更清晰。当然，实际应用中一定会遇到更复杂的情况，而其中
+其中大部分情况都能改写为不用忙等待方式同步的处理方式。乱用忙等待的程序都是反
+人类的。
+
+- Conclusion
+
+最重要的一点，在C/C++中，`volatile`不是为多线程准备的，不具备任何memory barrier
+的功能。我能搜到的国内的文章很多都提到了`volatile`对线程安全有好处，其实完全没有
+关系。从上面的例子中也能看出产生"不正确"优化问题的条件非常苛刻，而且其很容易避免
+。所以不能把产生与预期不符的代码的责任归咎于编译器，这完全是代码本身的问题。
+
+`volatile`会禁掉一部分优化，所以错误的使用会让程序更慢，没有好处。而且由于对
+`volatile`的实现又是和编译器和平台都相关，所以后可能会使程序再不同平台上行为不完
+全相同，这一点要特别注意。
+
+参考：
+# http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2006/n2016.html
+# http://kernel.org/doc/Documentation/volatile-considered-harmful.txt
+# http://software.intel.com/en-us/blogs/2007/11/30/volatile-almost-useless-for-multi-threaded-programming/
+
+%title volatile对优化的影响

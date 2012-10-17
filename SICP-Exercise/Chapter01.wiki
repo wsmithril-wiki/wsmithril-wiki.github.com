@@ -233,7 +233,7 @@ initial guess value, other thane simply take 1.
 
 [[newton_method_convergence|More on Newton's Method]]
 
-=== Exercise 2.8 ===
+=== Exercise 1.8 ===
 Newton's method for cube roots is based on the fact that if $y$ is
 an approximation to the cube root of $x$, then a better approximation is given by
 the value
@@ -793,7 +793,7 @@ Lu Ator over to help. When they examine Louis's code, they find that he has
 rewritten the `expmod` procedure to use an explicit multiplication, rather than
 calling square:
 
-{{{class="bursh: scheme"
+{{{class="brush: scheme"
 (define (expmod base exp m)
   (cond ((= exp 0) 1)
         ((even? exp)
@@ -1307,3 +1307,4 @@ section 1.3.3 in terms of `iterative-improve``.
 }}}
 
 %title SICP Exercises Chapter 01
+%toc

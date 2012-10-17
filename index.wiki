@@ -1,11 +1,17 @@
 = WsMithril's Wiki =
 - [[SICP-Exercise/index| My answer to SICP Exersices]]
   - [[SICP-Exercise/Chapter01|Chapter01]]
-  - [[SICP-Exercise/Chapter02-p01|Chapter02 - Part.I]]
+  - Chapter02 - [[SICP-Exercise/Chapter02-p01|Part.I]], [[SICP-Exercise/Chapter02-p02|Part.II]]
 
 - Haskell
   - Amazing tool to try haskell in a Broswer [[http://tryhaskell.org/|tryhaskell]]
   - 20 Intermediate Haskell [[haskell/20-intermediate|Exercises]] and [[/haskell/20-intermediate-ans|My Answers]]
+
+- C/C++
+  - [[c/votile-and-optimize|voltile]]
+
+- Raspberry Pi
+  - 
 
 - Online Compiler [[http://codepad.org/|CodePad]]
 

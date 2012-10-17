@@ -40,11 +40,16 @@ class TestHelloWorld(object):
 fibs = 1:1:zipWith (+) fibs (tail fibs)
 }}}
 
-{{{class="bursh: shell"
+{{{class="brush: bash"
 exec 1>/dev/tty 2>/dev/tty
 echo "Hello World"
 exec 1>- 2>-
 }}}
+
+{{{class="brush: asm"
+xor %eax, %eax
+}}}
+
 
 ᶠᶸᶜᵏ♂ᵧₒᵤ
 
