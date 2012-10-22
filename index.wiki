@@ -9,6 +9,7 @@
 
 - C/C++
   - [[c/votile-and-optimize|voltile]]
+  - [[tips]]
 
 - Raspberry Pi
   - 

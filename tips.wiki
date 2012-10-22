@@ -1,0 +1,23 @@
+== Some tips in C ==
+
+=== libstdc ===
+# `opendir()`打开目录后，目录内容发生改变，`readdir()`则不能正确获得目录内容。虽
+  然概率很低，还是会发生地
+# `rename()`不能跨mount point重命名文件，会返回`EBUSY`。移动、复制文件很复杂，可
+  以参考`coreutils`中`src/copy.c`的实现。
+
+=== Playing with macro ===
+# 多条语句的宏用`do { ... } while(0)`括住
+# Round up to power of 2: (`uint32_t` only)
+{{{class="brush: cpp"
+#define round_up_to_next_power_of_2(v) do { \
+    v--; \
+    v |= v >> 1; \
+    v |= v >> 2; \
+    v |= v >> 4; \
+    v |= v >> 8; \
+    v |= v >> 16; \
+    v++; \
+} while (0)
+}}}
+

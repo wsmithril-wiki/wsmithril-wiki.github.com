@@ -1,4 +1,5 @@
-- this is an mathematical formulae test   
+- this is an mathematical formulae test
+
 {{$ 
     \int_{-\infty}^{\infty} {\rm e}^{-x^2} {\rm d}x = \sqrt{\pi} 
 }}$
