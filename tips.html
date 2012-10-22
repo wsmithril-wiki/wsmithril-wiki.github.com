@@ -6,7 +6,7 @@
     <link type="image/x-icon" rel="shortcut icon" href="/favicon.ico" />
     <link rel="stylesheet" type="text/css" href="/css/style.css" />
     <script type="text/javascript" src="/MathJax/MathJax.js?config=TeX-AMS-MML_SVG"></script>
-    <title>Feature Test Page</title>
+    <title>tips</title>
 <script type="text/javascript">
 
   var _gaq = _gaq || [];
@@ -23,71 +23,40 @@
 </head>
 <body>
     <div class="content">
-<ul>
+<h2 id="toc_0.1">Some tips in C</h2>
+
+<h3 id="toc_0.1.1">libstdc</h3>
+<ol>
 <li>
-this is an mathematical formulae test
+<code>opendir()</code>打开目录后，目录内容发生改变，<code>readdir()</code>则不能正确获得目录内容。虽
+  然概率很低，还是会发生地
 
-</ul>
-
-\[
-    \int_{-\infty}^{\infty} {\rm e}^{-x^2} {\rm d}x = \sqrt{\pi} 
-\]
-
-<ul>
 <li>
-Code Highlight  
+<code>rename()</code>不能跨mount point重命名文件，会返回<code>EBUSY</code>。移动、复制文件很复杂，可
+  以参考<code>coreutils</code>中<code>src/copy.c</code>的实现。
 
-</ul>
+</ol>
 
+<h3 id="toc_0.1.2">Playing with macro</h3>
+<ol>
+<li>
+多条语句的宏用<code>do { ... } while(0)</code>括住
+
+<li>
+Round up to power of 2: (<code>uint32_t</code> only)
 <pre class="brush: cpp">
-
-#include &lt;stdio.h&gt;
-
-int main(void) {
-    prtinf("Hello World!\n");
-    return 0;
-}
-
+#define round_up_to_next_power_of_2(v) do { \
+    v--; \
+    v |= v &gt;&gt; 1; \
+    v |= v &gt;&gt; 2; \
+    v |= v &gt;&gt; 4; \
+    v |= v &gt;&gt; 8; \
+    v |= v &gt;&gt; 16; \
+    v++; \
+} while (0)
 </pre>
 
-<pre class="brush: python">
-
-class TestHelloWorld(object):
-  """Hello world python."""
-  def __init__(self, name):
-    self.name = name
-
-  def say(self):
-    print("hello {0}".format(self.name))
-
-</pre>
-
-
-<pre class="brush: scheme">
-(define hello-world 
-    (let ((msg "hello world!"))
-    (display msg)
-    (newline)))
-</pre>
-
-<pre class="brush: haskell">
-fibs = 1:1:zipWith (+) fibs (tail fibs)
-</pre>
-
-<pre class="brush: bash">
-exec 1&gt;/dev/tty 2&gt;/dev/tty
-echo "Hello World"
-exec 1&gt;- 2&gt;-
-</pre>
-
-<pre class="brush: asm">
-xor %eax, %eax
-</pre>
-
-
-<p>
-ᶠᶸᶜᵏ♂ᵧₒᵤ
-</p>
+</ol>
 </div>
     <div id="copyright"></div>
     <div id="disqus_thread"></div>

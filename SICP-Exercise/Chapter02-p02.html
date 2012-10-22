@@ -53,7 +53,7 @@ place queens in the first \(k\) columns of the board.
 
 <pre class="brush: scheme">
 (define (queens board-size)
-  (define (queen-cols k)  
+  (define (queen-cols k)
     (if (= k 0)
         (list empty-board)
         (filter
@@ -96,13 +96,13 @@ Answer:
     (append cols (list n)))
 
 ; is the board safe?
-; since we already assume that the (k - 1) board is safe, 
+; since we already assume that the (k - 1) board is safe,
 ; we only need to test the last queen on the board
 (define (safe? k cols)
     (define (all l) (accumulate (lambda (a b) (and a b)) #t l))
     (define (any l) (accumulate (lambda (a b) (or  a b)) #f l))
     (define (diag? col la)
-        (define (iter i c ret) 
+        (define (iter i c ret)
             (if (null? c) ret
                 (iter (+ i 1) (cdr c)
                       (cons (= (abs (- k i)) (abs (- la (car c)))) ret))))
@@ -133,7 +133,7 @@ mappings in the <code>flatmap</code>, writing it as
 <p>
 Explain why this interchange makes the program run slowly. Estimate how long it
 will take Louis's program to solve the eight-queens puzzle, assuming that the
-program in exercise 2.42 solves the puzzle in time \(T\). 
+program in exercise 2.42 solves the puzzle in time \(T\).
 </p>
 
 <ul>
@@ -180,7 +180,7 @@ problems... That is why it seems take forever even when \(n\) is not too large.
 
 <p>
 The original solution is basicaly enumerate every possible position of queens on
-the board, so it has an complacity of \(O(n^n)\) or \(O(n^(-\frac 12)n!)\). And with
+the board, so it has an complacity of \(O(n^n)\) or \(O(n^{-\frac 12}n!)\). And with
 the flipped iterative, solving a \(n\times n\) problem will result in solving each
 smaller board in a full recursive manner, so the time complacity would be \(O(n^{n^n})\).
 </p>
@@ -293,7 +293,7 @@ ratio (flipped / original)
 <h3 id="toc_1.2.1">Exercise 2.44</h3>
 <p>
 Define the procedure up-split used by <code>corner-split</code>. It is similar to
-<code>right-split</code>, except that it switches the roles of below and beside. 
+<code>right-split</code>, except that it switches the roles of below and beside.
 </p>
 
 <ul>
@@ -323,7 +323,7 @@ operation. Define a procedure <code>split</code> with the property that evaluati
 
 <p>
 produces procedures <code>right-split</code> and <code>up-split</code> with the same behaviors as the ones
-already defined. 
+already defined.
 </p>
 
 <ul>
@@ -333,7 +333,7 @@ Answer:
 </ul>
 
 <pre class="brush: scheme">
-(define (splite c1 c2) (lambda (painter n) 
+(define (splite c1 c2) (lambda (painter n)
     (if (= n 0) painter
         (let ((smaller ((split c1 c1) painter (- n 1))))
         (c1 painter (c2 smaller smaller))))))
@@ -347,7 +347,7 @@ abstraction for vectors by giving a constructor <code>make-vect </code>and corre
 selectors <code>xcor-vect</code> and <code>ycor-vect</code>. In terms of your selectors and constructor,
 implement procedures <code>add-vect</code>, <code>sub-vect</code>, and <code>scale-vect</code> that perform the
 operations vector addition, vector subtraction, and multiplying a vector by
-a scalar: 
+a scalar:
 </p>
 
 \[
@@ -393,7 +393,7 @@ Here are two possible constructors for frames:
 
 <p>
 For each constructor supply the appropriate selectors to produce an
-implementation for frames. 
+implementation for frames.
 </p>
 
 <ul>
@@ -420,7 +420,7 @@ A directed line segment in the plane can be represented as a pair of vectors --
 the vector running from the origin to the start-point of the segment, and the
 vector running from the origin to the end-point of the segment. Use your vector
 representation from exercise 2.46 to define a representation for segments with
-a constructor <code>make-segment</code> and selectors <code>start-segment</code> and <code>end-segment</code>. 
+a constructor <code>make-segment</code> and selectors <code>start-segment</code> and <code>end-segment</code>.
 </p>
 
 <ul>
@@ -428,6 +428,474 @@ a constructor <code>make-segment</code> and selectors <code>start-segment</code>
 Answer:
 
 </ul>
+
+<pre class="brush: scheme">
+(define make-segment cons)
+(define start-segment car)
+(define end-segment cdr)
+</pre>
+
+<h3 id="toc_1.2.6">Exercise 2.49</h3>
+<p>
+Use segments-&gt;painter to define the following primitive painters:
+</p>
+
+<p>
+a.  The painter that draws the outline of the designated frame.
+</p>
+
+<p>
+b.  The painter that draws an ``X'' by connecting opposite corners of the frame.
+</p>
+
+<p>
+c.  The painter that draws a diamond shape by connecting the midpoints of the sides of the frame.
+</p>
+
+<p>
+d.  The wave painter.
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+; outline
+(define outline (lambda (frame)
+    (let ((p1 (origin-vect frame))
+          (p2 (add-vect (origin-vect frame) (edge1-vect frame)))
+          (p3 (add-vect (origin-vect frame) (add-vect (edge1-vect frame) (edge2-vect frame)))
+          (p4 (add-vect (origin-vect frame) (edge2-vect frame)))))
+    (segments-&gt;painter (list (make-segment p1 p2) (make-segment p2 p3)
+                             (make-segment p3 p4) (make-segment p4 p1))))))
+
+; X mark
+(define X (lambda (frame)
+    (let ((p1 (origin-vect frame))
+          (p2 (add-vect (origin-vect frame) (edge1-vect frame)))
+          (p3 (add-vect (origin-vect frame) (add-vect (edge1-vect frame) (edge2-vect frame)))
+          (p4 (add-vect (origin-vect frame) (edge2-vect frame)))))
+    (segments-&gt;painter (list (make-segment p1 p3) (make-segment p2 p4))))))
+
+; diamond
+(define diamond (lambda (frame)
+    (define (midpoint p1 p2) (scale-vect 0.5 (add-vect p1 p2)))
+    (let ((p1 (origin-vect frame))
+          (p2 (add-vect (origin-vect frame) (edge1-vect frame)))
+          (p3 (add-vect (origin-vect frame) (add-vect (edge1-vect frame) (edge2-vect frame)))
+          (p4 (add-vect (origin-vect frame) (edge2-vect frame)))))
+    (let ((m1 (midpoint p1 p2))
+          (m2 (midpoint p2 p3))
+          (m3 (midpoint p3 p4))
+          (m4 (midpoint p4 p0)))
+    (segment-&gt;painter (list (make-segment m1 m2) (make-segment m2 m3)
+                            (make-segment m3 m4) (make-segment m4 m1)))))))
+; nothing new in wave, skip
+</pre>
+
+<h3 id="toc_1.2.7">Exercise 2.50</h3>
+<p>
+Define the transformation <code>flip-horiz</code>, which flips painters horizontally, and
+transformations that rotate painters counterclockwise by 180 degrees and 270
+degrees.
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define (flip-horiz painter)
+    (transform-painter painter (make-vert 1.0 0.0)
+                               (make-vert 0.0 0.0)
+                               (make-vert 1.0 1.0)))
+(define (rotate-180 painter)
+    (transform-painter painter (make-vert 1.0 1.0)
+                               (make-vert 0.0 1.0)
+                               (make-vert 1.0 0.0)))
+(define (rotate-270 painter)
+    (transform-painter painter (make-vert 1.0 0.0)
+                               (make-vert 1.0 1.0)
+                               (make-vert 0.0 0.0)))
+</pre>
+
+<h3 id="toc_1.2.8">Exercise 2.51</h3>
+<p>
+Define the <code>below</code> operation for painters. Below takes two painters as arguments.
+The resulting painter, given a frame, draws with the first painter in the bottom
+of the frame and with the second painter in the top.  Define below in two
+different ways -- first by writing a procedure that is analogous to the <code>beside</code>
+procedure given above, and again in terms of beside and suitable rotation
+operations (from exercise 2.50).
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+; in a way analogous to beside
+(define (below painter1 painter2)
+    (let ((mid-point (make-vert 0.0 0.5)))
+    (let ((top-part (transform-painter painter2 mid-point
+                                                (make-vert 0.5 1.0)
+                                                (make-vert 1.0 1.0)))
+          (bot-part (transform-painter painter1 (make-vert 0.0 0.0)
+                                                (make-vert 1.0 0.0)
+                                                mid-point)))
+    (lambda (frame)
+    (top-part frame)
+    (bot-part frame)))))
+
+; using rotates and beside
+(define (below painter1 painter2)
+    (rotate-90 (beside (rotate-270 painter2) (rotate-270 painter1))))
+</pre>
+
+<h3 id="toc_1.2.9">Exercise 2.52</h3>
+<p>
+Make changes to the square limit of wave shown in figure 2.9 by working at each
+of the levels described above. In particular:
+</p>
+
+<p>
+a.  Add some segments to the primitive wave painter of exercise  2.49 (to add
+a smile, for example).
+</p>
+
+<p>
+b.  Change the pattern constructed by corner-split (for example, by using only
+one copy of the up-split and right-split images instead of two).
+</p>
+
+<p>
+c.  Modify the version of square-limit that uses square-of-four so as to
+assemble the corners in a different pattern. (For example, you might make the
+big Mr. Rogers look outward from each corner of the square.)
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<p>
+Boring one, skipped...
+</p>
+
+<h3 id="toc_1.2.10">Exercise 2.53</h3>
+<p>
+What would the interpreter print in response to evaluating each of the
+following expressions?
+</p>
+<pre class="brush: scheme">
+(list 'a 'b 'c)
+
+(list (list 'george))
+(cdr '((x1 x2) (y1 y2)))
+
+(cadr '((x1 x2) (y1 y2)))
+(pair? (car '(a short list)))
+(memq 'red '((red shoes) (blue socks)))
+
+(memq 'red '(red shoes blue socks))
+</pre>
+
+<ul>
+<li>
+Answer:
+<pre class="brush: scheme">
+(list 'a 'b 'c)
+; returns (a b c)
+
+(list (list 'george))
+; returns ((george))
+(cdr '((x1 x2) (y1 y2)))
+; returns ((y1 y2))
+
+(cadr '((x1 x2) (y1 y2)))
+; returns (y1 y2)
+(pair? (car '(a short list)))
+; returns #f
+(memq 'red '((red shoes) (blue socks)))
+; returns #f
+(memq 'red '(red shoes blue socks))
+; returns (red shoes blue socks)
+</pre>
+
+</ul>
+
+<h3 id="toc_1.2.11">Exercise 2.54</h3>
+<p>
+Two lists are said to be equal? if they contain equal elements arranged in the
+same order. For example, <code>(equal? '(this is a list) '(this is a list))</code> is
+true, but <code>(equal? '(this is a list) '(this (is a) list))</code> is false.
+</p>
+
+<p>
+To be more precise, we can define <code>equal?</code> recursively in terms of the basic
+<code>eq?</code> equality of symbols by saying that a and b are equal? if they are both
+symbols and the symbols are <code>eq?</code>, or if they are both lists such that <code>(car a)</code> is
+<code>equal?</code> to <code>(car b)</code> and <code>(cdr a)</code> is <code>equal?</code> to `<code>(cdr b)</code>`. Using this idea, implement
+<code>equal?</code> as a procedure.
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define (equal? a b)
+    (let ((pa? (pair? a))
+          (pb? (pair? b)))
+    (cond ((and (null? a) (null? b)) #t)
+          ((and (not pa?) (not pb?)) (eq? a b))
+          ((or (and pa? (not pb?)) (and pb? (not pa?))) #f)
+          (else (and (equal? (car a) (car b)) (equal? (cdr a) (cdr b)))))))
+</pre>
+
+<h3 id="toc_1.2.12">Exercise 2.55</h3>
+<p>
+Eva Lu Ator types to the interpreter the expression <code>(car ''abracadabra)</code> To her
+surprise, the interpreter prints back <code>quote</code>. Explain.
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<p>
+When you type <code>'abc</code> to the interpreter, the interpreter will return <code>(quote abc)</code>,
+which means that the <code>'</code> notion is just an syntax sugar for <code>quote</code>. So <code>''abc</code>'
+will become <code>'(quote abc)</code>, therefore <code>car</code> will return <code>quote</code>.
+</p>
+
+<p>
+Exercise 2.56
+Show how to extend the basic differentiator to handle more kinds of expressions.
+For instance, implement the differentiation rule
+\(\frac{\rm{d}u^n}{\rm{d}x}=nu^{n-1}\frac{\rm{d}u}{\rm{d}x}\)
+by adding a new clause to the <code>deriv</code> program and defining appropriate procedures
+<code>exponentiation?</code>, <code>base</code>, <code>exponent</code>, and <code>make-exponentiation</code>. (You may use the
+symbol <code>**</code> to denote exponentiation.) Build in the rules that anything raised to
+the power 0 is 1 and anything raised to the power 1 is the thing itself.
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="bruch: scheme">
+; implement the new rules
+(define (make-exponentiation b e) 
+    (cond ((number? b) (exp b e))
+          ((= e 0) 1)
+          ((= e 1) b)
+          (else (list '** b e))))
+(define base cadr)
+(define exponent caddr)
+(define (exponentiation? e) 
+    (and (pair? e) (eq? '** (car e))))
+
+; new deriv
+(define (deriv exp var)
+  (cond ((number? exp) 0)
+        ((variable? exp)
+         (if (same-variable? exp var) 1 0))
+        ((sum? exp)
+         (make-sum (deriv (addend exp) var)
+                   (deriv (augend exp) var)))
+        ((product? exp)
+         (make-sum
+           (make-product (multiplier exp)
+                         (deriv (multiplicand exp) var))
+           (make-product (deriv (multiplier exp) var)
+                         (multiplicand exp))))
+        ((exponentiation? exp) 
+            (make-product 
+                (exponent exp)
+                (make-product (make-exponentiation (base exp) (- (exponent exp) 1))
+                              (deriv (base exp) var))))
+        (else
+         (error "unknown expression type -- DERIV" exp))))
+</pre>
+
+<h3 id="toc_1.2.13">Exercise 2.57</h3>
+<p>
+Extend the differentiation program to handle sums and products of arbitrary
+numbers of (two or more) terms. Then the last example above could be expressed
+as <code>(deriv '(* x y (+ x 3)) 'x)</code>.
+</p>
+
+<p>
+Try to do this by changing only the
+representation for <code>sums</code> and <code>products</code>, without changing the deriv procedure at
+all. For example, the <code>addend</code> of a sum would be the first term, and the <code>augend</code>
+would be the sum of the rest of the terms. 
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+; sum
+(define (make-sum . e)
+    (let ((numbers (fold + 0 (filter (lambda (x) (number? x)) e)))
+          (vars (filter (lambda (x) (not (number? x))) e)))
+    (cond ((= 0 numbers)
+        (cond ((null? vars) 0)
+              ((null? (cdr vars)) (car vars))
+              (else (cons '+ vars))))
+          (else (cond ((null? vars) numbers)
+                      (else (cons '+ (cons numbers vars))))))))
+(define addend cadr)
+(define (augend e)
+    (let ((aug (cddr e)))
+    (if (null? (cdr aug)) (car aug) (cons '+ aug))))
+
+; products
+(define (make-prouct . e)
+    (let ((numbers (fold * 1 (filter (lambda (x) (number? x)) e)))
+          (vars (filter (lambda (x) (not (number? x))) e)))
+    (cond ((= 0 numbers) 0)
+          ((= 1 numbers) (cond ((null? vars) 1)
+                               ((null? (cdr vars)) (car vars))
+                               (else (cons '+ vars))))
+          (else (cond ((null? vars) numbers)
+                      (else (cons '+ (cons numbers vars))))))))
+(define multiplier cadr)
+(define (multiplicand e)
+    (let ((aug (cddr e)))
+    (if (null? (cdr aug)) (car aug) (cons '* aug))))
+</pre>
+
+<p>
+One more thing, without a proper simplifier, the result is pretty messed up, and
+no sane soul will write some thing like this:
+</p>
+<pre class="brush: scheme">
+]=&gt; (deriv '( * x x x x y) 'x)
+    (+ (* x (+ (* x (+ (* x y) (* x y))) (* x x y))) (* x x x y))
+</pre>
+<p>
+This is indeed the correct answer, but badly shaped.
+</p>
+
+<h3 id="toc_1.2.14">Exercise 2.58</h3>
+<p>
+Suppose we want to modify the differentiation program so that it works with
+ordinary mathematical notation, in which <code>+</code> and <code>*</code> are infix rather than prefix
+operators. Since the differentiation program is defined in terms of abstract
+data, we can modify it to work with different representations of expressions
+solely by changing the predicates, selectors, and constructors that define the
+representation of the algebraic expressions on which the differentiator is to
+operate.
+</p>
+
+<p>
+a. Show how to do this in order to differentiate algebraic expressions presented
+in infix form, such as <code>(x + (3 * (x + (y + 2))))</code>. To simplify the task, assume
+that <code>+</code> and <code>*</code> always take two arguments and that expressions are fully
+parenthesized.
+</p>
+
+<p>
+b. The problem becomes substantially harder if we allow standard algebraic
+notation, such as <code>(x + 3 * (x + y + 2))</code>, which drops unnecessary parentheses and
+assumes that multiplication is done before addition. Can you design appropriate
+predicates, selectors, and constructors for this notation such that our
+derivative program still works? 
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<p>
+a. With all proper parentheses in the expersion, it is an simple task.
+</p>
+
+<pre class="brush: scheme">
+(define (make-sum e1 e2) 
+    (cond ((and (number? e1) (= e1 0)) e2)
+          ((and (number? e2) (= e2 0)) e1)
+          ((and (number? e1) (number? e2)) (+ e1 e2))
+          (else (list e1 '+ e2))))
+(define (sum? e) (eq? '+ (cadr e)))
+(define addend car)
+(define augend caddr)
+
+(define (make-product e1 e2)
+    (cond ((or (=number? e1 0) (=number? e2 0)) 0)
+          ((and (number? e1) (number? e2)) (* e1 e2))
+          ((=number? e1 1) e2)
+          ((=number? e2 1) e1)
+          (else (list e1 '* e2))))
+(define (product? e) (eq? '* (cadr e)))
+(define multiplier car)
+(define multiplicand caddr)
+</pre>
+
+<p>
+b. This one can be very complex. But here we only support two operation, <code>+</code> and
+<code>*</code>, things will become much easier. Only need to change <code>augend</code> and
+<code>multiplicand</code> in perivious exercise.
+</p>
+
+<p>
+The idea is similiar to ex2.57, which is take the expersion as two part, the
+first term, and the rest of it, without the operator in between. The only
+different is we need to bundle the chain of <code>*</code> in <code>augend</code>, which basically trun 
+<code>2 + 3 * 4 * 5 + 6</code> into <code>2 + (3 * 4 * 5) + 6</code>, and then, the <code>(3 * 4 * 5)</code> can
+be processed in trun. This is to avoid the complicity because of precedence and
+take advantage of the language itself.
+</p>
+
+<pre class="brush: scheme">
+(define (augend e)
+    ; the most complex part, need to bundle next chain of * into a list
+    ; i.e. trun upcoming 4 * 5 * 6 + 7 to (4 * 5 * 6) + 7
+    (define (helper in bundle)
+        (let ((e  (car in))
+              (es (cdr in)))
+        (cond ((null? es) (if (null? bundle) e (append bundle (list '* e))))
+              ((eq? (car es) '*) 
+                (if (null? bundle) (helper (cdr es) (list e))
+                    (helper (cdr es) (append bundle (list '* e)))))
+              (else 
+                (if (null? bundle) in 
+                    (append (list (append bundle (list '* e))) es))))))
+    (let ((t (cddr e)))
+    (cond ((pair? (car t)) (car t))
+          (else (helper t '())))))
+
+; no need to bundle anything here, for * has the hiest precedence in this
+; exercises
+(define (multiplicand e)
+    (cond ((pair? (caddr e)) (caddr e))
+          (else (cddr e))))
+</pre>
+
+
 
 <div class="toc">
 <ul>
@@ -444,6 +912,15 @@ Answer:
 <li><a href="#toc_1.2.3">Exercise 2.46</a>
 <li><a href="#toc_1.2.4">Exercise 2.47</a>
 <li><a href="#toc_1.2.5">Exercise 2.48</a>
+<li><a href="#toc_1.2.6">Exercise 2.49</a>
+<li><a href="#toc_1.2.7">Exercise 2.50</a>
+<li><a href="#toc_1.2.8">Exercise 2.51</a>
+<li><a href="#toc_1.2.9">Exercise 2.52</a>
+<li><a href="#toc_1.2.10">Exercise 2.53</a>
+<li><a href="#toc_1.2.11">Exercise 2.54</a>
+<li><a href="#toc_1.2.12">Exercise 2.55</a>
+<li><a href="#toc_1.2.13">Exercise 2.57</a>
+<li><a href="#toc_1.2.14">Exercise 2.58</a>
 </ul>
 </ul>
 </ul>
