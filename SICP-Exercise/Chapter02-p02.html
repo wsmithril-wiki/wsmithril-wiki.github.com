@@ -112,7 +112,7 @@ Answer:
     (not (or (any (map (lambda (a) (= a la)) hs)) (diag? hs la)))))
 </pre>
 
-<h2 id="toc_1.2">Exercise 2.43</h2>
+<h3 id="toc_1.1.2">Exercise 2.43</h3>
 <p>
 Louis Reasoner is having a terrible time doing exercise 2.42. His queens
 procedure seems to work, but it runs extremely slowly. (Louis never does manage
@@ -290,7 +290,7 @@ ratio (flipped / original)
 </table>
 </p>
 
-<h3 id="toc_1.2.1">Exercise 2.44</h3>
+<h3 id="toc_1.1.3">Exercise 2.44</h3>
 <p>
 Define the procedure up-split used by <code>corner-split</code>. It is similar to
 <code>right-split</code>, except that it switches the roles of below and beside.
@@ -309,7 +309,7 @@ Answer:
       (below painter(beside smaller smaller)))))
 </pre>
 
-<h3 id="toc_1.2.2">Exercise 2.45</h3>
+<h3 id="toc_1.1.4">Exercise 2.45</h3>
 
 <p>
 <code>right-split</code> and <code>up-split</code> can be expressed as instances of a general splitting
@@ -339,7 +339,7 @@ Answer:
         (c1 painter (c2 smaller smaller))))))
 </pre>
 
-<h3 id="toc_1.2.3">Exercise 2.46</h3>
+<h3 id="toc_1.1.5">Exercise 2.46</h3>
 <p>
 A two-dimensional vector <strong>v</strong> running from the origin to a point can be represented
 as a pair consisting of an x-coordinate and a y-coordinate. Implement a data
@@ -378,7 +378,7 @@ Answer:
     (make-vect (* a (xcor-vect v)) (* a (ycor-vect v))))
 </pre>
 
-<h3 id="toc_1.2.4">Exercise 2.47</h3>
+<h3 id="toc_1.1.6">Exercise 2.47</h3>
 <p>
 Here are two possible constructors for frames:
 </p>
@@ -414,7 +414,7 @@ Answer:
 (define edge2-frame cddr)
 </pre>
 
-<h3 id="toc_1.2.5">Exercise 2.48</h3>
+<h3 id="toc_1.1.7">Exercise 2.48</h3>
 <p>
 A directed line segment in the plane can be represented as a pair of vectors --
 the vector running from the origin to the start-point of the segment, and the
@@ -435,7 +435,7 @@ Answer:
 (define end-segment cdr)
 </pre>
 
-<h3 id="toc_1.2.6">Exercise 2.49</h3>
+<h3 id="toc_1.1.8">Exercise 2.49</h3>
 <p>
 Use segments-&gt;painter to define the following primitive painters:
 </p>
@@ -496,7 +496,7 @@ Answer:
 ; nothing new in wave, skip
 </pre>
 
-<h3 id="toc_1.2.7">Exercise 2.50</h3>
+<h3 id="toc_1.1.9">Exercise 2.50</h3>
 <p>
 Define the transformation <code>flip-horiz</code>, which flips painters horizontally, and
 transformations that rotate painters counterclockwise by 180 degrees and 270
@@ -524,7 +524,7 @@ Answer:
                                (make-vert 0.0 0.0)))
 </pre>
 
-<h3 id="toc_1.2.8">Exercise 2.51</h3>
+<h3 id="toc_1.1.10">Exercise 2.51</h3>
 <p>
 Define the <code>below</code> operation for painters. Below takes two painters as arguments.
 The resulting painter, given a frame, draws with the first painter in the bottom
@@ -559,7 +559,7 @@ Answer:
     (rotate-90 (beside (rotate-270 painter2) (rotate-270 painter1))))
 </pre>
 
-<h3 id="toc_1.2.9">Exercise 2.52</h3>
+<h3 id="toc_1.1.11">Exercise 2.52</h3>
 <p>
 Make changes to the square limit of wave shown in figure 2.9 by working at each
 of the levels described above. In particular:
@@ -591,11 +591,12 @@ Answer:
 Boring one, skipped...
 </p>
 
-<h3 id="toc_1.2.10">Exercise 2.53</h3>
+<h3 id="toc_1.1.12">Exercise 2.53</h3>
 <p>
 What would the interpreter print in response to evaluating each of the
 following expressions?
 </p>
+
 <pre class="brush: scheme">
 (list 'a 'b 'c)
 
@@ -612,6 +613,9 @@ following expressions?
 <ul>
 <li>
 Answer:
+
+</ul>
+
 <pre class="brush: scheme">
 (list 'a 'b 'c)
 ; returns (a b c)
@@ -631,9 +635,7 @@ Answer:
 ; returns (red shoes blue socks)
 </pre>
 
-</ul>
-
-<h3 id="toc_1.2.11">Exercise 2.54</h3>
+<h3 id="toc_1.1.13">Exercise 2.54</h3>
 <p>
 Two lists are said to be equal? if they contain equal elements arranged in the
 same order. For example, <code>(equal? '(this is a list) '(this is a list))</code> is
@@ -664,7 +666,7 @@ Answer:
           (else (and (equal? (car a) (car b)) (equal? (cdr a) (cdr b)))))))
 </pre>
 
-<h3 id="toc_1.2.12">Exercise 2.55</h3>
+<h3 id="toc_1.1.14">Exercise 2.55</h3>
 <p>
 Eva Lu Ator types to the interpreter the expression <code>(car ''abracadabra)</code> To her
 surprise, the interpreter prints back <code>quote</code>. Explain.
@@ -699,7 +701,7 @@ Answer:
 
 </ul>
 
-<pre class="bruch: scheme">
+<pre class="brush: scheme">
 ; implement the new rules
 (define (make-exponentiation b e) 
     (cond ((number? b) (exp b e))
@@ -734,7 +736,7 @@ Answer:
          (error "unknown expression type -- DERIV" exp))))
 </pre>
 
-<h3 id="toc_1.2.13">Exercise 2.57</h3>
+<h3 id="toc_1.1.15">Exercise 2.57</h3>
 <p>
 Extend the differentiation program to handle sums and products of arbitrary
 numbers of (two or more) terms. Then the last example above could be expressed
@@ -798,7 +800,7 @@ no sane soul will write some thing like this:
 This is indeed the correct answer, but badly shaped.
 </p>
 
-<h3 id="toc_1.2.14">Exercise 2.58</h3>
+<h3 id="toc_1.1.16">Exercise 2.58</h3>
 <p>
 Suppose we want to modify the differentiation program so that it works with
 ordinary mathematical notation, in which <code>+</code> and <code>*</code> are infix rather than prefix
@@ -888,12 +890,186 @@ take advantage of the language itself.
     (cond ((pair? (car t)) (car t))
           (else (helper t '())))))
 
-; no need to bundle anything here, for * has the hiest precedence in this
+; no need to bundle anything here, for * has the highest precedence in this
 ; exercises
 (define (multiplicand e)
     (cond ((pair? (caddr e)) (caddr e))
           (else (cddr e))))
 </pre>
+
+<h3 id="toc_1.1.17">Exercise 2.59</h3>
+<p>
+Implement the <code>union-set</code> operation for the unordered-list representation of sets.
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define (union-set set1 set2)
+    (if (null? set2) set1)
+        (let ((x  (car set2))
+              (xs (cdr set2)))
+        (if (element-of-set? x set1) 
+            (union-set set1 xs)
+            (union-set (adjoin-set x set1) xs))))
+</pre>
+
+<h3 id="toc_1.1.18">Exercise 2.60</h3>
+<p>
+We specified that a set would be represented as a list with no duplicates. Now
+suppose we allow duplicates. For instance, the set <code>{1,2,3}</code> could be represented
+as the list <code>(2 3 2 1 3 2 2)</code>. Design procedures <code>element-of-set?</code>, <code>adjoin-set</code>,
+<code>union-set</code>, and <code>intersection-set</code> that operate on this representation. How does
+the efficiency of each compare with the corresponding procedure for the
+non-duplicate representation? Are there applications for which you would use
+this representation in preference to the non-duplicate one? 
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<p>
+The precedure <code>element-of-set</code> and <code>intersection-set</code> should remain same, only
+<code>union-set</code> and <code>adjoin-set</code> need to rewrite.
+</p>
+
+<pre class="brush: scheme">
+(define union-set append)
+(define adjoin-set cons)
+</pre>
+
+<p>
+Since there is no need to eliminate duplicate element, simply join two part of
+the set will do.
+</p>
+
+<p>
+As for efficiency, <code>unoin-set</code> and <code>adjoint-set</code> will significant faster than
+non-duplicate representation. But while the set grow larger and with a lot of
+duplicated element, <code>element-of-set?</code> and <code>intersect-set</code> will mush slower.
+</p>
+
+<h3 id="toc_1.1.19">Exercise 2.61</h3>
+<p>
+Give an implementation of <code>adjoin-set</code> using the ordered representation. By
+analogy with <code>element-of-set?</code> show how to take advantage of the ordering to
+produce a procedure that requires on the average about half as many steps as
+with the unordered representation.
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define (adjoin-set x set)
+    (define (iter xs res)
+        (cond ((null? xs) (append res (list x)))
+              ((= x (car xs)) set)
+              ((&lt; x (car xs)) (append res (cons x xs)))
+              ((&gt; x (car xs)) (iter (cdr xs) (append res (list (car xs)))))))
+    (iter set '()))
+</pre>
+
+<h3 id="toc_1.1.20">Exercise 2.62</h3>
+<p>
+Give a \(O(n)\) implementation of <code>union-set</code> for sets represented as ordered
+lists. 
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define (union-set set1 set2)
+    (define (iter s1 s2 res)
+        (cond ((null? s1) (append res s2))
+              ((null? s2) (append res s1))
+              (else (let ((x1 (car s1)) (x2 (car s2)))
+                    (cond ((= x1 x2) (iter (cdr s1) (cdr s2) (append res (list x1))))
+                          ((&gt; x1 x2) (iter s1       (cdr s2) (append res (list x2))))
+                          ((&lt; x1 x2) (iter (cdr s1) s2       (append res (list x1)))))))))
+    (iter set1 set2 '()))
+</pre>
+
+<h3 id="toc_1.1.21">Exercise 2.63</h3>
+<p>
+Each of the following two procedures converts a binary tree to a list.
+</p>
+
+<pre class="brush: scheme">
+(define (tree-&gt;list-1 tree)
+  (if (null? tree)
+      '()
+      (append (tree-&gt;list-1 (left-branch tree))
+              (cons (entry tree)
+                    (tree-&gt;list-1 (right-branch tree))))))
+
+(define (tree-&gt;list-2 tree)
+  (define (copy-to-list tree result-list)
+    (if (null? tree)
+        result-list
+        (copy-to-list (left-branch tree)
+                      (cons (entry tree)
+                            (copy-to-list (right-branch tree)
+                                          result-list)))))
+  (copy-to-list tree '()))
+</pre>
+
+<ul>
+<li>
+Do the two procedures produce the same result for every tree? If not, how do
+  the results differ? What lists do the two procedures produce for the trees in
+  picture:
+
+</ul>
+ 
+<p>
+  <img src="/SICP-Exercise/image/fig-c02-p02-trees.svg" alt="Tree" style="width: 400px; height: 200px" />
+</p>
+
+<ul>
+<li>
+Do the two procedures have the same order of growth in the number of steps
+  required to convert a balanced tree with n elements to a list?  If not, which
+  one grows more slowly? 
+
+</ul>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<p>
+Since both <code>tree-&gt;list-1</code> and <code>tree-&gt;list-2</code> convert a tree into a list in
+a "left-subtree, entry, right-subtree" way, which is an "inorder traversal"
+path to an tree. All 3 trees in the figue returns the list <code>(1 3 5 7 9 11)</code>.
+</p>
+
+<p>
+The different of times of list operation (Consider <code>cons</code> as 1 operation,
+<code>append</code> a list at length of m considered m operations) used between the two
+precedure is huge. <code>tree-&gt;list-2</code> take less operations, for it does not have
+a lot of <code>append</code> and <code>cons</code> one element to the result on each node traversed.
+So the <code>tree-&gt;list-2</code> has the order of list operation of \(O(n)\). While
+<code>tree-&gt;list-1</code> has to append a list of right-subtree to left-subtree. So the
+order of list operation would be \(O(n\rm{log}n)\).
+</p>
+
 
 
 
@@ -904,23 +1080,26 @@ take advantage of the language itself.
 <li><a href="#toc_1.1">Chapter 02 - Part.II</a>
 <ul>
 <li><a href="#toc_1.1.1">Exercise 2.42</a>
-</ul>
-<li><a href="#toc_1.2">Exercise 2.43</a>
-<ul>
-<li><a href="#toc_1.2.1">Exercise 2.44</a>
-<li><a href="#toc_1.2.2">Exercise 2.45</a>
-<li><a href="#toc_1.2.3">Exercise 2.46</a>
-<li><a href="#toc_1.2.4">Exercise 2.47</a>
-<li><a href="#toc_1.2.5">Exercise 2.48</a>
-<li><a href="#toc_1.2.6">Exercise 2.49</a>
-<li><a href="#toc_1.2.7">Exercise 2.50</a>
-<li><a href="#toc_1.2.8">Exercise 2.51</a>
-<li><a href="#toc_1.2.9">Exercise 2.52</a>
-<li><a href="#toc_1.2.10">Exercise 2.53</a>
-<li><a href="#toc_1.2.11">Exercise 2.54</a>
-<li><a href="#toc_1.2.12">Exercise 2.55</a>
-<li><a href="#toc_1.2.13">Exercise 2.57</a>
-<li><a href="#toc_1.2.14">Exercise 2.58</a>
+<li><a href="#toc_1.1.2">Exercise 2.43</a>
+<li><a href="#toc_1.1.3">Exercise 2.44</a>
+<li><a href="#toc_1.1.4">Exercise 2.45</a>
+<li><a href="#toc_1.1.5">Exercise 2.46</a>
+<li><a href="#toc_1.1.6">Exercise 2.47</a>
+<li><a href="#toc_1.1.7">Exercise 2.48</a>
+<li><a href="#toc_1.1.8">Exercise 2.49</a>
+<li><a href="#toc_1.1.9">Exercise 2.50</a>
+<li><a href="#toc_1.1.10">Exercise 2.51</a>
+<li><a href="#toc_1.1.11">Exercise 2.52</a>
+<li><a href="#toc_1.1.12">Exercise 2.53</a>
+<li><a href="#toc_1.1.13">Exercise 2.54</a>
+<li><a href="#toc_1.1.14">Exercise 2.55</a>
+<li><a href="#toc_1.1.15">Exercise 2.57</a>
+<li><a href="#toc_1.1.16">Exercise 2.58</a>
+<li><a href="#toc_1.1.17">Exercise 2.59</a>
+<li><a href="#toc_1.1.18">Exercise 2.60</a>
+<li><a href="#toc_1.1.19">Exercise 2.61</a>
+<li><a href="#toc_1.1.20">Exercise 2.62</a>
+<li><a href="#toc_1.1.21">Exercise 2.63</a>
 </ul>
 </ul>
 </ul>
