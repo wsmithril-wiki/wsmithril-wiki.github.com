@@ -1,45 +1,43 @@
 <?xml version="1.0" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg width="400" height="200" version="1.1" xmlns="http://www.w3.org/2000/svg">
-
-<text x="70" y="15" style="font-size: 0.9em; text-anchor: middle">7</text>
-<text x="40" y="75" style="font-size: 0.9em; text-anchor: middle">3</text>
-<text x="100" y="75" style="font-size: 0.9em; text-anchor: middle">9</text>
-<text x="10" y="135" style="font-size: 0.9em; text-anchor: middle">1</text>
-<text x="70" y="135" style="font-size: 0.9em; text-anchor: middle">5</text>
-<text x="130" y="135" style="font-size: 0.9em; text-anchor: middle">11</text>
-
-<line x1="65" y1="20" x2="40" y2="60" style="stroke: black; stroke-width: 2px" />
-<line x1="75" y1="20" x2="100" y2="60" style="stroke: black; stroke-width: 2px" />
-<line x1="35" y1="80" x2="10" y2="120" style="stroke: black; stroke-width: 2px" />
-<line x1="45" y1="80" x2="70" y2="120" style="stroke: black; stroke-width: 2px" />
-<line x1="105" y1="80" x2="130" y2="120" style="stroke: black; stroke-width: 2px" />
-
-<text x="180" y="15" style="font-size: 0.9em; text-anchor: middle">3</text>
-<text x="155" y="75" style="font-size: 0.9em; text-anchor: middle">1</text>
-<text x="205" y="75" style="font-size: 0.9em; text-anchor: middle">7</text>
-<text x="180" y="135" style="font-size: 0.9em; text-anchor: middle">5</text>
-<text x="230" y="135" style="font-size: 0.9em; text-anchor: middle">9</text>
-<text x="255" y="195" style="font-size: 0.9em; text-anchor: middle">11</text>
-
-<line x1="175" y1="20" x2="155" y2="60" style="stroke: black; stroke-width: 2px" />
-<line x1="180" y1="20" x2="205" y2="60" style="stroke: black; stroke-width: 2px" />
-<line x1="200" y1="80" x2="180" y2="120" style="stroke: black; stroke-width: 2px" />
-<line x1="210" y1="80" x2="230" y2="120" style="stroke: black; stroke-width: 2px" />
-<line x1="235" y1="140" x2="255" y2="180" style="stroke: black; stroke-width: 2px" />
-
-<text x="330" y="15" style="font-size: 0.9em; text-anchor: middle">5</text>
-<text x="300" y="75" style="font-size: 0.9em; text-anchor: middle">3</text>
-<text x="360" y="75" style="font-size: 0.9em; text-anchor: middle">9</text>
-<text x="330" y="135" style="font-size: 0.9em; text-anchor: middle">1</text>
-<text x="270" y="135" style="font-size: 0.9em; text-anchor: middle">7</text>
-<text x="390" y="135" style="font-size: 0.9em; text-anchor: middle">11</text>
-
-<line x1="325" y1="20" x2="300" y2="60" style="stroke: black; stroke-width: 2px" />
-<line x1="335" y1="20" x2="360" y2="60" style="stroke: black; stroke-width: 2px" />
-<line x1="295" y1="80" x2="270" y2="120" style="stroke: black; stroke-width: 2px" />
-<line x1="355" y1="80" x2="330" y2="120" style="stroke: black; stroke-width: 2px" />
-<line x1="365" y1="80" x2="390" y2="120" style="stroke: black; stroke-width: 2px" />
-
-
+<defs>
+<style type="text/css"><![CDATA[
+text {font-size: 0.9em; text-anchor: middle}
+line {stroke: black; stroke-width: 2}
+]]></style>
+</defs>
+<text x="70" y="15">7</text>
+<text x="40" y="75">3</text>
+<text x="100" y="75">9</text>
+<text x="10" y="135">1</text>
+<text x="70" y="135">5</text>
+<text x="130" y="135">11</text>
+<line x1="65" y1="20" x2="40" y2="60"/>
+<line x1="75" y1="20" x2="100" y2="60"/>
+<line x1="35" y1="80" x2="10" y2="120"/>
+<line x1="45" y1="80" x2="70" y2="120"/>
+<line x1="105" y1="80" x2="130" y2="120"/>
+<text x="180" y="15">3</text>
+<text x="155" y="75">1</text>
+<text x="205" y="75">7</text>
+<text x="180" y="135">5</text>
+<text x="230" y="135">9</text>
+<text x="255" y="195">11</text>
+<line x1="175" y1="20" x2="155" y2="60"/>
+<line x1="185" y1="20" x2="205" y2="60"/>
+<line x1="200" y1="80" x2="180" y2="120"/>
+<line x1="210" y1="80" x2="230" y2="120"/>
+<line x1="235" y1="140" x2="255" y2="180"/>
+<text x="330" y="15">5</text>
+<text x="300" y="75">3</text>
+<text x="360" y="75">9</text>
+<text x="330" y="135">7</text>
+<text x="270" y="135">1</text>
+<text x="390" y="135">11</text>
+<line x1="325" y1="20" x2="300" y2="60"/>
+<line x1="335" y1="20" x2="360" y2="60"/>
+<line x1="295" y1="80" x2="270" y2="120"/>
+<line x1="355" y1="80" x2="330" y2="120"/>
+<line x1="365" y1="80" x2="390" y2="120"/>
 </svg>
