@@ -1274,9 +1274,7 @@ Answer:
 <pre class="brush: scheme">
 (define (encode-symbol sym tree)
     (define (iter branch res)
-        (cond ((leaf? branch)
-                (if (eq? sym (symbol-leaf branch)) res
-                    (error "Symbol not in tree -- encode-symbol" sym)))
+        (cond ((leaf? branch) res)
               ((memq sym (symbols (left-branch branch)))
                 (iter (left-branch branch) (cons 0 res)))
               ((memq sym (symbols (right-branch branch)))
@@ -1314,20 +1312,24 @@ Answer:
 </ul>
 
 <pre class="brush: scheme">
-(define (successice-merge ps)
+(define (successive-merge ps)
     (define (repeat time p) (lambda (x)
         (cond ((= time 0) '())
               ((= time 1) x)
               (else ((repeat (- time 1) p) (p x))))))
     (define (merge-1 xs)
         (adjoin-set (make-code-tree (car xs) (cadr xs)) (cddr xs)))
-    ((repeat (length ps) merge-1) ps))
+    ((repeat (- (length ps) 1) merge-1) ps))
 </pre>
 
 <p>
 The inner precedure <code>merge-1</code> will merge the first two element together, and put
 it back to a proper position in the list using <code>adjoin-set</code>. Repeat this step
 n times for a list of n element will get a proper Huffman tree.
+</p>
+
+<p>
+This is not as triky as Exercises 2.58. That one is really tricky.
 </p>
 
 <h3 id="toc_1.1.28">Exercise 2.70</h3>
@@ -1364,12 +1366,51 @@ bits that would be needed to encode this song if we used a fixed-length code
 for the eight-symbol alphabet?
 </p>
 
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<p>
+The Huffman encodings of this song takes 84 bits, the whole messege is
+</p>
+<pre>
+111111100111101110000000001111111001111011100000000011010101010101010101010111011011
+</pre>
+
+<p>
+But if we use a fix length encoding, each word needs 3-bit for each can encoding
+8 different word. Therefore, 108 bits for the whole messege.
+</p>
+
+
 <h3 id="toc_1.1.29">Exercise 2.71</h3>
 <p>
 Suppose we have a Huffman tree for an alphabet of n symbols, and that the
 relative frequencies of the symbols are 1, 2, 4, ..., \(2^{n-1}\). Sketch the
 tree for n=5; for n=10. In such a tree (for general n) how many bits are
 required to encode the most frequent symbol? the least frequent symbol?
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<p>
+Using symbol a-e to note the 5 symbols, the Huffman tree lookes like this:
+</p>
+
+<p>
+<img src="/SICP-Exercise/image/ch02-p02-ex271-t1.svg" alt="n = 5" />
+</p>
+
+<p>
+The tree when n=10 is similiar to n=5, but has more level. In gereral, to encode
+the most frequent symbol alway takes 1 bit (simplily <code>0</code>), and n bits for the
+least frequent symbol (<code>11...1</code>, n times 1).
 </p>
 
 <h3 id="toc_1.1.30">Exercise 2.72</h3>
@@ -1384,6 +1425,309 @@ number of steps needed to encode the most frequent and least frequent symbols
 in the alphabet.
 </p>
 
+<ul>
+<li>
+Answer: 
+
+</ul>
+
+<p>
+If the distribution of symbols follows ex2.71, i.e. each symbol's occourance is
+1, 2, 4, ..., \(2^{n-1}\), encoding the most frequent symbol takes \(O(1)\) step,
+while \(O(n)\) for the least frequent symbol. If we consider the ocourance of each
+symbol into account, to encode a message at length of n will takes 
+\(n\sum_{i=1}^n i\times\frac{2^{i-1}}{2^n-1}\) steps in average, which is
+surprisingly less then \(4n\) for every \(n\ge3\), even irrelvent to the size of
+alphbet.
+</p>
+
+<h3 id="toc_1.1.31">Exercise 2.73</h3>
+<p>
+Section 2.3.2 described a program that performs symbolic differentiation:
+</p>
+
+<pre class="brush: scheme">
+(define (deriv exp var)
+  (cond ((number? exp) 0)
+        ((variable? exp) (if (same-variable? exp var) 1 0))
+        ((sum? exp)
+         (make-sum (deriv (addend exp) var)
+                   (deriv (augend exp) var)))
+        ((product? exp)
+         (make-sum
+           (make-product (multiplier exp)
+                         (deriv (multiplicand exp) var))
+           (make-product (deriv (multiplier exp) var)
+                         (multiplicand exp))))
+        ;&lt;more rules can be added here&gt;
+        (else (error "unknown expression type -- DERIV" exp))))
+</pre>
+
+<p>
+We can regard this program as performing a dispatch on the type of the
+expression to be differentiated. In this situation the "type tag" of the datum
+is the algebraic operator symbol (such as <code>+</code>) and the operation being performed
+is <code>deriv</code>. We can transform this program into <code>data-directed</code> style by rewriting
+the basic derivative procedure as:
+</p>
+
+<pre class="brush: scheme">
+(define (deriv exp var)
+   (cond ((number? exp) 0)
+         ((variable? exp) (if (same-variable? exp var) 1 0))
+         (else ((get 'deriv (operator exp)) (operands exp)
+                                            var))))
+(define (operator exp) (car exp))
+(define (operands exp) (cdr exp))
+</pre>
+
+<ol>
+<li>
+Explain what was done above. Why can't we assimilate the predicates number?
+  and <code>same-variable?</code> into the data-directed dispatch?
+
+</ol>
+
+<ol>
+<li>
+Write the procedures for derivatives of sums and products, and the
+  auxiliary code required to install them in the table used by the program above.
+
+</ol>
+
+<ol>
+<li>
+Choose any additional differentiation rule that you like, such as the one
+  for exponents (exercise 2.56), and install it in this data-directed system.
+
+</ol>
+
+<ol>
+<li>
+In this simple algebraic manipulator the type of an expression is the
+  algebraic operator that binds it together. Suppose, however, we indexed the
+  procedures in the opposite way, so that the dispatch line in deriv looked like
+
+</ol>
+
+<pre class="brush: scheme">
+((get (operator exp) 'deriv) (operands exp) var)
+</pre>
+
+<p>
+What corresponding changes to the derivative system are required? 
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<p>
+The reason for <code>number?</code> and <code>same-variable</code> can't assimilated into
+data-directed dispatch is they are dealing with data without data-tag. 
+</p>
+
+<p>
+The precedure to derives sum and product looks likes this:
+</p>
+
+<pre class="brush: scheme">
+(define (deriv-add expr) 
+    (make-sum (deriv (addend expr))
+              (deriv (augend expr))))
+(define (deriv-prod expr)
+    (let ((exp1 (multiplicand expr))
+          (exp2 (multiplication expr)))
+    (make-sum (make-product exp1 (deriv exp2))
+              (make-product exp2 (deriv exp1)))))
+(put 'deriv '(+) deriv-add)
+(put 'deriv '(*) deriv-prod)
+</pre>
+
+<p>
+Add exponent to <code>deriv</code>. Using precedures in previous exercises.
+</p>
+
+<pre class="brush: scheme">
+(define (deriv-exponent expr)
+    (make-product
+        (exponent expr)
+        (make-product (make-exponentiation (base expr) (- (exponent expr) 1))
+                      (deriv (base expr) var))))
+</pre>
+
+<p>
+If we want to use dispatch line like <code>((get (operator exp) 'deriv) (operands exp) var)))</code>,
+we need to implement <code>operator</code> and <code>operands</code> precedures.
+</p>
+
+<pre class="brush: scheme">
+(define operator car)
+(define operands (lambda (x) x))
+</pre>
+
+<h3 id="toc_1.1.32">Exercise 2.74</h3>
+<p>
+Insatiable Enterprises, Inc., is a highly decentralized conglomerate company
+consisting of a large number of independent divisions located all over the
+world. The company's computer facilities have just been interconnected by means
+of a clever network-interfacing scheme that makes the entire network appear to
+any user to be a single computer. Insatiable's president, in her first attempt
+to exploit the ability of the network to extract administrative information
+from division files, is dismayed to discover that, although all the division
+files have been implemented as data structures in Scheme, the particular data
+structure used varies from division to division. A meeting of division managers
+is hastily called to search for a strategy to integrate the files that will
+satisfy headquarters' needs while preserving the existing autonomy of the
+divisions.
+</p>
+
+<p>
+Show how such a strategy can be implemented with data-directed programming. As
+an example, suppose that each division's personnel records consist of a single
+file, which contains a set of records keyed on employees' names. The structure
+of the set varies from division to division. Furthermore, each employee's
+record is itself a set (structured differently from division to division) that
+contains information keyed under identifiers such as address and salary. In
+particular:
+</p>
+
+<p>
+a.  Implement for headquarters a <code>get-record</code> procedure that retrieves a
+specified employee's record from a specified personnel file. The procedure
+should be applicable to any division's file. Explain how the individual 
+divisions' files should be structured. In particular, what type information
+must be supplied?
+</p>
+
+<p>
+b.  Implement for headquarters a <code>get-salary</code> procedure that returns the salary
+information from a given employee's record from any division's personnel file.
+How should the record be structured in order to make this operation work?
+</p>
+
+<p>
+c.  Implement for headquarters a <code>find-employee-record</code> procedure. This should
+search all the divisions' files for the record of a given employee and return
+the record. Assume that this procedure takes as arguments an employee's name
+and a list of all the divisions' files.
+</p>
+
+<p>
+d.  When Insatiable takes over a new company, what changes must be made in
+order to incorporate the new personnel information into the central system? 
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<p>
+Short answer, how the files structured in each division dose not matter much,
+as long as it suits the needs of each division. The HQ may holds a list of all
+personnel, detailing which division each personnel belongs, and syncronize it
+with each division on every personnel changes. When the HQ calls <code>get-record</code>,
+it looks up in the personnel list, knowing which division to querry, and then
+send a request to the coresponding division. The division get this request,
+doing theri local search, and return thr record in a unified format, meaning
+each division shall implement their own constrotor, but returns a same
+representation. Then <code>get-salary</code> shall just extract the information from the
+record as a selector. <code>find-employee-record</code> works like a <code>filter-map</code>, like 
+</p>
+<pre class="brush: scheme">
+(define (find-employee-record name)
+    (map get-record (filter (lambda (x) (eq? name x)) employee-name-list)))
+</pre>
+<p>
+shall do. 
+</p>
+
+<p>
+Adding a new division is simple in this design. Just implement the constrotor
+for record locally, and an interface to process requests come from HQ, and
+return the record. Then syncronize the employee list to HQ.
+</p>
+
+<p>
+The most tricky part in this design is how to syncronize the employee list. This
+is indeed a very complex problem cannot be avoided in a distributed system. 
+</p>
+
+<h3 id="toc_1.1.33">Exercise 2.75</h3>
+<p>
+Implement the constructor <code>make-from-mag-ang</code> in message-passing style. This
+procedure should be analogous to the <code>make-from-real-imag</code> procedure given above.
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define (make-from-mag-ang r t)
+    (define (dispatch op)
+        (cond ((eq? op 'real-part) (* r (sin t)))
+              ((eq? op 'imag-part) (* r (cos t)))
+              ((eq? op 'magnitude) r)
+              ((eq? op 'angle)     t))
+              (else "Unknown op ---" op))
+    dispatch)
+</pre>
+
+<h3 id="toc_1.1.34">Exercise 2.76</h3>
+<p>
+As a large system with generic operations evolves, new types of data objects or
+new operations may be needed. For each of the three strategies -- generic
+operations with explicit dispatch, data-directed style, and
+message-passing-style -- describe the changes that must be made to a system in
+order to add new types or new operations. Which organization would be most
+appropriate for a system in which new types must often be added? Which would be
+most appropriate for a system in which new operations must often be added?
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<p>
+Add a new operation to the system when using explicit dispatch need to modified all
+involved precedure, adding approperated branches. This method need huge amount
+of work, and will affect exisiting code in an unpredicatable way (introducing
+new bug, forget some branches, recurssion, etc.). The same thing happens when we
+add a new type to the system. This really sucks.
+</p>
+
+<p>
+In data-directed style program, we will only need insert new implement into
+global add to the system, which means whatever we want to add to the system, we
+can simplily append the source to the original source without touching any
+already exisiting source, which makes it the most simple way to add new feature
+of old system. But all these come with a price, for in a large system, the
+dispatch table can be huge. This will resulting in a big overhead when the
+dispatcher lookup in the table, and find the which precedure to call. Also,
+dealing the tag in data can also have a tiny overhead. And we still need to
+worry about name comflict, but dealing with it is much easier in comperison to
+explicit dispatch style. This is the best way foe system with bunch of "fixed"
+precedure, but need to add new type often.
+</p>
+
+<p>
+Message passing comes in the middle. We need add new branches into all
+involving precedure when adding new types, lots of work, but less than explicit
+dispatch. Adding new precedure is much easier, only need to implement them.
+But we do not have to worry about name comflict at all, for everything is in
+a closure. And this style does not have the overhead of looking up the dispatch
+table and deal with the tag in the data. This is the best way for a system needs
+new operations must often be added, and need convertions between types often.
+</p>
 
 <div class="toc">
 <ul>
@@ -1421,6 +1765,10 @@ in the alphabet.
 <li><a href="#toc_1.1.28">Exercise 2.70</a>
 <li><a href="#toc_1.1.29">Exercise 2.71</a>
 <li><a href="#toc_1.1.30">Exercise 2.72</a>
+<li><a href="#toc_1.1.31">Exercise 2.73</a>
+<li><a href="#toc_1.1.32">Exercise 2.74</a>
+<li><a href="#toc_1.1.33">Exercise 2.75</a>
+<li><a href="#toc_1.1.34">Exercise 2.76</a>
 </ul>
 </ul>
 </ul>
