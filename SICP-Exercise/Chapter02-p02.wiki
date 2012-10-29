@@ -77,7 +77,7 @@ other.)
     (not (or (any (map (lambda (a) (= a la)) hs)) (diag? hs la)))))
 }}}
 
-== Exercise 2.43 ==
+=== Exercise 2.43 ===
 Louis Reasoner is having a terrible time doing exercise 2.42. His queens
 procedure seems to work, but it runs extremely slowly. (Louis never does manage
 to wait long enough for it to solve even the 6×6 case.) When Louis asks Eva Lu
@@ -373,6 +373,7 @@ Boring one, skipped...
 === Exercise 2.53 ===
 What would the interpreter print in response to evaluating each of the
 following expressions?
+
 {{{class="brush: scheme"
 (list 'a 'b 'c)
 
@@ -387,6 +388,7 @@ following expressions?
 }}}
 
 - Answer:
+
 {{{class="brush: scheme"
 (list 'a 'b 'c)
 ; returns (a b c)
@@ -442,7 +444,7 @@ will become `'(quote abc)`, therefore `car` will return `quote`.
 Exercise 2.56
 Show how to extend the basic differentiator to handle more kinds of expressions.
 For instance, implement the differentiation rule
-$\frac{\rm{d}u^n}{\rm{d}x}=nu^{n-1}\frac{\rm{d}u}{\rm{d}x}$
+$\frac{{\rm d}u^n}{{\rm d}x}=nu^{n-1}\frac{{\rm d}u}{{\rm d}x}$
 by adding a new clause to the `deriv` program and defining appropriate procedures
 `exponentiation?`, `base`, `exponent`, and `make-exponentiation`. (You may use the
 symbol `**` to denote exponentiation.) Build in the rules that anything raised to
@@ -450,16 +452,16 @@ the power 0 is 1 and anything raised to the power 1 is the thing itself.
 
 - Answer:
 
-{{{class="bruch: scheme"
+{{{class="brush: scheme"
 ; implement the new rules
-(define (make-exponentiation b e) 
+(define (make-exponentiation b e)
     (cond ((number? b) (exp b e))
           ((= e 0) 1)
           ((= e 1) b)
           (else (list '** b e))))
 (define base cadr)
 (define exponent caddr)
-(define (exponentiation? e) 
+(define (exponentiation? e)
     (and (pair? e) (eq? '** (car e))))
 
 ; new deriv
@@ -476,8 +478,8 @@ the power 0 is 1 and anything raised to the power 1 is the thing itself.
                          (deriv (multiplicand exp) var))
            (make-product (deriv (multiplier exp) var)
                          (multiplicand exp))))
-        ((exponentiation? exp) 
-            (make-product 
+        ((exponentiation? exp)
+            (make-product
                 (exponent exp)
                 (make-product (make-exponentiation (base exp) (- (exponent exp) 1))
                               (deriv (base exp) var))))
@@ -493,7 +495,7 @@ as `(deriv '(* x y (+ x 3)) 'x)`.
 Try to do this by changing only the
 representation for `sums` and `products`, without changing the deriv procedure at
 all. For example, the `addend` of a sum would be the first term, and the `augend`
-would be the sum of the rest of the terms. 
+would be the sum of the rest of the terms.
 
 - Answer:
 
@@ -555,14 +557,14 @@ b. The problem becomes substantially harder if we allow standard algebraic
 notation, such as `(x + 3 * (x + y + 2))`, which drops unnecessary parentheses and
 assumes that multiplication is done before addition. Can you design appropriate
 predicates, selectors, and constructors for this notation such that our
-derivative program still works? 
+derivative program still works?
 
 - Answer:
 
 a. With all proper parentheses in the expersion, it is an simple task.
 
 {{{class="brush: scheme"
-(define (make-sum e1 e2) 
+(define (make-sum e1 e2)
     (cond ((and (number? e1) (= e1 0)) e2)
           ((and (number? e2) (= e2 0)) e1)
           ((and (number? e1) (number? e2)) (+ e1 e2))
@@ -588,7 +590,7 @@ b. This one can be very complex. But here we only support two operation, `+` and
 
 The idea is similiar to ex2.57, which is take the expersion as two part, the
 first term, and the rest of it, without the operator in between. The only
-different is we need to bundle the chain of `*` in `augend`, which basically trun 
+different is we need to bundle the chain of `*` in `augend`, which basically trun
 `2 + 3 * 4 * 5 + 6` into `2 + (3 * 4 * 5) + 6`, and then, the `(3 * 4 * 5)` can
 be processed in trun. This is to avoid the complicity because of precedence and
 take advantage of the language itself.
@@ -601,23 +603,629 @@ take advantage of the language itself.
         (let ((e  (car in))
               (es (cdr in)))
         (cond ((null? es) (if (null? bundle) e (append bundle (list '* e))))
-              ((eq? (car es) '*) 
+              ((eq? (car es) '*)
                 (if (null? bundle) (helper (cdr es) (list e))
                     (helper (cdr es) (append bundle (list '* e)))))
-              (else 
-                (if (null? bundle) in 
+              (else
+                (if (null? bundle) in
                     (append (list (append bundle (list '* e))) es))))))
     (let ((t (cddr e)))
     (cond ((pair? (car t)) (car t))
           (else (helper t '())))))
 
-; no need to bundle anything here, for * has the hiest precedence in this
+; no need to bundle anything here, for * has the highest precedence in this
 ; exercises
 (define (multiplicand e)
     (cond ((pair? (caddr e)) (caddr e))
           (else (cddr e))))
 }}}
 
+=== Exercise 2.59 ===
+Implement the `union-set` operation for the unordered-list representation of sets.
 
+- Answer:
+
+{{{class="brush: scheme"
+(define (union-set set1 set2)
+    (if (null? set2) set1)
+        (let ((x  (car set2))
+              (xs (cdr set2)))
+        (if (element-of-set? x set1)
+            (union-set set1 xs)
+            (union-set (adjoin-set x set1) xs))))
+}}}
+
+=== Exercise 2.60 ===
+We specified that a set would be represented as a list with no duplicates. Now
+suppose we allow duplicates. For instance, the set `{1,2,3}` could be represented
+as the list `(2 3 2 1 3 2 2)`. Design procedures `element-of-set?`, `adjoin-set`,
+`union-set`, and `intersection-set` that operate on this representation. How does
+the efficiency of each compare with the corresponding procedure for the
+non-duplicate representation? Are there applications for which you would use
+this representation in preference to the non-duplicate one?
+
+- Answer:
+
+The precedure `element-of-set` and `intersection-set` should remain same, only
+`union-set` and `adjoin-set` need to rewrite.
+
+{{{class="brush: scheme"
+(define union-set append)
+(define adjoin-set cons)
+}}}
+
+Since there is no need to eliminate duplicate element, simply join two part of
+the set will do.
+
+As for efficiency, `unoin-set` and `adjoint-set` will significant faster than
+non-duplicate representation. But while the set grow larger and with a lot of
+duplicated element, `element-of-set?` and `intersect-set` will mush slower.
+
+=== Exercise 2.61 ===
+Give an implementation of `adjoin-set` using the ordered representation. By
+analogy with `element-of-set?` show how to take advantage of the ordering to
+produce a procedure that requires on the average about half as many steps as
+with the unordered representation.
+
+- Answer:
+
+{{{class="brush: scheme"
+(define (adjoin-set x set)
+    (define (iter xs res)
+        (cond ((null? xs) (append res (list x)))
+              ((= x (car xs)) set)
+              ((< x (car xs)) (append res (cons x xs)))
+              ((> x (car xs)) (iter (cdr xs) (append res (list (car xs)))))))
+    (iter set '()))
+}}}
+
+=== Exercise 2.62 ===
+Give a $O(n)$ implementation of `union-set` for sets represented as ordered
+lists.
+
+- Answer:
+
+{{{class="brush: scheme"
+(define (union-set set1 set2)
+    (define (iter s1 s2 res)
+        (cond ((null? s1) (append res s2))
+              ((null? s2) (append res s1))
+              (else (let ((x1 (car s1)) (x2 (car s2)))
+                    (cond ((= x1 x2) (iter (cdr s1) (cdr s2) (append res (list x1))))
+                          ((> x1 x2) (iter s1       (cdr s2) (append res (list x2))))
+                          ((< x1 x2) (iter (cdr s1) s2       (append res (list x1)))))))))
+    (iter set1 set2 '()))
+}}}
+
+=== Exercise 2.63 ===
+Each of the following two procedures converts a binary tree to a list.
+
+{{{class="brush: scheme"
+(define (tree->list-1 tree)
+  (if (null? tree)
+      '()
+      (append (tree->list-1 (left-branch tree))
+              (cons (entry tree)
+                    (tree->list-1 (right-branch tree))))))
+
+(define (tree->list-2 tree)
+  (define (copy-to-list tree result-list)
+    (if (null? tree)
+        result-list
+        (copy-to-list (left-branch tree)
+                      (cons (entry tree)
+                            (copy-to-list (right-branch tree)
+                                          result-list)))))
+  (copy-to-list tree '()))
+}}}
+
+* Do the two procedures produce the same result for every tree? If not, how do
+  the results differ? What lists do the two procedures produce for the trees in
+  picture:
+
+  {{/SICP-Exercise/image/fig-c02-p02-trees.svg|Tree|style="width: 400px; height: 200px"}}
+
+* Do the two procedures have the same order of growth in the number of steps
+  required to convert a balanced tree with n elements to a list? If not, which
+  one grows more slowly?
+
+- Answer:
+
+Since both `tree->list-1` and `tree->list-2` convert a tree into a list in
+a "left-subtree, entry, right-subtree" way, which is an "inorder traversal"
+path to an tree. All 3 trees in the figue returns the list `(1 3 5 7 9 11)`.
+
+The different of times of list operation (Consider `cons` as 1 operation,
+`append` a list at length of m considered m operations) used between the two
+precedure is huge. `tree->list-2` take less operations, for it does not have
+a lot of `append` and `cons` one element to the result on each node traversed.
+So the `tree->list-2` has the order of list operation of $O(n)$. While
+`tree->list-1` has to append a list of right-subtree to left-subtree. So the
+order of list operation would be $O(n^2)$ for the most unbalanced tree, but
+$O(n{\rm log}n)$ for a balanced tree.
+
+=== Exercise 2.64 ===
+The following procedure `list->tree` converts an ordered list to a balanced binary
+tree. The helper procedure `partial-tree` takes as arguments an integer n and list
+of at least n elements and constructs a balanced tree containing the first
+n elements of the list. The result returned by `partial-tree` is a pair (formed
+with `cons`) whose `car` is the constructed tree and whose `cdr` is the list of
+elements not included in the tree.
+
+{{{class="brush: scheme"
+(define (list->tree elements)
+  (car (partial-tree elements (length elements))))
+
+(define (partial-tree elts n)
+  (if (= n 0)
+      (cons '() elts)
+      (let ((left-size (quotient (- n 1) 2)))
+        (let ((left-result (partial-tree elts left-size)))
+          (let ((left-tree (car left-result))
+                (non-left-elts (cdr left-result))
+                (right-size (- n (+ left-size 1))))
+            (let ((this-entry (car non-left-elts))
+                  (right-result (partial-tree (cdr non-left-elts)
+                                              right-size)))
+              (let ((right-tree (car right-result))
+                    (remaining-elts (cdr right-result)))
+                (cons (make-tree this-entry left-tree right-tree)
+                      remaining-elts))))))))
+}}}
+
+* Write a short paragraph explaining as clearly as you can how partial-tree
+  works. Draw the tree produced by `list->tree` for the list `(1 3 5 7 9 11)`.
+
+* What is the order of growth in the number of steps required by `list->tree` to
+  convert a list of n elements?
+
+- Answer:
+
+Here is how `list->tree` works with given list `(1 3 5 7 9 11)`:
+
+{{{class="ascii-art"
+(partial-tree '(1 3 5 7 9 11) 6)
+  |==> left tree (partial-tree '(1 3 5 7 9 11) 2)
+    |==> left tree (partial-tree '(1 3 5 7 9 11) 1)
+      |==> left tree (partial-tree '(1 3 5 7 9 11) 0) <==| returns (cons '() '(1 3 5 7 9 11))
+      |==> right tree (partial '(3 5 7 9 11) 0) <==| returns (cons '() '(3 5 7 9 11))
+    <==| left tree returns '(1 () ())
+    <==| right tree returns '()
+  <==| left tree returns '(3 (1 () ()) ())
+  |==> right tree (partial-tree '(7 9 11) 3)
+    |==> left tree (partial-tree '(7 9 11) 1)
+    ...
+    <==| left tree returns '(7 () ())
+    ...
+    <==| right tree returns '(11 () ())
+  <== right tree returns '(9 (7 () ()) (11 () ()))
+==> got the whole tree: '(5 (3 (1 () ()) ()) (9 (7 () ()) (11 () ())))'
+}}}
+
+This is the same tree as the 3rd tree in the figure of last exercises.
+
+Since this precedure calls `make-tree` and take of an element in the list each
+time of `partial-tree` invoked, the order of growth is $O(n)$ for a list of
+n elements.
+
+=== Exercise 2.65 ===
+Use the results of exercises 2.63 and 2.64 to give $O(n)$ implementations of
+`union-set` and `intersection-set` for sets implemented as (balanced) binary
+trees
+
+- Answer:
+
+Merging two balanced tree into a new balanced tree is never easy. The idea is
+simplily flatten two tree into sorted list, supporsed the trees is build from
+from well sorted lists, union/intersect the merged list, then convert it back to
+a balanced tree. Each step has a order of growth $O(n)$, so at a whole, it is
+$O(n)$. The precedure with `-list` in suffix refer to those coresponding
+precedures to deal with set with sorted-list representation.
+
+{{{class="brush: scheme"
+(define (union-set set1 set2)
+    (cond ((null? set1) set2)
+          ((null? set2) set1)
+          (else
+            (list->tree (union-set-list (tree->list-2 set1)
+                                        (tree->list-2 set2))))))
+(define (intersection-set set1 set2)
+    (cond ((or (null? set1) (null? set2)) '())
+          (else
+            (list->tree (intersection-seti-list (tree->list-2 set1)
+                                                (tree->list-2 set2))))))
+}}}
+
+=== Exercise 2.66 ===
+Implement the lookup procedure for the case where the set of records is
+structured as a binary tree, ordered by the numerical values of the keys.
+
+- Answer:
+
+{{{class="brush: scheme"
+(define (lookup given-key set)
+    (if (null? set) '()
+        (let ((this-entry (entry set)))
+        (let ((this-key (key this-entry)))
+        (cond ((= this-key given-key) this-entry)
+              ((> this-key given-key) (lookup given-key (left-tree this-entry)))
+              ((< this-key given-key) (lookup given-key (right-tree this-entry))))))))
+}}}
+
+=== Exercise 2.67 ===
+Define an encoding tree and a sample message:
+
+{{{ class="brush: scheme"
+(define sample-tree
+  (make-code-tree (make-leaf 'A 4)
+                  (make-code-tree
+                   (make-leaf 'B 2)
+                   (make-code-tree (make-leaf 'D 1)
+                                   (make-leaf 'C 1)))))
+(define sample-message '(0 1 1 0 0 1 0 1 0 1 1 1 0))
+}}}
+
+Use the `decode` procedure to decode the message, and give the result.
+
+- Answer:
+
+Result is list `(a d a b b c a)`
+
+=== Exercise 2.68 ===
+The `encode` procedure takes as arguments a message and a tree and produces the
+list of bits that gives the encoded message.
+
+{{{class="brush: scheme"
+(define (encode message tree)
+  (if (null? message)
+      '()
+      (append (encode-symbol (car message) tree)
+              (encode (cdr message) tree))))
+}}}
+
+`encode-symbol` is a procedure, which you must write, that returns the list of
+bits that encodes a given symbol according to a given tree. You should design
+`encode-symbol` so that it signals an error if the symbol is not in the tree at
+all. Test your procedure by encoding the result you obtained in exercise 2.67
+with the sample tree and seeing whether it is the same as the original sample
+message.
+
+- Answer:
+
+{{{class="brush: scheme"
+(define (encode-symbol sym tree)
+    (define (iter branch res)
+        (cond ((leaf? branch) res)
+              ((memq sym (symbols (left-branch branch)))
+                (iter (left-branch branch) (cons 0 res)))
+              ((memq sym (symbols (right-branch branch)))
+                (iter (right-branch branch) (cons 1 res)))))
+    (reverse (iter tree '())))
+}}}
+
+=== Exercise 2.69 ===
+The following procedure takes as its argument a list of symbol-frequency pairs
+(where no symbol appears in more than one pair) and generates a Huffman
+encoding tree according to the Huffman algorithm.
+
+{{{class="brush: scheme"
+(define (generate-huffman-tree pairs)
+  (successive-merge (make-leaf-set pairs)))
+}}}
+
+`make-leaf-set` is the procedure given above that transforms the list of pairs
+into an ordered set of leaves. `successive-merge` is the procedure you must
+write, using `make-code-tree` to successively merge the `smallest-weight` elements
+of the set until there is only one element left, which is the desired Huffman
+tree. (This procedure is slightly tricky, but not really complicated. If you
+find yourself designing a complex procedure, then you are almost certainly
+doing something wrong. You can take significant advantage of the fact that we
+are using an ordered set representation.)
+
+- Answer:
+
+{{{class="brush: scheme"
+(define (successive-merge ps)
+    (define (repeat time p) (lambda (x)
+        (cond ((= time 0) '())
+              ((= time 1) x)
+              (else ((repeat (- time 1) p) (p x))))))
+    (define (merge-1 xs)
+        (adjoin-set (make-code-tree (car xs) (cadr xs)) (cddr xs)))
+    ((repeat (- (length ps) 1) merge-1) ps))
+}}}
+
+The inner precedure `merge-1` will merge the first two element together, and put
+it back to a proper position in the list using `adjoin-set`. Repeat this step
+n times for a list of n element will get a proper Huffman tree.
+
+This is not as triky as Exercises 2.58. That one is really tricky.
+
+=== Exercise 2.70 ===
+The following eight-symbol alphabet with associated relative frequencies was
+designed to efficiently encode the lyrics of 1950s rock songs. (Note that the
+"symbols" of an "alphabet" need not be individual letters.)
+
+{{{
+A     2   NA  16
+BOOM  1   SHA  3
+GET   2   YIP  9
+JOB   2   WAH  1
+}}}
+
+Use `generate-huffman-tree` (exercise 2.69) to generate a corresponding Huffman
+tree, and use encode (exercise 2.68) to encode the following message:
+
+{{{
+Get a job
+Sha na na na na na na na na
+Get a job
+Sha na na na na na na na na
+Wah yip yip yip yip yip yip yip yip yip
+Sha boom
+}}}
+
+How many bits are required for the encoding? What is the smallest number of
+bits that would be needed to encode this song if we used a fixed-length code
+for the eight-symbol alphabet?
+
+- Answer:
+
+The Huffman encodings of this song takes 84 bits, the whole messege is
+{{{
+111111100111101110000000001111111001111011100000000011010101010101010101010111011011
+}}}
+
+But if we use a fix length encoding, each word needs 3-bit for each can encoding
+8 different word. Therefore, 108 bits for the whole messege.
+
+
+=== Exercise 2.71 ===
+Suppose we have a Huffman tree for an alphabet of n symbols, and that the
+relative frequencies of the symbols are 1, 2, 4, ..., $2^{n-1}$. Sketch the
+tree for n=5; for n=10. In such a tree (for general n) how many bits are
+required to encode the most frequent symbol? the least frequent symbol?
+
+- Answer:
+
+Using symbol a-e to note the 5 symbols, the Huffman tree lookes like this:
+
+{{/SICP-Exercise/image/ch02-p02-ex271-t1.svg|n = 5}}
+
+The tree when n=10 is similiar to n=5, but has more level. In gereral, to encode
+the most frequent symbol alway takes 1 bit (simplily `0`), and n bits for the
+least frequent symbol (`11...1`, n times 1).
+
+=== Exercise 2.72 ===
+Consider the encoding procedure that you designed in exercise 2.68. What is the
+order of growth in the number of steps needed to encode a symbol? Be sure to
+include the number of steps needed to search the symbol list at each node
+encountered. To answer this question in general is difficult.  Consider the
+special case where the relative frequencies of the n symbols are as described
+in exercise 2.71, and give the order of growth (as a function of n) of the
+number of steps needed to encode the most frequent and least frequent symbols
+in the alphabet.
+
+- Answer: 
+
+If the distribution of symbols follows ex2.71, i.e. each symbol's occourance is
+1, 2, 4, ..., $2^{n-1}$, encoding the most frequent symbol takes $O(1)$ step,
+while $O(n)$ for the least frequent symbol. If we consider the ocourance of each
+symbol into account, to encode a message at length of n will takes 
+$n\sum_{i=1}^n i\times\frac{2^{i-1}}{2^n-1}$ steps in average, which is
+surprisingly less then $4n$ for every $n\ge3$, even irrelvent to the size of
+alphbet.
+
+=== Exercise 2.73 ===
+Section 2.3.2 described a program that performs symbolic differentiation:
+
+{{{class="brush: scheme"
+(define (deriv exp var)
+  (cond ((number? exp) 0)
+        ((variable? exp) (if (same-variable? exp var) 1 0))
+        ((sum? exp)
+         (make-sum (deriv (addend exp) var)
+                   (deriv (augend exp) var)))
+        ((product? exp)
+         (make-sum
+           (make-product (multiplier exp)
+                         (deriv (multiplicand exp) var))
+           (make-product (deriv (multiplier exp) var)
+                         (multiplicand exp))))
+        ;<more rules can be added here>
+        (else (error "unknown expression type -- DERIV" exp))))
+}}}
+
+We can regard this program as performing a dispatch on the type of the
+expression to be differentiated. In this situation the "type tag" of the datum
+is the algebraic operator symbol (such as `+`) and the operation being performed
+is `deriv`. We can transform this program into `data-directed` style by rewriting
+the basic derivative procedure as:
+
+{{{class="brush: scheme"
+(define (deriv exp var)
+   (cond ((number? exp) 0)
+         ((variable? exp) (if (same-variable? exp var) 1 0))
+         (else ((get 'deriv (operator exp)) (operands exp)
+                                            var))))
+(define (operator exp) (car exp))
+(define (operands exp) (cdr exp))
+}}}
+
+# Explain what was done above. Why can't we assimilate the predicates number?
+  and `same-variable?` into the data-directed dispatch?
+
+# Write the procedures for derivatives of sums and products, and the
+  auxiliary code required to install them in the table used by the program above.
+
+# Choose any additional differentiation rule that you like, such as the one
+  for exponents (exercise 2.56), and install it in this data-directed system.
+
+# In this simple algebraic manipulator the type of an expression is the
+  algebraic operator that binds it together. Suppose, however, we indexed the
+  procedures in the opposite way, so that the dispatch line in deriv looked like
+
+{{{class="brush: scheme"
+((get (operator exp) 'deriv) (operands exp) var)
+}}}
+
+What corresponding changes to the derivative system are required? 
+
+- Answer:
+
+The reason for `number?` and `same-variable` can't assimilated into
+data-directed dispatch is they are dealing with data without data-tag. 
+
+The precedure to derives sum and product looks likes this:
+
+{{{class="brush: scheme"
+(define (deriv-add expr) 
+    (make-sum (deriv (addend expr))
+              (deriv (augend expr))))
+(define (deriv-prod expr)
+    (let ((exp1 (multiplicand expr))
+          (exp2 (multiplication expr)))
+    (make-sum (make-product exp1 (deriv exp2))
+              (make-product exp2 (deriv exp1)))))
+(put 'deriv '(+) deriv-add)
+(put 'deriv '(*) deriv-prod)
+}}}
+
+Add exponent to `deriv`. Using precedures in previous exercises.
+
+{{{class="brush: scheme"
+(define (deriv-exponent expr)
+    (make-product
+        (exponent expr)
+        (make-product (make-exponentiation (base expr) (- (exponent expr) 1))
+                      (deriv (base expr) var))))
+}}}
+
+If we want to use dispatch line like `((get (operator exp) 'deriv) (operands exp) var)))`,
+we need to implement `operator` and `operands` precedures.
+
+{{{class="brush: scheme"
+(define operator car)
+(define operands (lambda (x) x))
+}}}
+
+=== Exercise 2.74 ===
+Insatiable Enterprises, Inc., is a highly decentralized conglomerate company
+consisting of a large number of independent divisions located all over the
+world. The company's computer facilities have just been interconnected by means
+of a clever network-interfacing scheme that makes the entire network appear to
+any user to be a single computer. Insatiable's president, in her first attempt
+to exploit the ability of the network to extract administrative information
+from division files, is dismayed to discover that, although all the division
+files have been implemented as data structures in Scheme, the particular data
+structure used varies from division to division. A meeting of division managers
+is hastily called to search for a strategy to integrate the files that will
+satisfy headquarters' needs while preserving the existing autonomy of the
+divisions.
+
+Show how such a strategy can be implemented with data-directed programming. As
+an example, suppose that each division's personnel records consist of a single
+file, which contains a set of records keyed on employees' names. The structure
+of the set varies from division to division. Furthermore, each employee's
+record is itself a set (structured differently from division to division) that
+contains information keyed under identifiers such as address and salary. In
+particular:
+
+a.  Implement for headquarters a `get-record` procedure that retrieves a
+specified employee's record from a specified personnel file. The procedure
+should be applicable to any division's file. Explain how the individual 
+divisions' files should be structured. In particular, what type information
+must be supplied?
+
+b.  Implement for headquarters a `get-salary` procedure that returns the salary
+information from a given employee's record from any division's personnel file.
+How should the record be structured in order to make this operation work?
+
+c.  Implement for headquarters a `find-employee-record` procedure. This should
+search all the divisions' files for the record of a given employee and return
+the record. Assume that this procedure takes as arguments an employee's name
+and a list of all the divisions' files.
+
+d.  When Insatiable takes over a new company, what changes must be made in
+order to incorporate the new personnel information into the central system? 
+
+- Answer:
+
+Short answer, how the files structured in each division dose not matter much,
+as long as it suits the needs of each division. The HQ may holds a list of all
+personnel, detailing which division each personnel belongs, and syncronize it
+with each division on every personnel changes. When the HQ calls `get-record`,
+it looks up in the personnel list, knowing which division to querry, and then
+send a request to the coresponding division. The division get this request,
+doing theri local search, and return thr record in a unified format, meaning
+each division shall implement their own constrotor, but returns a same
+representation. Then `get-salary` shall just extract the information from the
+record as a selector. `find-employee-record` works like a `filter-map`, like 
+{{{class="brush: scheme"
+(define (find-employee-record name)
+    (map get-record (filter (lambda (x) (eq? name x)) employee-name-list)))
+}}}
+shall do. 
+
+Adding a new division is simple in this design. Just implement the constrotor
+for record locally, and an interface to process requests come from HQ, and
+return the record. Then syncronize the employee list to HQ.
+
+The most tricky part in this design is how to syncronize the employee list. This
+is indeed a very complex problem cannot be avoided in a distributed system. 
+
+=== Exercise 2.75 ===
+Implement the constructor `make-from-mag-ang` in message-passing style. This
+procedure should be analogous to the `make-from-real-imag` procedure given above.
+
+- Answer:
+
+{{{class="brush: scheme"
+(define (make-from-mag-ang r t)
+    (define (dispatch op)
+        (cond ((eq? op 'real-part) (* r (sin t)))
+              ((eq? op 'imag-part) (* r (cos t)))
+              ((eq? op 'magnitude) r)
+              ((eq? op 'angle)     t))
+              (else "Unknown op ---" op))
+    dispatch)
+}}}
+
+=== Exercise 2.76 ===
+As a large system with generic operations evolves, new types of data objects or
+new operations may be needed. For each of the three strategies -- generic
+operations with explicit dispatch, data-directed style, and
+message-passing-style -- describe the changes that must be made to a system in
+order to add new types or new operations. Which organization would be most
+appropriate for a system in which new types must often be added? Which would be
+most appropriate for a system in which new operations must often be added?
+
+- Answer:
+
+Add a new operation to the system when using explicit dispatch need to modified all
+involved precedure, adding approperated branches. This method need huge amount
+of work, and will affect exisiting code in an unpredicatable way (introducing
+new bug, forget some branches, recurssion, etc.). The same thing happens when we
+add a new type to the system. This really sucks.
+
+In data-directed style program, we will only need insert new implement into
+global add to the system, which means whatever we want to add to the system, we
+can simplily append the source to the original source without touching any
+already exisiting source, which makes it the most simple way to add new feature
+of old system. But all these come with a price, for in a large system, the
+dispatch table can be huge. This will resulting in a big overhead when the
+dispatcher lookup in the table, and find the which precedure to call. Also,
+dealing the tag in data can also have a tiny overhead. And we still need to
+worry about name comflict, but dealing with it is much easier in comperison to
+explicit dispatch style. This is the best way foe system with bunch of "fixed"
+precedure, but need to add new type often.
+
+Message passing comes in the middle. We need add new branches into all
+involving precedure when adding new types, lots of work, but less than explicit
+dispatch. Adding new precedure is much easier, only need to implement them.
+But we do not have to worry about name comflict at all, for everything is in
+a closure. And this style does not have the overhead of looking up the dispatch
+table and deal with the tag in the data. This is the best way for a system needs
+new operations must often be added, and need convertions between types often.
 
 %toc
