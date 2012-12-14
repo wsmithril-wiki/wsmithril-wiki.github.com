@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link type="image/x-icon" rel="icon" href="/favicon.ico" />
+    <link type="image/x-icon" rel="shortcut icon" href="/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="/css/style.css" />
+    <script type="text/javascript" src="/MathJax/MathJax.js?config=TeX-AMS-MML_SVG"></script>
+    <title>Chapter02-p03</title>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-35399239-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</head>
+<body>
+    <div class="content">
+<h1 id="toc_1">SICP Exercises</h1>
+<h2 id="toc_1.1">Chapter 02 - Part.III</h2>
+
+<h3 id="toc_1.1.1">Exercise 2.77</h3>
+<p>
+Louis Reasoner tries to evaluate the expression <code>(magnitude z)</code> where <code>z</code> is the
+object shown in figure 2.24. To his surprise, instead of the answer 5 he gets an
+error message from <code>apply-generic</code>, saying there is no method for the operation
+magnitude on the types (complex). He shows this interaction to Alyssa P. Hacker,
+who says that the problem is that the complex-number selectors were never defined
+for complex numbers, just for polar and rectangular numbers. All you have to do
+to make this work is add the following to the complex package:
+</p>
+<pre class="brush: scheme">
+(put 'real-part '(complex) real-part)
+(put 'imag-part '(complex) imag-part)
+(put 'magnitude '(complex) magnitude)
+(put 'angle '(complex) angle)
+</pre>
+<p>
+Describe in detail why this works. As an example, trace through all the
+procedures called in evaluating the expression <code>(magnitude z)</code> where z is the
+object shown in figure 2.24. In particular, how many times is <code>apply-generic</code>
+invoked? What procedure is dispatched to in each case? 
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<p>
+When the interpreter try to evaluate <code>(magnitude z)</code>, where <code>z</code> is the date
+object <code>'(complex . (rectangular . (3 4)))</code>, the <code>magnitude</code> precedure shall get the
+tag of this data, which is <code>complex</code>, then lookup into the selector in dispatch
+table, not surprisingly, this will fail, for there is not such thing. Then, the
+dispatcher <code>apply-generic</code> just returns an error. 
+</p>
+
+<p>
+After we install those orecedures in the complex pckage, the lookup will return
+<code>magnitude</code> as the selector. Then <code>apply-generic</code> will call this precedure like
+<code>(magnitude (rectangular . (3 4)))</code>. Again, this needs to call <code>apply-generic</code>,
+but needs to lookup the selector for the tag <code>rectangular</code>, and it is
+<code>magnitude</code> in <code>rectangular-package</code>, and then the interpreter shall evaluate 
+<code>(magnitude 3 4)</code> and returns the right answer <code>5</code>. 
+</p>
+
+<h3 id="toc_1.1.2">Exercise 2.78</h3>
+<p>
+The internal procedures in the <code>scheme-number</code> package are essentially nothing
+more than calls to the primitive procedures <code>+</code>, <code>-</code>, etc. It was not possible to
+use the primitives of the language directly because our type-tag system requires
+that each data object have a type attached to it. In fact, however, all Lisp
+implementations do have a type system, which they use internally. Primitive
+predicates such as <code>symbol?</code> and <code>number?</code> determine whether data objects have
+particular types. Modify the definitions of <code>type-tag</code>, <code>contents</code>, and
+<code>attach-tag</code> from section 2.4.2 so that our generic system takes advantage of
+Scheme's internal type system. That is to say, the system should work as before
+except that ordinary numbers should be represented simply as Scheme numbers
+rather than as pairs whose <code>car</code> is the symbol <code>scheme-number</code>.
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define (type-tag data)
+    (cond ((pair? data) 
+            (let ((tag (car data)))
+            (if (symbol? tag) tag 'scheme-pair)))
+          ((number? data) 'scheme-number)
+          (else "error tag -- DATA" data)))
+; list of data types with no data tags
+(define internal-list '(scheme-number scheme-pair))
+(define (attach-tag tag data)
+    (if (any (lambda (x) (eq? tag x)) internal-list) data (cons tag data)))
+(define (content data) 
+    (let ((tag (type-tag data)))
+    (if (any (lambda (x) (eq? tag x)) internal-list) data (cdr data))))
+
+; then, we can add those type like
+(put 'add '(scheme-number scheme-number) +)
+; or the more "unified" way, attaching tags
+(put 'add '(scheme-number scheme-number)
+    (lambda (x y) (attach-tag 'scheme-number (+ x y))))
+</pre>
+
+<h3 id="toc_1.1.3">Exercise 2.79</h3>
+<p>
+Define a generic equality predicate <code>equ?</code> that tests the equality of two numbers,
+and install it in the generic arithmetic package. This operation should work for
+ordinary numbers, rational numbers, and complex numbers.
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+; this goes into scheme-number package
+(put 'equ? '(scheme-number scheme-number) (lambda (x y) (= x y)))
+; and the retional number
+(put 'equ? '(rational rational)
+    (lambda (x y) (= (* (numer x) (denom y)) 
+                     (* (denom x) (numer y)))))
+; and complex number
+(put 'equ? '(complex complex) 
+    (lambda (x y) (and (= (real-part x) (real-part y)) 
+                       (= (imag-part x) (imag-part y)))))
+</pre>
+
+<h3 id="toc_1.1.4">Exercise 2.80</h3>
+<p>
+Define a generic predicate <code>=zero?</code> that tests if its argument is zero, and
+install it in the generic arithmetic package. This operation should work for
+ordinary numbers, rational numbers, and complex numbers. 
+</p>
+
+<pre class="brush: scheme">
+(put '=zero? 'scheme-number (lambda (x) (= x 0)))
+(put '=zero? 'rational 
+    (lambda (x) (and (= 0 (numer x))
+                     (not (= 0 (denom x))))))
+(put '=zero? 'complex (lambda (x) (= 0 (magnitude x))))
+</pre>
+
+<h3 id="toc_1.1.5">Exercise 2.81</h3>
+<p>
+Louis Reasoner has noticed that <code>apply-generic</code> may try to coerce the arguments to
+each other's type even if they already have the same type. Therefore, he
+reasons, we need to put procedures in the coercion table to "coerce" arguments
+of each type to their own type. For example, in addition to the
+<code>scheme-number-&gt;complex</code> coercion shown above, he would do:
+</p>
+<pre class="brush: scheme">
+(define (scheme-number-&gt;scheme-number n) n)
+(define (complex-&gt;complex z) z)
+(put-coercion 'scheme-number 'scheme-number
+              scheme-number-&gt;scheme-number)
+(put-coercion 'complex 'complex complex-&gt;complex)
+</pre>
+
+<ol>
+<li>
+With Louis's coercion procedures installed, what happens if apply-generic is
+  called with two arguments of type scheme-number or two arguments of type complex
+  for an operation that is not found in the table for those types? For example,
+  assume that we've defined a generic exponentiation operation:
+<pre class="brush: scheme">
+(define (exp x y) (apply-generic 'exp x y))
+</pre>
+  and have put a procedure for exponentiation in the Scheme-number package but
+  not in any other package:
+<pre class="brush: scheme">
+;; following added to Scheme-number package
+(put 'exp '(scheme-number scheme-number)
+     (lambda (x y) (tag (expt x y)))) ; using primitive expt
+</pre>
+  What happens if we call exp with two complex numbers as arguments?
+
+<li>
+Is Louis correct that something had to be done about coercion with arguments
+  of the same type, or does apply-generic work correctly as is?
+
+<li>
+Modify apply-generic so that it doesn't try coercion if the two arguments have
+  the same type. 
+
+</ol>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<p>
+Louis's coercion precedures is a bad idea. When calling a precedure cannot found
+in the dispatch table, the <code>apply-generic</code> will start try to coerce both args,
+form themself to themself, and call <code>apple-generic</code> and doing all this all
+over again. The evaluation will trapped in an infinity loop, with no exit. In
+fact, what Louis did is pointless, but reveal a possible bug here: if we happen
+to have the coercion between in the corecion table, and call a <code>apply-generic</code>   
+with no generic precedure in the dispatch table, this will end up with infinate
+loop.
+</p>
+
+<p>
+To make sure that this never happen, we needs to check if the args is in a same
+type:
+</p>
+<pre class="brush: scheme">
+(define (apply-generic op . args)
+    (let ((type-tags (map type-tag args)))
+    (let ((proc (get op type-tags)))
+    (if proc (apply proc (map contents args))
+        (if (= (length args) 2)
+            (let ((type1 (car type-tags))
+                  (type2 (cadr type-tags))
+                  (a1 (car args))
+                  (a2 (cadr args)))
+            ; ==== NEW CODE HERE ====
+            (if (eq? type1 type2) 
+                (error "No method for these type" (list op type-tags))
+                (let ((t1-&gt;t2 (get-coercion type1 type2))
+                      (t)'&gt;t1 (get-coercion type2 type1)))
+                (cond (t1-&gt;t2 (apply-generic op (t1-&gt;t2 a1) a2))
+                      (t2-&gt;t1 (apply-generic op a1 (t2-&gt;t1 a2)))
+                      (else (error "No method for these types"
+                                   (list op type-tags))))))
+                (error "No method for these types"
+                       (list op type-tags)))))))
+</pre>
+
+<p>
+But this method has a big problem: when we only have a precedure that only
+handles data with different type, implement <code>apply-generic</code> in this fashion will
+never let you do what you want.
+</p>
+
+<h3 id="toc_1.1.6">Exercise 2.82</h3>
+<p>
+Show how to generalize <code>apply-generic</code> to handle coercion in the general case of
+multiple arguments. One strategy is to attempt to coerce all the arguments to
+the type of the first argument, then to the type of the second argument, and so
+on. Give an example of a situation where this strategy (and likewise the
+two-argument version given above) is not sufficiently general. (Hint: Consider
+the case where there are some suitable mixed-type operations present in the
+table that will not be tried.)
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<p>
+This modified <code>apply-generic</code> can be apply to multiple args:
+</p>
+<pre class="brush: scheme">
+(define (apply-generic op . args)
+    (let ((type-tags (map type-tag args)))
+    (define errmsg (error "No method for those types" (list op type-tags)))
+    ; no conversion
+    (define (id x) x)
+    ; when same type conversion, retuen precedure id
+    (define (get-coerce t1 t2) 
+            (if (eq? t1 t2) id (get-corection t1 t2)))
+    ; helper function for get coercion for all types
+    (define (first-coercion rest-types)
+        (let ((t (cat rest-types)))
+        (if (null? t) '() ; no coercion function for all types
+            (let ((coerce-list (map (lambda (t) (get-coercion t this-type)
+                                    type-tags))))
+            (if (all id coerce-list) coerce-list
+                (first-coercion (cdr rest-types)))))))
+    ; same to (zipWith $) in Haskell
+    (define (zipwith$ funclist arglist)
+        (define (iter fs as result)
+            (if (or (nil? fs) (nil? as)) (reverse result)
+                (iter (cdr fs) (cdr as) (cons ((car fs) (car zs)) resule))))
+        (iter fs as '()))
+    (let ((proc (get op type-tags)))
+    (if proc (apply proc (map contents args))
+        (cond ((= 1 (length args)) (errmsg))
+              ((all (lambda (x) (eq? x (car type-tags))) (cdr args)) (errmsg))
+              (else 
+                (let ((coercions (first-coercion type-tags)))
+                (if (coercions) (apply proc (zipwith$ coercions args))
+                    (errmsg)))))))))
+</pre>
+
+<p>
+Very complex, yet buggy one. Consider the following situation: if there is no
+precedure to coerce one type directly into another, say, we have precedure to
+coerce <code>integer</code> to <code>rational</code> and <code>rational</code> to <code>real</code>, but we do not have a precedure
+to coerce <code>integer</code> to <code>real</code> in one step, then this precedure will not try the
+two step coerce.
+</p>
+
+<h3 id="toc_1.1.7">Exercise 2.83</h3>
+<p>
+Suppose you are designing a generic arithmetic system for dealing with the tower
+of types shown in figure 2.25: <code>integer</code>, <code>rational</code>, <code>real</code>, <code>complex</code>. For each type
+(except <code>complex</code>), design a procedure that raises objects of that type one level
+in t)e tower. Show how to install a generic raise operation that will work for
+each type (except complex).
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<p>
+Supporsed we already have those type coercion precedures to coerce one type up
+along the tree on level, all we need to do is to install generic operation
+<code>raise</code> to dispatch table, like any other generic operations.
+</p>
+<pre class="brush: scheme">
+(put 'raise 'integer  (lambda (i) ((get-coeration 'integer  'rational) i)))
+(put 'raise 'rational (lambda (r) ((get-coeration 'rational 'real)     r)))
+(put 'raise 'real     (lambda (r) ((get-coeration 'real     'complex)  r)))
+; and the generic operation
+(define (raise x) (apply-generic 'raise x))
+</pre>
+
+<h3 id="toc_1.1.8">Exercise 2.84</h3>
+<p>
+Using the <code>raise</code> operation of exercise 2.83, modify the <code>apply-generic</code> procedure
+so that it coerces its arguments to have the same type by the method of
+successive raising, as discussed in this section. You will need to devise a way
+to test which of two types is higher in the tower. Do this in a manner that is
+"compatible" with the rest of the system and will not lead to problems in
+adding new levels to the tower.
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+; for simplicity, only implement apply-generic with two args
+(define (apply-generic op v1 v2)
+    ; raise v to the type t
+    (define (raise-to v t)
+        (let ((vt (type-tag v)))
+        (let ((raise-proc (get 'raise vt)))
+        (cond ((eq? vt t) v)
+              (raise-proc (raise-to (raise-proc v) t))
+              (else #f)))))
+    (let ((t1 (type-tag v1))
+          (t2 (type-tag v2)))
+    (let ((proc (get op (list t1 t1))))
+    (cond (proc (proc v1 v2))
+          ((eq? t1 t2) (error "NO precedure for" (list op t1 t2)))
+          (else (let ((v1-&gt;v2 (raise-to v1 t2)))
+                (if v1-&gt;v2 (apply-generic op v1-&gt;v2 v2)
+                    (let ((v2-&gt;v1 (raise v2 v1)))
+                    (if v2-&gt;v1 (apply-generic op v1 v2-&gt;v1)
+                        (error "No precedure for" (list op t1 t2)))))))))))
+</pre>
+
+<h3 id="toc_1.1.9">Exercise 2.85</h3>
+<p>
+This section mentioned a method for "simplifying" a data object by lowering it
+in the tower of types as far as possible. Design a procedure drop that
+accomplishes this for the tower described in exercise 2.83. The key is to
+decide, in some general way, whether an object can be lowered. For example, the
+<code>complex</code> number <code>1.5 + 0i</code> can be lowered as far as <code>real</code>, the <code>complex</code>
+number <code>1 + 0i</code> can be lowered as far as <code>integer</code>, and the <code>complex</code> number <code>2 + 3i</code> 
+cannot be lowered at all. Here is a plan for determining whether an object can
+be lowered: Begin by defining a generic operation project that "pushes" an
+object down in the tower. For example, projecting a <code>complex</code> number would
+involve throwing away the imaginary part. Then a number can be dropped if, when
+we project it and raise the result back to the type we started with, we end up
+with something equal to what we started with. Show how to implement this idea in
+detail, by writing a <code>drop</code> procedure that drops an object as far as possible.
+You will need to design the various projection operations and install project as
+a generic operation in the system. You will also need to make use of a generic
+equality predicate, such as described in exercise 2.79. Finally, use drop to
+rewrite <code>apply-generic</code> from exercise 2.84 so that it "simplifies"" its answers.
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<p>
+Again, we do not implement each drop one level precedures, assume they are
+already implemented by the convention of returning the same value when cannot
+simplify the value. For example trying to drop <code>1+2i</code> will get <code>1+2i</code>.
+</p>
+<pre class="brush: scheme">
+(put 'drop 'complex  drop-complex)
+(put 'drop 'real     drop-real)
+(put 'drop 'rational drop-rational)
+(put 'drop 'integer (lambda (x) x)) ; basic level, cannot drop
+
+; generic drop precedure
+(define (drop x) 
+    (let ((tag (type-tag x)))
+          (dropped-value (apply-generic 'drop x))
+    (let ((droppen-tag (type-tag dropped-value)))
+    (if (eq? tag dropped-tag) x (drop dropped-value)))))
+
+; the new version of apply-generic only needs to drop the return value.
+; apply-generic-2-84 is the apply-generic in exercise 2.84
+(define (apply-generic op v1 v2) (drop (apply-generic-2-84 p v1 v2)))
+</pre>
+
+<h3 id="toc_1.1.10">Exercise 2.86</h3>
+<p>
+Suppose we want to handle <code>complex</code> numbers whose real parts, imaginary parts,
+magnitudes, and angles can be either ordinary numbers, rational numbers, or
+other numbers we might wish to add to the system. Describe and implement the
+changes to the system needed to accommodate this. You will have to define
+operations such as sine and cosine that are generic over ordinary numbers and
+rational numbers. 
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<p>
+Only partialy implement <code>integer</code> package.
+</p>
+<pre class="brush: scheme">
+(define (install-integer-package)
+    (define (tag x) (attach-tag 'integer x))
+    (put 'make 'integer (lambda(x) (tag x)))
+    ; don't install cos and sin, calling these precedure will result in a raise
+    (put 'add 'integer (lambda (x y) (tag (+ (int x) (int y)))))
+    ; and other arithmetic operatios...
+    'done)
+</pre>
+
+<p>
+To get a more consistant with the real mathematic defination, we needs to define
+the <code>sine</code> precedure in the <code>real</code> package to implement the "classic" <code>sine</code>,
+whose domain is just all real number, and then define its analytic prolongation
+in <code>complex</code> package, only implementing the complex number part. Calling <code>sine</code>
+with an <code>integer</code> will result in <code>raise</code> its argument twice into <code>real</code>, then
+calling <code>sine</code> in <code>real</code> package.
+</p>
+
+<h3 id="toc_1.1.11">Exercise 2.87</h3>
+<p>
+Install <code>=zero?</code> for polynomials in the generic arithmetic package. This will
+allow <code>adjoin-term</code> to work for polynomials with coefficients that are themselves
+polynomials.
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<pre class="brush: scheme">
+(define (=zero? x) (apply-generic '=zero? x))
+; this goes into the scheme-number package
+(put '=zero? 'scheme-number (lambda (x) (and (number? x) (= x 0))))
+; and this goes into polynomial package
+(put '=zero? 'polinomial (lambda (x)
+    (empty-termlist? x)
+</pre>
+
+<h3 id="toc_1.1.12">Exercise 2.88</h3>
+<p>
+Extend the polynomial system to include subtraction of polynomials. (Hint: You
+may find it helpful to define a generic negation operation.)
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<p>
+Just take advantage of the fact \(a+b=a+(-1)*b\):
+</p>
+
+<pre class="brush: scheme">
+(define (negation x) (apply-generic 'negation x))
+(put 'negation 'polynomial (lambda (x) 
+    (make-polynomial (variable x)
+                     (map (lambda (t) (make-term (order t) (* -1 (coeff t))))
+                          (term-list t)))))
+; define sub via add and negation on generic operation level
+(define (sub x y) (apply-generic 'add x (apply-generic 'negation y)))
+</pre>
+
+<h3 id="toc_1.1.13">Exercise 2.89</h3>
+<p>
+Define procedures that implement the <code>term-list</code> representation described above as
+appropriate for dense polynomials.
+</p>
+
+<ul>
+<li>
+Answer:
+
+</ul>
+
+<p>
+Indeed a major change. Starting with the dense list:
+</p>
+
+<pre class="brush: scheme">
+(define (install-polynimial-dense-package) 
+    ; dealing with tags
+    (define (tag) 'polynomial-dense)
+    (define (tagged x) (appatch-tag tag x))
+    
+    ; make
+    (put 'make tag (lambda (v t) (tagged (cons v t))))
+    
+    ; selectors
+    (define (term-list p) (cdr p))
+    (define (variable  p) (car p))
+
+    ; helper functions
+    (define (prefix-zeros n l) (if (&lt;= n 0) l (prefix-zeros (- n 1) (cons 0 l))))
+    (define (zipwith f l1 l2)
+        (define (iter as bs result)
+            (if (or (null? as) (null? bs)) (reverse result)
+                (iter (cdr as) (cdr bs) (cons (f (car as) (car bs)) result)))))
+    
+    ; only add and mulptiply
+    (define (add-termlist p1 p2)
+        (if (not (eq? (variable p1) (variable p2))) 
+            (error "Add cannot apply to POLYNOMIAL with different variables")
+            (let ((vl1 (term-list p1))
+                  (vl2 (term-list p2)))
+            (let ((l1 (length vl1))
+                  (l2 (length vl2)))
+            (zipwith add (prefix-zeros (- l2 l1) vl1) (prefox-zeros (- l1 l2) vl2))))))
+    (put 'add tag add-term)
+
+    (put 'mul tag (lambda (x y)
+        (define (mul-one t ls) (map (lambda (l) (mul t l)) ls))
+        (define (iter l result)
+            (if (null? l) result
+                (iter (cdr l)
+                      (add-term result (append (mul-one (car l) l2)
+                                               (prefix-zeros (length l) '()))))))
+        (if (not (eq? (variable p1) (variable p2))) 
+            (error "MUL cannot apply to POLYNOMIAL with different variables")
+            (let ((vl1 (term-list p1))
+                  (vl2 (term-list p2)))
+            (let ((l1 (length vl1))
+                  (l2 (length vl2)))
+            (iter l1 l2))))))
+    ; get termlist as dense list
+    (put 'dense-term 'polynomial-dense term-list)
+    ; get sparse term list
+    (put 'sparse-term 'polynomial-dense (lambda (x) 
+        (zipwith make-term-dense 
+                (reverse (iterate-interval 0 (length x)))
+                (term-list x))))
+    'done)
+</pre>
+
+<p>
+And the sparse representation should remain as same as <code>polynomial</code> package in
+the book, but rename it to <code>polynimail-sparse</code>.
+</p>
+
+<p>
+Finally, we combine those two representation in a whole package called
+<code>polynomial</code>, and add those generic operations:
+</p>
+
+
+
+<pre class="brush: scheme">
+(define (install-polynomial-package ))
+</pre>
+
+
+<p>
+Exercise 2.90.  Suppose we want to have a polynomial system that is efficient for both sparse and dense polynomials. One way to do this is to allow both kinds of term-list representations in our system. The situation is analogous to the complex-number example of section 2.4, where we allowed both rectangular and polar representations. To do this we must distinguish different types of term lists and make the operations on term lists generic. Redesign the polynomial system to implement this generalization. This is a major effort, not a local change.
+</p>
+
+<p>
+Exercise 2.91.  A univariate polynomial can be divided by another one to produce a polynomial quotient and a polynomial remainder. For example,
+</p>
+
+<p>
+Division can be performed via long division. That is, divide the highest-order term of the dividend by the highest-order term of the divisor. The result is the first term of the quotient. Next, multiply the result by the divisor, subtract that from the dividend, and produce the rest of the answer by recursively dividing the difference by the divisor. Stop when the order of the divisor exceeds the order of the dividend and declare the dividend to be the remainder. Also, if the dividend ever becomes zero, return zero as both quotient and remainder.
+</p>
+
+<p>
+We can design a div-poly procedure on the model of add-poly and mul-poly. The procedure checks to see if the two polys have the same variable. If so, div-poly strips off the variable and passes the problem to div-terms, which performs the division operation on term lists. Div-poly finally reattaches the variable to the result supplied by div-terms. It is convenient to design div-terms to compute both the quotient and the remainder of a division. Div-terms can take two term lists as arguments and return a list of the quotient term list and the remainder term list.
+</p>
+
+<p>
+Complete the following definition of div-terms by filling in the missing expressions. Use this to implement div-poly, which takes two polys as arguments and returns a list of the quotient and remainder polys.
+</p>
+
+<pre class="brush: scheme">
+(define (div-terms L1 L2)
+  (if (empty-termlist? L1)
+      (list (the-empty-termlist) (the-empty-termlist))
+      (let ((t1 (first-term L1))
+            (t2 (first-term L2)))
+        (if (&gt; (order t2) (order t1))
+            (list (the-empty-termlist) L1)
+            (let ((new-c (div (coeff t1) (coeff t2)))
+                  (new-o (- (order t1) (order t2))))
+              (let ((rest-of-result
+                     &lt;compute rest of result recursively&gt;
+                     ))
+                &lt;form complete result&gt;
+                ))))))
+</pre>
+
+
+<div class="toc">
+<ul>
+<li><a href="#toc_1">SICP Exercises</a>
+<ul>
+<li><a href="#toc_1.1">Chapter 02 - Part.III</a>
+<ul>
+<li><a href="#toc_1.1.1">Exercise 2.77</a>
+<li><a href="#toc_1.1.2">Exercise 2.78</a>
+<li><a href="#toc_1.1.3">Exercise 2.79</a>
+<li><a href="#toc_1.1.4">Exercise 2.80</a>
+<li><a href="#toc_1.1.5">Exercise 2.81</a>
+<li><a href="#toc_1.1.6">Exercise 2.82</a>
+<li><a href="#toc_1.1.7">Exercise 2.83</a>
+<li><a href="#toc_1.1.8">Exercise 2.84</a>
+<li><a href="#toc_1.1.9">Exercise 2.85</a>
+<li><a href="#toc_1.1.10">Exercise 2.86</a>
+<li><a href="#toc_1.1.11">Exercise 2.87</a>
+<li><a href="#toc_1.1.12">Exercise 2.88</a>
+<li><a href="#toc_1.1.13">Exercise 2.89</a>
+</ul>
+</ul>
+</ul>
+</div>
+</div>
+    <div id="copyright"></div>
+    <div id="disqus_thread"></div>
+    <div class="footer"></div>
+</body>
+</script>
+<script src="/js/jquery-1.4.2.min.js" type="text/javascript"></script>
+<script src="/js/wiki.js" type="text/javascript"></script>
+</html>
