@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link type="image/x-icon" rel="icon" href="/favicon.ico" />
+    <link type="image/x-icon" rel="shortcut icon" href="/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="/css/style.css" />
+    <script type="text/javascript" src="/MathJax/MathJax.js?config=TeX-AMS-MML_SVG"></script>
+    <title>On unicode and Character Sets</title>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-35399239-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</head>
+<body>
+    <div class="content">
+<h1 id="toc_1">Unicode和字符集</h1>
+
+<p>
+在Windows XP的Notepad中有一个经典的BUG：
+新建一个文本文件，在里面输入<code>Bush hid the facts</code>，没有换行符。然后保存退出，再打
+开这个文件，文件的内容就会变成<code>畂桳栠摩琠敨映捡獴</code>。这种现象叫做<code>Mojibake</code>
+(源自日语<code>文字化け</code>)，我们一般叫它乱码。
+</p>
+
+<p>
+两段文字其实是同一串字节流在不同编码下的得到的结果。
+</p>
+<pre  class="brush: bash">
+$ echo '畂桳栠摩琠敨映捡獴' | iconv -f UTF8 -t UTF16LE
+Bush hid the facts
+</pre>
+
+<p>
+有人说任何符合单词长度是<code>4 3 3 5</code>的文件都能触发这个BUG，但实际上不是。
+<code>Bush hid the facts</code>，<code>This app now broken</code>都能触发BUG，但<code>Bush hid the truth</code>
+就不行。Notepad会调用<code>IsTextUnicode()</code>来*<strong>猜</strong>*字符串是不是unicode编码，显然猜得
+不太准确。
+</p>
+
+<p>
+其实这里还有一个问题，Windows下的Unicode编码其实是UTF-16LE With BOM。
+</p>
+
+<h2 id="toc_1.1">Once upon a time</h2>
+
+<p>
+理清字符编码问题的最好方法就是跟随字符编码的发展，一点一点来看
+</p>
+
+<p>
+当<code>Unix</code>系统和<code>K&amp;R C</code>刚成型的时候，并不需要处理太多字符，只需要常见的英文字
+母和数字等就够用了。他们采用了<code>ASCII</code>码表来表示这些字符。<code>ASCII</code>码表用7bit表示一
+个字符，所有常用的字符都编码在0x20~0x7f这个范围内，0x20是空格，0x41是A等等。
+0x00~0x1f留给了控制字符，包括Backspace、CR、LF等。当时绝大多数电脑都用的都是
+8-bit表示一个字节，大多数情况下都是用一字节保存一个字符。
+</p>
+
+<p>
+用一字节表示一个字符带来一个问题：每个字节值只用到了0x00~0x7f，还有1bit没有用到
+。当时很多人都想到了要把这一位利用起来。当时，有的文字处理软件将这一位用来标记正
+文的最后一个字符：这一位为1的是正文的最后一个字。这只是个例。更多人的想法是将
+<code>ASCII</code>扩展，将0x80~0xff映射为自己需要的字符。但是很不幸，映射成哪些字符每个人的
+想法都不同。
+</p>
+
+<p>
+当时IBM-PC将0x80-0xff这个区间内字符称为OEM字符，包含方言字符、制表符等（<code>áåâäà</code>
+， <code>├─┼┤</code>这些等）。这应该是最常见的扩展。不同的PC制造商也都借鉴了这个思路，实现
+了自己的OEM字符。有些厂商为了将PC销往不同的地区，针对不同语言的用户使用不同的OEM
+。比如在销往欧洲地区将0x82映为<code>é</code>，而在销往西亚地区的PC中将0x83映为<code>ת</code>。这样做有
+一个明显的问题：同样地文本在不同的电脑上可能显示为不同的内容，<code>résumé</code>在一部分PC
+上能正常显示，在令一部分PC上就会变成<code>rתsumת</code>。幸好当时互联网不发达，这样的问题比
+较罕见。
+</p>
+
+<p>
+之后一段时间里，这些OEM扩展逐渐汇总为<code>ANSI</code>标准。在标准中，对0x80~0xff不同的扩展
+以<code>页</code>(Code page)区分。就像一本书，希腊语在737页，中文在936页，查找一个字符首先
+要知道用哪一个<code>Code page</code>，随后在对应的页上查找。这似乎解决了不同扩展的问题，只
+要预先将所有的<code>Code page</code>预装在PC上，打开文件时只要指定好<code>Code page</code>就能得到正常
+的显示结果。这种编码方式一般叫做<code>ANSI</code>。但是这个解决方案还是不能正确处理包含两种
+以上语言的的文件。
+</p>
+
+<h2 id="toc_1.2">The 2 Byte of Madness</h2>
+
+<p>
+以上只是在欧美、西亚地区的情况，在亚洲地区，尤其是中日韩，扩展<code>ASCII</code>采用的是更
+“疯狂”的做法。这些地区的文字数量远远超过0x00~0xff所能编码的范围，在这些地区，通
+常采用的是<code>DBCS</code>(Double Byte Cherecter Set)，用2字节编码一个扩展字符。例如中文常
+用的<code>GBK2312</code>编码，原<code>ASCII</code>用一个字节编码，用连续2个0xA1~0xfe内的字节编码一个汉
+字，最多可以编码\(94 * 94 = 8836\)个汉字。<code>Shift JIS</code>就更复杂了，要考虑是半宽字符
+还是普通字符，而且<code>Shift JIS</code>还有很多版本，还要考虑日语的不同书写系统...这样做使
+得像“在字符串中向前移动一个字符”等操作变得非常复杂，很难保证其在不同的代码页下都
+能正常工作。<code>Unicode</code>就是为了解决这些混乱的情况而生的。
+</p>
+
+<h2 id="toc_1.3">The call of Unicode</h2>
+
+<p>
+<code>Unicode</code>的首要目的就是把能找到的所有书写系统中的字符统一起来，用统一的编码方式
+表示。对<code>Unicode</code>常见的误解就是<code>Unicode</code>就是DBCS，最多能编码65535个字符。Not
+True。在Unicode标准6.2中码表地址为0x000000~0x10FFFF，收录了110182个字符。
+<code>Unicode</code>中最与众不同的地方就是它如何理解字符。一般我们会认为字符<code>A</code>和其编码表示
+<code>0x41</code>是等价的，两者之间可以互换，写到文件中的也应该是<code>0x41</code>这个Hex值。<code>Unicode</code>
+不这样想，每个字符对应一个的独立的<code>Code Point</code>，<code>A</code>对应的是<code>Latin Capital letter A</code>，
+同时为其分配了一个唯一的<code>Magic Code</code> <code>U+0041</code>。其中<code>U</code>代表<code>Unicode</code>，<code>0041</code>是一
+个十六进制数。这样做实际上在把字符本身和其编码方式之间解耦，字符集只关心字符本身
+，而不关心其他问题。后面会看到这样做的好处。
+</p>
+
+<p>
+例如字符串<code>"Hello World"</code>在Unicode中的表示就是
+</p>
+<pre>
+U+0048 U+0065 U+006C U+006C U+006F U+0020 U+0057 U+006F U+0072 U+006C U+0064
+</pre>
+<p>
+这只是一列<code>Code Point</code>，怎么把它存在文件中，这一步才需要编码。
+</p>
+
+<h2 id="toc_1.4">Encoding Unicode</h2>
+
+<p>
+最初，人们想到的是最直接的方式：直接把<code>Code Point</code>中的16进制<code>Magic</code>当成编码。之
+前的<code>"Hello World"</code>编码为：
+</p>
+<pre>
+00 48 00 65 00 6c 00 6c 00 6f 00 20 00 57 00 6f 00 72 00 6c 00 64
+</pre>
+<p>
+慢著，这里忽略了一个非常关键的问题： <strong>字节序</strong> 。这是在<code>Big Endian</code>CPU下的编码。
+如果在<code>Little Endian</code>CPU下上述编码就会变成：
+</p>
+<pre>
+48 00 65 00 6c 00 6c 00 6f 00 20 00 57 00 6f 00 72 00 6c 00 64 00
+</pre>
+
+<p>
+这样还是没有解决统一编码的问题。同样地文件在不同的电脑上可能还是会解释成不同的内
+容。于是有人想到了一个诡异的解决方案：<code>BOM</code>（Bit Orger Marking）。这个方法很简单
+，在文件开头加上2字节，<code>0xFEFF</code>表示BE，<code>0xFFFE</code>表示LE。其实这是一个Unicode字
+符<code>Byte Order Mark(BOM) U+FEFF</code>，通过写在文件开始的这个字符就能判断文件内容的字
+节序了。
+</p>
+
+<p>
+到此，似乎一切问题再次全部解决了。还是有一个很严重问题：文件可以通过第一
+个字节判断字节序，如果只有一个字符串怎么办？而且在Unicode标准中不强制也不推荐使
+用BOM。在Visual Studio中经典的乱码<code>锟斤拷</code>一部分就是BOM字符造成的，原因后述。
+</p>
+
+<h2 id="toc_1.5">UTF-8 out of Space</h2>
+
+<p>
+暂时先放下这个问题，看一下现在的编码方法中的问题。零太多了，对于编码纯英文的文本
+，浪费了一般空间，而且还没解决字节序的问题。为此，有人发明了非常出色的编码方式：
+<code>UTF-8</code>。<code>UTF-8</code>根据<code>Code point</code>的范围使用1~6字节编码一个字符。规则如下：
+</p>
+
+<table>
+<tr>
+<th>
+Min
+</th>
+<th>
+Max
+</th>
+<th>
+Sequence
+</th>
+</tr>
+<tr>
+<td>
+0x00000000
+</td>
+<td>
+0x0000007f
+</td>
+<td>
+0vvvvvvv
+</td>
+</tr>
+<tr>
+<td>
+0x00000080
+</td>
+<td>
+0x000007ff
+</td>
+<td>
+110vvvvv 10vvvvvv
+</td>
+</tr>
+<tr>
+<td>
+0x00000800
+</td>
+<td>
+0x0000ffff
+</td>
+<td>
+1110vvvv 10vvvvvv 10vvvvvv
+</td>
+</tr>
+<tr>
+<td>
+0x00010000
+</td>
+<td>
+0x001fffff
+</td>
+<td>
+11110vvv 10vvvvvv 10vvvvvv 10vvvvvv
+</td>
+</tr>
+<tr>
+<td>
+0x02000800
+</td>
+<td>
+0x03ffffff
+</td>
+<td>
+111110vv 10vvvvvv 10vvvvvv 10vvvvvv 10vvvvvv
+</td>
+</tr>
+<tr>
+<td>
+0x04000800
+</td>
+<td>
+0x7fffffff
+</td>
+<td>
+1111110v 10vvvvvv 10vvvvvv 10vvvvvv 10vvvvvv 10vvvvvv
+</td>
+</tr>
+</table>
+
+<p>
+这样做的好处非常明显：
+</p>
+<ul>
+<li>
+原来<code>Ascii</code>编码集字符长度不变，对英文字符仍然是1字节编码
+
+<li>
+非常容易确定上一个字符和下一个字符的位置，根据每个字节的前两位即可
+
+<li>
+字节序无关
+
+<li>
+即使收到不完整的字节流，也能很轻松地跳过不完整的字符
+
+</ul>
+
+<p>
+目前为止，已经介绍了两种存储Unicode的方式，最传统的2位定长存储和UTF-8。其中定长
+存储又叫<code>UCS-2</code>（因为2字节存储）或者<code>UTF-16</code>（同样因为2字节存储），又可以根据字
+节序细分为<code>UTF-16LE</code>，<code>UTF-16BE</code>两种。还有其他编码Unicode的方式，例如<code>UTF-7</code>和
+<code>USC-4</code>。在ISO标准中，<code>UTF-8</code>又叫<code>ISO-10646</code>。能自由选择编码方式这点也正是
+Unicode将字符与编码解耦的目的。
+</p>
+
+<p>
+还有一点就是没有所谓的Unicode编码方式这样的东西。Windows中的Unicode编码指的是
+<code>UTF-16LE</code>编码，是乱写的。Unicode根本就没有指定编码的功能。每次听到有人说把文件
+用Unicode编码保存我都不知道怎么吐槽好。
+</p>
+
+<h2 id="toc_1.6">The returning of ANSI</h2>
+
+<p>
+Unicode还有一个非常完美的特性，能够向后兼容最早的<code>Code page</code>方式的ANSI编码。
+Unicode不使用<code>U+0080~U+00ff</code>之间的<code>Code point</code>，这一部分用来兼容OEM。原来的每一
+个<code>Code page</code>都能直接对应新的<code>Code Point</code>一段连续的空间。在读到OEM段的字符时，只
+需要根据给定的<code>Code page</code>得到一个偏移，就能直接得到字符在Unicode中的<code>Code Point</code>
+</p>
+
+<h2 id="toc_1.7">锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷</h2>
+
+<p>
+很多用过Visual Studio的人都应该对<code>锟斤拷</code>有印象。这个是Windows对字符编码支持
+非常糟糕的最直接的例子。成因很简单：把ANSI编码的文件用UTF-8解码造成的。由于对
+于ASCII字符任何编码方式都相同，
+</p>
+</div>
+    <div id="copyright"></div>
+    <div id="disqus_thread"></div>
+    <div class="footer"></div>
+</body>
+</script>
+<script src="/js/jquery-1.4.2.min.js" type="text/javascript"></script>
+<script src="/js/wiki.js" type="text/javascript"></script>
+</html>
