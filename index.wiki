@@ -1,7 +1,9 @@
 = WsMithril's Wiki =
 - [[SICP-Exercise/index| My answer to SICP Exersices]]
   - [[SICP-Exercise/Chapter01|Chapter01]]
-  - Chapter02 - [[SICP-Exercise/Chapter02-p01|Part.I]], [[SICP-Exercise/Chapter02-p02|Part.II]]
+  - Chapter02 - [[SICP-Exercise/Chapter02-p01|Part.I]], 
+    [[SICP-Exercise/Chapter02-p02|Part.II]],
+    [[SICP-Exercise/Chapter02-p03|Part.III]] 
 
 - Haskell
   - Amazing tool to try haskell in a Broswer [[http://tryhaskell.org/|tryhaskell]]
@@ -13,6 +15,17 @@
 
 - Raspberry Pi
   - 
+
+- Lua
+  - My rc files for Awesome WM on [[https://github.com/wsmithril/awesomerc|Github]]
+    * Needs lfs (Lua FileSystem)
+    * Writing all widget form scretch
+    * BSD style autostart config, pretending to be a session controlor
+
+- Arduino
+  - [[quad/index|Build a Quadricopter From Scratch]]
+
+- [[string_enc|On Unicode and String sets]]
 
 - Online Compiler [[http://codepad.org/|CodePad]]
 

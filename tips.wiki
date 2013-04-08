@@ -21,3 +21,66 @@
 } while (0)
 }}}
 
+=== 夏令时 ===
+夏令时会导致很多异常诡异的时间问题。
+
+{{{class="brush: cpp"
+/* tz-dst.c */
+#include <time.h>
+#include <stdio.h>
+
+int main( void ) {
+    time_t t;
+    struct tm temp_tm;
+    struct tm tm_out;
+    char tmp_time[32];
+    
+   strptime("2012-10-04 11:12:13", "%Y-%m-%d %H:%M:%S", &temp_tm);      
+    t = mktime(&temp_tm);
+
+    localtime_r(&t, &tm_out);
+    strftime(tmp_time, 27, "%Y-%m-%d %H:%M:%S", &tm_out);
+
+    printf("%d - %s\n", t, tmp_time);
+    return 0;
+}
+}}}
+
+编译执行，再夏令时时区会有问题：
+
+{{{class="brush: bash"
+$ gcc tz-dst.c -o dst-test
+$ TZ=CST6CET ./dst-test # CST +6 with daylight saving time
+1349370733 - 2012-10-04 12:12:13
+$ TZ=CST6 ./dst-test # CST +6 without daylight saving time
+1349370733 - 2012-10-04 11:12:13
+}}}
+
+秒数相同，但是转换后时间相差一小时。`struct tm`结构中`tm_isdst`可以用于判断当前
+是否处于夏时令。`localtime()`, `localtime_r()`, `mktime()`不会参考这个值，而是从
+环境变量`TZ`中获取是否考虑夏令时。
+
+强制`mktime()`返回`UTC`时间的方法：
+{{{class="brush: cpp"
+time_t mktime_utc(struct tm * timeinfo) {
+    char * tz_old = getenv("TZ");
+    time_t ret = 0;
+
+    putenv("TZ=UTC");
+    _tzset();
+
+    ret = mktime(timeinfo);
+    
+    if (!tz_old) {
+        setenv("TZ=");
+    } else {
+        char buf[64];
+        sprintf(buf, "TZ=%s", tz_old);
+        setenv(buf);
+    }
+    _tzset();
+    return ret;
+}
+}}}
+
+
